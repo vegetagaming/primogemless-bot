@@ -4,6 +4,7 @@ import { existsSync, writeFileSync, readFileSync, unlinkSync } from 'node:fs';
 import { setTimeout as delay } from 'node:timers/promises';
 import { Telegram, TelegramError } from './telegram.mjs';
 import { Store } from './store.mjs';
+import {PostgresDatabase,postgresConfig} from './postgres.mjs';
 import { BotApp, COMMANDS } from './app.mjs';
 import { Vault } from './vault.mjs';
 import { Hoyo } from './hoyo.mjs';
@@ -18,7 +19,10 @@ const runtime=resolve(process.env.BOT_DATA_DIR??resolve(root,'.local'));
 let tg;
 try {tg=new Telegram(process.env.TELEGRAM_BOT_TOKEN);} catch {console.error('Set TELEGRAM_BOT_TOKEN using Start-Bot.ps1 or your hosting secret manager.');process.exit(1);}
 delete process.env.TELEGRAM_BOT_TOKEN;
-const store=new Store(resolve(runtime,'wishes.sqlite'));
+const databaseConfig=postgresConfig();
+const store=new Store(resolve(runtime,'wishes.sqlite'),databaseConfig?{database:new PostgresDatabase(databaseConfig)}:{});
+delete process.env.BOT_DATABASE_URL;delete process.env.BOT_DATABASE_CA;
+if(databaseConfig&&store.getMeta('cloud_migration_complete')!=='ready'){console.error('CLOUD_ARCHIVE_REQUIRED: complete and verify migration before running.');store.close();process.exit(1);}
 loadSchedule(store);
 let vault;
 try {vault=new Vault(store,Buffer.from(process.env.BOT_VAULT_KEY??'','base64'));}catch{console.error('The encrypted session vault could not be opened. Check BOT_VAULT_KEY or Start-Bot.ps1.');store.close();process.exit(1);}

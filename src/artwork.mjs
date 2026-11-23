@@ -22,12 +22,12 @@ export class Artwork{
  override(id){try{return JSON.parse(this.store.getMeta('art_override:'+id)??'null');}catch{return null;}}
  emoji(id){try{return JSON.parse(this.store.getMeta('item_emoji:'+id)??'null');}catch{return null;}}
  setEmoji(id,value){itemInfo(id);this.store.setMeta('item_emoji:'+id,JSON.stringify(value));}
- save(id,bytes){itemInfo(id);const info=imageInfo(bytes),hash=createHash('sha256').update(bytes).digest('hex');writeFileSync(join(this.directory,hash+'.img'),bytes);this.store.setMeta('art_override:'+id,JSON.stringify({hash,...info}));return info;}
+ save(id,bytes){itemInfo(id);const info=imageInfo(bytes),hash=createHash('sha256').update(bytes).digest('hex');this.store.saveArtwork(hash,bytes);writeFileSync(join(this.directory,hash+'.img'),bytes);this.store.setMeta('art_override:'+id,JSON.stringify({hash,...info}));return info;}
  reset(id){itemInfo(id);this.store.setMeta('art_override:'+id,'null');}
  async source(id,portrait=false){
   const a=artwork[id];if(!a)return null;
   const override=!portrait&&this.override(id);
-  if(override&&/^[a-f0-9]{64}$/.test(override.hash)){try{const bytes=readFileSync(join(this.directory,override.hash+'.img'));return {bytes,mime:imageInfo(bytes).mime,custom:true};}catch{}}
+  if(override&&/^[a-f0-9]{64}$/.test(override.hash)){try{const file=join(this.directory,override.hash+'.img'),bytes=existsSync(file)?readFileSync(file):this.store.loadArtwork(override.hash);if(bytes){return {bytes,mime:imageInfo(bytes).mime,custom:true};}}catch{}}
   const splash=a.kind==='character'?a.icon.replace('UI_AvatarIcon_','UI_Gacha_AvatarImg_'):a.icon;
   for(const path of [...new Set([portrait?a.icon:splash,a.icon])]){
    try{const bytes=await this.fetchAsset(path);return {bytes,mime:imageInfo(bytes).mime,custom:false};}catch{}
@@ -38,6 +38,7 @@ export class Artwork{
   if(!/^\/ui\/[A-Za-z0-9_]+\.png$/.test(path))throw new Error('Invalid asset path');
   const hash=createHash('sha256').update(path).digest('hex'),file=join(this.directory,hash+'.img');
   if(existsSync(file))return readFileSync(file);
+  const saved=this.store.loadArtwork(hash);if(saved){writeFileSync(file,saved);return saved;}
   if(this.pending.has(path))return this.pending.get(path);
   const task=(async()=>{
    const r=await this.fetcher('https://enka.network'+path,{redirect:'error',signal:AbortSignal.timeout(15000)});

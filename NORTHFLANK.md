@@ -1,72 +1,56 @@
 # Primogemless on Northflank
 
-The container keeps the current Telegram bot, SQLite archive, account connections,
-custom emojis and artwork. It needs one running instance and a persistent disk.
-This is a deployment recipe; it does not mean the bot has been deployed.
+The Sandbox deployment uses one bot service and the included PostgreSQL addon.
+The PC copy keeps SQLite. Both use the same Store behavior and encryption format.
+All cloud records and custom artwork are committed to PostgreSQL before returning;
+container storage is only a disposable artwork cache and heartbeat directory.
 
-## Free-plan check
+## Configuration
 
-Select Developer Sandbox and use Northflank Cloud. Check the dashboard's estimate
-for BOTH the service and the persistent volume before creating resources. Do not
-upgrade to Pay as you go to work around a free-plan limit. Card verification may
-be required even for a free service. If the free account cannot attach a volume,
-stop: this SQLite application cannot safely use its temporary container storage.
+- Developer Sandbox; no paid upgrade or standalone volume.
+- Private GitHub source, Dockerfile `/Dockerfile`, build context `/`.
+- One bot instance, recreate rollout, no public ports, 90-second shutdown grace.
+- Private PostgreSQL 17 addon with TLS; the application uses its non-admin role.
+- `BOT_DATABASE_URL`: private PostgreSQL URI, as a runtime secret.
+- `TELEGRAM_BOT_TOKEN`: existing bot token, as a runtime secret.
+- `BOT_VAULT_KEY`: the SAME base64 master key as the local bot, as a runtime secret.
+- `BOT_DATA_DIR=/data`; `BOT_DEPLOYMENT_MODE=hold` during migration, `run` afterward.
+- Health command `node /app/ops/healthcheck.mjs`, period 60s, timeout 10s,
+  initial delay 120s, failure threshold 3.
 
-## Service
+Secrets must never be build arguments or repository files. Windows DPAPI XML files
+stay on Windows. Existing encrypted sessions need the original master key.
 
-- Private source repository containing this directory, without node_modules or data.
-- Combined service, Dockerfile `/Dockerfile`, build context `/`.
-- One instance; no autoscaling and no public ports.
-- Persistent Single Read/Write volume mounted at `/data`.
-- Recreate rollout strategy, if available, so two Telegram pollers never overlap.
-- Termination grace period of at least 60 seconds.
-- Initially keep `BOT_DEPLOYMENT_MODE=hold` (the image default).
-- Liveness command: `node /app/ops/healthcheck.mjs`, every 60 seconds, timeout
-  10 seconds, failure threshold 3. Allow 120 seconds for startup.
+The database adapter uses one dedicated worker/session to preserve the existing
+synchronous Store interface. A session advisory lock prevents two cloud writers.
+Queries have timeouts, parameterized values, verified TLS, and durable commits.
+This is intended for the initial small bot; database round trips block each Store
+operation. For a large public audience, migrate the Store interface to async
+queries and batch imports before increasing traffic.
 
-The startup wrapper refuses a container with no separate data mount. Hold mode
-keeps the container available for migration without polling Telegram or HoYoLAB.
+## Migration
 
-## Runtime secrets
+1. Build in hold mode. The PC bot remains active during preparation.
+2. Verify PostgreSQL integration tests in the isolated `primogemless_test` schema.
+3. Stop the PC bot and wait for its stopped heartbeat.
+4. Take a consistent SQLite backup; keep it locally for recovery.
+5. Copy all tables in one PostgreSQL transaction, preserving IDs, owner boundaries,
+   metadata, encrypted sessions, UI state, and sequence counters. Copy artwork blobs.
+6. Compare hashes and row counts and verify the existing key decrypts connections.
+7. Set `cloud_migration_complete=ready` only after verification, then run the cloud bot.
+8. Verify a live heartbeat, Telegram access, image rendering, and restart persistence.
 
-Set these as runtime variables/secrets, never build arguments or repository files:
+Hold mode never polls Telegram or HoYoLAB. Run mode refuses an unverified empty
+cloud database. An alternative SQLite deployment still requires a separately
+mounted persistent volume; it must not use ephemeral storage.
 
-- `TELEGRAM_BOT_TOKEN`: the existing bot token.
-- `BOT_VAULT_KEY`: the SAME base64 encryption key used by the local bot.
-- `BOT_DATA_DIR`: `/data`.
-- `BOT_DEPLOYMENT_MODE`: `hold` until the migration is verified, then `run`.
+## Recovery
 
-The existing archive already contains the owner ID and custom emoji settings.
-Do not generate a new vault key: existing HoYoLAB connections require the old key.
-The Windows DPAPI XML files cannot be opened on Linux and must not be uploaded.
+Keep the local bot stopped while cloud polling is enabled. Set cloud mode to hold
+and verify polling has stopped before restarting a PC copy. Cloud data may be newer
+than the original SQLite backup: export and reconcile it before rolling back.
+Keep the vault key securely backed up separately. A persistent database is not a
+separate backup. Monitor Sandbox resource limits; the free plan has no uptime SLA.
 
-## Cutover
-
-1. Build the service and verify its log says `CLOUD_MIGRATION_HOLD`.
-2. Keep the PC bot active until the build, disk and secret configuration are ready.
-3. Stop the PC bot and wait for `BOT_STOPPED` and a stopped health record.
-4. Make a consistent SQLite backup and retain a local recovery copy. Copy the
-   archive plus the `artwork/` directory using Northflank's authenticated file
-   transfer. Do not copy process files, logs, XML secrets, or stop.request.
-5. Verify SQLite integrity, record counts, emoji settings and artwork hashes on
-   the server. Verify the existing vault key opens every encrypted connection.
-6. Set `BOT_DEPLOYMENT_MODE=run`, then verify `BOT_RUNNING`, a fresh heartbeat,
-   the four-button Telegram menu, history, a generated card and account syncing.
-7. Restart the cloud container and check that its saved data and settings survive.
-8. Keep the local bot stopped. Two polling instances cause Telegram conflicts.
-
-Use Northflank's authenticated CLI/client to download backups. Back up the vault
-key separately in a protected secret store. A disk is persistence, not a backup.
-
-## Rollback
-
-Set the cloud deployment to hold and confirm polling has stopped before starting
-the PC bot. If users added anything after cutover, take a new cloud database/artwork
-backup first and reconcile it; do not replace it with an older local snapshot.
-
-## Sources
-
-- https://northflank.com/pricing
-- https://northflank.com/docs/v1/application/databases-and-persistence/add-a-volume
-- https://northflank.com/docs/v1/application/observe/configure-health-checks
-- https://northflank.com/docs/v1/api/copy-files
+Official documentation: https://northflank.com/pricing and
+https://northflank.com/docs/v1/application/databases-and-persistence.

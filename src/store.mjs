@@ -7,14 +7,15 @@ import {balances,CURRENCIES} from './savings.mjs';
 import {validateRoster,manualWeapon} from './roster-data.mjs';
 
 export class Store {
-  constructor(path) {
+  constructor(path,{database}={}) {
     if (path !== ':memory:') mkdirSync(dirname(path),{recursive:true});
-    this.db = new DatabaseSync(path);
+    this.db = database??new DatabaseSync(path);
     this.db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA secure_delete=ON; PRAGMA busy_timeout=5000;
       CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, selected_uid TEXT, created_at TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS accounts (owner TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, uid TEXT NOT NULL, timezone INTEGER NOT NULL, lang TEXT NOT NULL, updated_at TEXT NOT NULL, PRIMARY KEY(owner,uid));
       CREATE TABLE IF NOT EXISTS wishes (owner TEXT NOT NULL, uid TEXT NOT NULL, id TEXT NOT NULL, data TEXT NOT NULL, PRIMARY KEY(owner,uid,id), FOREIGN KEY(owner,uid) REFERENCES accounts(owner,uid) ON DELETE CASCADE);
       CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+      CREATE TABLE IF NOT EXISTS artwork_blobs (hash TEXT PRIMARY KEY, bytes BLOB NOT NULL);
       CREATE TABLE IF NOT EXISTS confirmations (owner TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE, nonce TEXT NOT NULL, expires INTEGER NOT NULL);
       CREATE TABLE IF NOT EXISTS connections (owner TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE, secret TEXT NOT NULL, status TEXT NOT NULL, linked_at TEXT NOT NULL, last_sync TEXT, next_sync INTEGER NOT NULL DEFAULT 0, error_code TEXT);
       CREATE TABLE IF NOT EXISTS login_challenges (owner TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE, challenge TEXT NOT NULL UNIQUE, expires INTEGER NOT NULL);
@@ -29,6 +30,8 @@ export class Store {
     `);
   }
   close() { this.db.close(); }
+  saveArtwork(hash,bytes){this.db.prepare('INSERT INTO artwork_blobs VALUES (?,?) ON CONFLICT(hash) DO NOTHING').run(hash,bytes);}
+  loadArtwork(hash){const row=this.db.prepare('SELECT bytes FROM artwork_blobs WHERE hash=?').get(hash);return row?Buffer.from(row.bytes):null;}
   roster(owner,uid){const r=this.db.prepare('SELECT data,checked_at FROM roster_snapshots WHERE owner=? AND uid=?').get(String(owner),String(uid));return r?{characters:JSON.parse(r.data),checked_at:r.checked_at}:null;}
   saveRoster(owner,uid,rows){
     if(!this.accounts(owner).some(a=>a.uid===uid))throw new UserError('Choose your own saved account.');
