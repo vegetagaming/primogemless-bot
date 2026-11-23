@@ -1,7 +1,7 @@
-# Primogemless 2.5
+# Primogemless 2.6
 
 For hosting without a PC, see [Northflank deployment](NORTHFLANK.md). The Docker
-image starts in migration hold mode and requires persistent storage. It does not
+image starts in migration hold mode and uses PostgreSQL or a persistent disk. It does not
 start a second Telegram poller until the archive and existing secrets are restored.
 
 Four public commands: `/tutorial`, `/history`, `/primogems`, `/characters`.
@@ -241,10 +241,10 @@ or distributable archives. Run `node src/main.mjs --setup` once, then
 `node src/main.mjs`. Losing or changing the vault key makes existing sessions
 unreadable. Reconnect accounts if it is lost; do not silently reset it.
 
-This is a local server installation, not deployed cloud hosting. Other players'
-PCs may be off; the PC running this bot must remain awake and connected. A reliable
-public service still needs a host, restart supervision, monitoring and an explicit
-backup/retention policy. Only one Telegram polling process may run for a token.
+The Windows launchers run a local server and require that PC to remain awake.
+The Northflank deployment runs independently of every player's PC and stores data
+in its private PostgreSQL addon. Keep a separate recovery backup and vault key.
+Only one Telegram polling process may run for a token.
 
 ## Privacy and security design
 
@@ -305,3 +305,4 @@ The bot owner can open Tutorial -> 2: Wish History -> Add video / channel link.
 Post the tutorial video in a public Telegram channel, then send its public post
 link to the bot in that editor. A channel link also works. Players see Watch
 tutorial once the link is saved. Only the owner can change or remove the link.
+
