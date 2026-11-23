@@ -1,0 +1,14 @@
+.local/
+.env
+*.sqlite*
+*.log
+*token*.xml
+node_modules/
+*.xml
+*.connect.json
+connection.json
+*.env
+*.env.*
+data/
+backups/
+work/

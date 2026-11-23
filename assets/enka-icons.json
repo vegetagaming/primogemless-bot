@@ -1,0 +1,1774 @@
+{
+  "source": "https://github.com/EnkaNetwork/API-docs/tree/master/store/gi",
+  "updated": "2026-11-23",
+  "items": {
+    "11101": {
+      "icon": "/ui/UI_EquipIcon_Sword_Blunt.png",
+      "kind": "weapon"
+    },
+    "11201": {
+      "icon": "/ui/UI_EquipIcon_Sword_Silver.png",
+      "kind": "weapon"
+    },
+    "11301": {
+      "icon": "/ui/UI_EquipIcon_Sword_Steel.png",
+      "kind": "weapon"
+    },
+    "11302": {
+      "icon": "/ui/UI_EquipIcon_Sword_Dawn.png",
+      "kind": "weapon"
+    },
+    "11303": {
+      "icon": "/ui/UI_EquipIcon_Sword_Traveler.png",
+      "kind": "weapon"
+    },
+    "11304": {
+      "icon": "/ui/UI_EquipIcon_Sword_Darker.png",
+      "kind": "weapon"
+    },
+    "11305": {
+      "icon": "/ui/UI_EquipIcon_Sword_Sashimi.png",
+      "kind": "weapon"
+    },
+    "11306": {
+      "icon": "/ui/UI_EquipIcon_Sword_Mitsurugi.png",
+      "kind": "weapon"
+    },
+    "11401": {
+      "icon": "/ui/UI_EquipIcon_Sword_Zephyrus.png",
+      "kind": "weapon"
+    },
+    "11402": {
+      "icon": "/ui/UI_EquipIcon_Sword_Troupe.png",
+      "kind": "weapon"
+    },
+    "11403": {
+      "icon": "/ui/UI_EquipIcon_Sword_Fossil.png",
+      "kind": "weapon"
+    },
+    "11404": {
+      "icon": "/ui/UI_EquipIcon_Sword_Theocrat.png",
+      "kind": "weapon"
+    },
+    "11405": {
+      "icon": "/ui/UI_EquipIcon_Sword_Rockkiller.png",
+      "kind": "weapon"
+    },
+    "11406": {
+      "icon": "/ui/UI_EquipIcon_Sword_Proto.png",
+      "kind": "weapon"
+    },
+    "11407": {
+      "icon": "/ui/UI_EquipIcon_Sword_Exotic.png",
+      "kind": "weapon"
+    },
+    "11408": {
+      "icon": "/ui/UI_EquipIcon_Sword_Blackrock.png",
+      "kind": "weapon"
+    },
+    "11409": {
+      "icon": "/ui/UI_EquipIcon_Sword_Bloodstained.png",
+      "kind": "weapon"
+    },
+    "11410": {
+      "icon": "/ui/UI_EquipIcon_Sword_Outlaw.png",
+      "kind": "weapon"
+    },
+    "11412": {
+      "icon": "/ui/UI_EquipIcon_Sword_Psalmus.png",
+      "kind": "weapon"
+    },
+    "11413": {
+      "icon": "/ui/UI_EquipIcon_Sword_Magnum.png",
+      "kind": "weapon"
+    },
+    "11414": {
+      "icon": "/ui/UI_EquipIcon_Sword_Bakufu.png",
+      "kind": "weapon"
+    },
+    "11415": {
+      "icon": "/ui/UI_EquipIcon_Sword_Opus.png",
+      "kind": "weapon"
+    },
+    "11416": {
+      "icon": "/ui/UI_EquipIcon_Sword_Youtou.png",
+      "kind": "weapon"
+    },
+    "11417": {
+      "icon": "/ui/UI_EquipIcon_Sword_Arakalari.png",
+      "kind": "weapon"
+    },
+    "11418": {
+      "icon": "/ui/UI_EquipIcon_Sword_Pleroma.png",
+      "kind": "weapon"
+    },
+    "11422": {
+      "icon": "/ui/UI_EquipIcon_Sword_Kasabouzu.png",
+      "kind": "weapon"
+    },
+    "11424": {
+      "icon": "/ui/UI_EquipIcon_Sword_Boreas.png",
+      "kind": "weapon"
+    },
+    "11425": {
+      "icon": "/ui/UI_EquipIcon_Sword_Vorpal.png",
+      "kind": "weapon"
+    },
+    "11426": {
+      "icon": "/ui/UI_EquipIcon_Sword_Machination.png",
+      "kind": "weapon"
+    },
+    "11427": {
+      "icon": "/ui/UI_EquipIcon_Sword_Mechanic.png",
+      "kind": "weapon"
+    },
+    "11428": {
+      "icon": "/ui/UI_EquipIcon_Sword_Purewill.png",
+      "kind": "weapon"
+    },
+    "11430": {
+      "icon": "/ui/UI_EquipIcon_Sword_Umpakati.png",
+      "kind": "weapon"
+    },
+    "11431": {
+      "icon": "/ui/UI_EquipIcon_Sword_Isikhulu.png",
+      "kind": "weapon"
+    },
+    "11432": {
+      "icon": "/ui/UI_EquipIcon_Sword_SacrificialNgombe.png",
+      "kind": "weapon"
+    },
+    "11433": {
+      "icon": "/ui/UI_EquipIcon_Sword_Ilmarinen.png",
+      "kind": "weapon"
+    },
+    "11434": {
+      "icon": "/ui/UI_EquipIcon_Sword_Miekka.png",
+      "kind": "weapon"
+    },
+    "11435": {
+      "icon": "/ui/UI_EquipIcon_Sword_SerpentTooth.png",
+      "kind": "weapon"
+    },
+    "11436": {
+      "icon": "/ui/UI_EquipIcon_Sword_GlintstoneSword.png",
+      "kind": "weapon"
+    },
+    "11437": {
+      "icon": "/ui/UI_EquipIcon_Sword_SpikedStake.png",
+      "kind": "weapon"
+    },
+    "11438": {
+      "icon": "/ui/UI_EquipIcon_Sword_Fajian.png",
+      "kind": "weapon"
+    },
+    "11501": {
+      "icon": "/ui/UI_EquipIcon_Sword_Falcon.png",
+      "kind": "weapon"
+    },
+    "11502": {
+      "icon": "/ui/UI_EquipIcon_Sword_Dvalin.png",
+      "kind": "weapon"
+    },
+    "11503": {
+      "icon": "/ui/UI_EquipIcon_Sword_Widsith.png",
+      "kind": "weapon"
+    },
+    "11504": {
+      "icon": "/ui/UI_EquipIcon_Sword_Kunwu.png",
+      "kind": "weapon"
+    },
+    "11505": {
+      "icon": "/ui/UI_EquipIcon_Sword_Morax.png",
+      "kind": "weapon"
+    },
+    "11509": {
+      "icon": "/ui/UI_EquipIcon_Sword_Narukami.png",
+      "kind": "weapon"
+    },
+    "11510": {
+      "icon": "/ui/UI_EquipIcon_Sword_Amenoma.png",
+      "kind": "weapon"
+    },
+    "11511": {
+      "icon": "/ui/UI_EquipIcon_Sword_Deshret.png",
+      "kind": "weapon"
+    },
+    "11512": {
+      "icon": "/ui/UI_EquipIcon_Sword_Ayus.png",
+      "kind": "weapon"
+    },
+    "11513": {
+      "icon": "/ui/UI_EquipIcon_Sword_Regalis.png",
+      "kind": "weapon"
+    },
+    "11514": {
+      "icon": "/ui/UI_EquipIcon_Sword_Needle.png",
+      "kind": "weapon"
+    },
+    "11515": {
+      "icon": "/ui/UI_EquipIcon_Sword_Estoc.png",
+      "kind": "weapon"
+    },
+    "11516": {
+      "icon": "/ui/UI_EquipIcon_Sword_XochitlsTube.png",
+      "kind": "weapon"
+    },
+    "11517": {
+      "icon": "/ui/UI_EquipIcon_Sword_OuterSword.png",
+      "kind": "weapon"
+    },
+    "11518": {
+      "icon": "/ui/UI_EquipIcon_Sword_Motsognir.png",
+      "kind": "weapon"
+    },
+    "11519": {
+      "icon": "/ui/UI_EquipIcon_Sword_SilverwareSaw.png",
+      "kind": "weapon"
+    },
+    "11520": {
+      "icon": "/ui/UI_EquipIcon_Sword_Swanlake.png",
+      "kind": "weapon"
+    },
+    "11521": {
+      "icon": "/ui/UI_EquipIcon_Sword_WeaponQuestSnezhnaya.png",
+      "kind": "weapon"
+    },
+    "11522": {
+      "icon": "/ui/UI_EquipIcon_Sword_Samosvist.png",
+      "kind": "weapon"
+    },
+    "12101": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Aniki.png",
+      "kind": "weapon"
+    },
+    "12201": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Oyaji.png",
+      "kind": "weapon"
+    },
+    "12301": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Glaive.png",
+      "kind": "weapon"
+    },
+    "12302": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Siegfry.png",
+      "kind": "weapon"
+    },
+    "12303": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Tin.png",
+      "kind": "weapon"
+    },
+    "12305": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Reasoning.png",
+      "kind": "weapon"
+    },
+    "12306": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Mitsurugi.png",
+      "kind": "weapon"
+    },
+    "12401": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Zephyrus.png",
+      "kind": "weapon"
+    },
+    "12402": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Troupe.png",
+      "kind": "weapon"
+    },
+    "12403": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Fossil.png",
+      "kind": "weapon"
+    },
+    "12404": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Theocrat.png",
+      "kind": "weapon"
+    },
+    "12405": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Perdue.png",
+      "kind": "weapon"
+    },
+    "12406": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Proto.png",
+      "kind": "weapon"
+    },
+    "12407": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Exotic.png",
+      "kind": "weapon"
+    },
+    "12408": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Blackrock.png",
+      "kind": "weapon"
+    },
+    "12409": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Kione.png",
+      "kind": "weapon"
+    },
+    "12410": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Lapis.png",
+      "kind": "weapon"
+    },
+    "12411": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Dragonfell.png",
+      "kind": "weapon"
+    },
+    "12412": {
+      "icon": "/ui/UI_EquipIcon_Claymore_MillenniaTuna.png",
+      "kind": "weapon"
+    },
+    "12414": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Bakufu.png",
+      "kind": "weapon"
+    },
+    "12415": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Pleroma.png",
+      "kind": "weapon"
+    },
+    "12416": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Maria.png",
+      "kind": "weapon"
+    },
+    "12417": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Arakalari.png",
+      "kind": "weapon"
+    },
+    "12418": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Fleurfair.png",
+      "kind": "weapon"
+    },
+    "12424": {
+      "icon": "/ui/UI_EquipIcon_Claymore_BeastTamer.png",
+      "kind": "weapon"
+    },
+    "12425": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Vorpal.png",
+      "kind": "weapon"
+    },
+    "12426": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Champion.png",
+      "kind": "weapon"
+    },
+    "12427": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Mechanic.png",
+      "kind": "weapon"
+    },
+    "12430": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Umpakati.png",
+      "kind": "weapon"
+    },
+    "12431": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Isikhulu.png",
+      "kind": "weapon"
+    },
+    "12432": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Polilith.png",
+      "kind": "weapon"
+    },
+    "12433": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Ilmarinen.png",
+      "kind": "weapon"
+    },
+    "12435": {
+      "icon": "/ui/UI_EquipIcon_Claymore_EscapeWheel.png",
+      "kind": "weapon"
+    },
+    "12436": {
+      "icon": "/ui/UI_EquipIcon_Claymore_GlintstoneClaymore.png",
+      "kind": "weapon"
+    },
+    "12501": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Dvalin.png",
+      "kind": "weapon"
+    },
+    "12502": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Wolfmound.png",
+      "kind": "weapon"
+    },
+    "12503": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Widsith.png",
+      "kind": "weapon"
+    },
+    "12504": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Kunwu.png",
+      "kind": "weapon"
+    },
+    "12505": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Aniki.png",
+      "kind": "weapon"
+    },
+    "12510": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Itadorimaru.png",
+      "kind": "weapon"
+    },
+    "12511": {
+      "icon": "/ui/UI_EquipIcon_Claymore_Deshret.png",
+      "kind": "weapon"
+    },
+    "12512": {
+      "icon": "/ui/UI_EquipIcon_Claymore_GoldenVerdict.png",
+      "kind": "weapon"
+    },
+    "12513": {
+      "icon": "/ui/UI_EquipIcon_Claymore_EmeraldSword.png",
+      "kind": "weapon"
+    },
+    "12514": {
+      "icon": "/ui/UI_EquipIcon_Claymore_RadianceSword.png",
+      "kind": "weapon"
+    },
+    "12515": {
+      "icon": "/ui/UI_EquipIcon_Claymore_EnsisAquilonis.png",
+      "kind": "weapon"
+    },
+    "12516": {
+      "icon": "/ui/UI_EquipIcon_Claymore_CrystallineSword.png",
+      "kind": "weapon"
+    },
+    "13101": {
+      "icon": "/ui/UI_EquipIcon_Pole_Gewalt.png",
+      "kind": "weapon"
+    },
+    "13201": {
+      "icon": "/ui/UI_EquipIcon_Pole_Rod.png",
+      "kind": "weapon"
+    },
+    "13301": {
+      "icon": "/ui/UI_EquipIcon_Pole_Ruby.png",
+      "kind": "weapon"
+    },
+    "13302": {
+      "icon": "/ui/UI_EquipIcon_Pole_Halberd.png",
+      "kind": "weapon"
+    },
+    "13303": {
+      "icon": "/ui/UI_EquipIcon_Pole_Noire.png",
+      "kind": "weapon"
+    },
+    "13401": {
+      "icon": "/ui/UI_EquipIcon_Pole_Stardust.png",
+      "kind": "weapon"
+    },
+    "13402": {
+      "icon": "/ui/UI_EquipIcon_Pole_Proto.png",
+      "kind": "weapon"
+    },
+    "13403": {
+      "icon": "/ui/UI_EquipIcon_Pole_Exotic.png",
+      "kind": "weapon"
+    },
+    "13404": {
+      "icon": "/ui/UI_EquipIcon_Pole_Blackrock.png",
+      "kind": "weapon"
+    },
+    "13405": {
+      "icon": "/ui/UI_EquipIcon_Pole_Gladiator.png",
+      "kind": "weapon"
+    },
+    "13406": {
+      "icon": "/ui/UI_EquipIcon_Pole_Lapis.png",
+      "kind": "weapon"
+    },
+    "13407": {
+      "icon": "/ui/UI_EquipIcon_Pole_Zephyrus.png",
+      "kind": "weapon"
+    },
+    "13408": {
+      "icon": "/ui/UI_EquipIcon_Pole_Theocrat.png",
+      "kind": "weapon"
+    },
+    "13409": {
+      "icon": "/ui/UI_EquipIcon_Pole_Everfrost.png",
+      "kind": "weapon"
+    },
+    "13414": {
+      "icon": "/ui/UI_EquipIcon_Pole_Bakufu.png",
+      "kind": "weapon"
+    },
+    "13415": {
+      "icon": "/ui/UI_EquipIcon_Pole_Mori.png",
+      "kind": "weapon"
+    },
+    "13416": {
+      "icon": "/ui/UI_EquipIcon_Pole_Maria.png",
+      "kind": "weapon"
+    },
+    "13417": {
+      "icon": "/ui/UI_EquipIcon_Pole_Arakalari.png",
+      "kind": "weapon"
+    },
+    "13419": {
+      "icon": "/ui/UI_EquipIcon_Pole_Windvane.png",
+      "kind": "weapon"
+    },
+    "13424": {
+      "icon": "/ui/UI_EquipIcon_Pole_Shanty.png",
+      "kind": "weapon"
+    },
+    "13425": {
+      "icon": "/ui/UI_EquipIcon_Pole_Vorpal.png",
+      "kind": "weapon"
+    },
+    "13426": {
+      "icon": "/ui/UI_EquipIcon_Pole_Caduceus.png",
+      "kind": "weapon"
+    },
+    "13427": {
+      "icon": "/ui/UI_EquipIcon_Pole_Mechanic.png",
+      "kind": "weapon"
+    },
+    "13430": {
+      "icon": "/ui/UI_EquipIcon_Pole_Umpakati.png",
+      "kind": "weapon"
+    },
+    "13431": {
+      "icon": "/ui/UI_EquipIcon_Pole_Isikhulu.png",
+      "kind": "weapon"
+    },
+    "13432": {
+      "icon": "/ui/UI_EquipIcon_Pole_Aoandon.png",
+      "kind": "weapon"
+    },
+    "13433": {
+      "icon": "/ui/UI_EquipIcon_Pole_Ilmarinen.png",
+      "kind": "weapon"
+    },
+    "13434": {
+      "icon": "/ui/UI_EquipIcon_Pole_Krivule.png",
+      "kind": "weapon"
+    },
+    "13435": {
+      "icon": "/ui/UI_EquipIcon_Pole_FaesCrystalle.png",
+      "kind": "weapon"
+    },
+    "13436": {
+      "icon": "/ui/UI_EquipIcon_Pole_GlintstonePolearm.png",
+      "kind": "weapon"
+    },
+    "13501": {
+      "icon": "/ui/UI_EquipIcon_Pole_Homa.png",
+      "kind": "weapon"
+    },
+    "13502": {
+      "icon": "/ui/UI_EquipIcon_Pole_Dvalin.png",
+      "kind": "weapon"
+    },
+    "13504": {
+      "icon": "/ui/UI_EquipIcon_Pole_Kunwu.png",
+      "kind": "weapon"
+    },
+    "13505": {
+      "icon": "/ui/UI_EquipIcon_Pole_Morax.png",
+      "kind": "weapon"
+    },
+    "13507": {
+      "icon": "/ui/UI_EquipIcon_Pole_Santika.png",
+      "kind": "weapon"
+    },
+    "13509": {
+      "icon": "/ui/UI_EquipIcon_Pole_Narukami.png",
+      "kind": "weapon"
+    },
+    "13511": {
+      "icon": "/ui/UI_EquipIcon_Pole_Deshret.png",
+      "kind": "weapon"
+    },
+    "13512": {
+      "icon": "/ui/UI_EquipIcon_Pole_BloodMoon.png",
+      "kind": "weapon"
+    },
+    "13513": {
+      "icon": "/ui/UI_EquipIcon_Pole_Muguet.png",
+      "kind": "weapon"
+    },
+    "13514": {
+      "icon": "/ui/UI_EquipIcon_Pole_Trident.png",
+      "kind": "weapon"
+    },
+    "13515": {
+      "icon": "/ui/UI_EquipIcon_Pole_Perdix.png",
+      "kind": "weapon"
+    },
+    "13516": {
+      "icon": "/ui/UI_EquipIcon_Pole_TummaLyhty.png",
+      "kind": "weapon"
+    },
+    "13517": {
+      "icon": "/ui/UI_EquipIcon_Pole_Carbine.png",
+      "kind": "weapon"
+    },
+    "14101": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Apprentice.png",
+      "kind": "weapon"
+    },
+    "14201": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Pocket.png",
+      "kind": "weapon"
+    },
+    "14301": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Intro.png",
+      "kind": "weapon"
+    },
+    "14302": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Pulpfic.png",
+      "kind": "weapon"
+    },
+    "14303": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Lightnov.png",
+      "kind": "weapon"
+    },
+    "14304": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Jade.png",
+      "kind": "weapon"
+    },
+    "14305": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Phoney.png",
+      "kind": "weapon"
+    },
+    "14401": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Zephyrus.png",
+      "kind": "weapon"
+    },
+    "14402": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Troupe.png",
+      "kind": "weapon"
+    },
+    "14403": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Fossil.png",
+      "kind": "weapon"
+    },
+    "14404": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Theocrat.png",
+      "kind": "weapon"
+    },
+    "14405": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Resurrection.png",
+      "kind": "weapon"
+    },
+    "14406": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Proto.png",
+      "kind": "weapon"
+    },
+    "14407": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Exotic.png",
+      "kind": "weapon"
+    },
+    "14408": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Blackrock.png",
+      "kind": "weapon"
+    },
+    "14409": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Truelens.png",
+      "kind": "weapon"
+    },
+    "14410": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Outlaw.png",
+      "kind": "weapon"
+    },
+    "14412": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Everfrost.png",
+      "kind": "weapon"
+    },
+    "14413": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Ludiharpastum.png",
+      "kind": "weapon"
+    },
+    "14414": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Bakufu.png",
+      "kind": "weapon"
+    },
+    "14415": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Jyanome.png",
+      "kind": "weapon"
+    },
+    "14416": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Pleroma.png",
+      "kind": "weapon"
+    },
+    "14417": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Arakalari.png",
+      "kind": "weapon"
+    },
+    "14424": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Yue.png",
+      "kind": "weapon"
+    },
+    "14425": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Vorpal.png",
+      "kind": "weapon"
+    },
+    "14426": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_DandelionPoem.png",
+      "kind": "weapon"
+    },
+    "14427": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_ConchSprayer.png",
+      "kind": "weapon"
+    },
+    "14430": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Umpakati.png",
+      "kind": "weapon"
+    },
+    "14431": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Isikhulu.png",
+      "kind": "weapon"
+    },
+    "14432": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_SeeliesLute.png",
+      "kind": "weapon"
+    },
+    "14433": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Ilmarinen.png",
+      "kind": "weapon"
+    },
+    "14434": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Ziedas.png",
+      "kind": "weapon"
+    },
+    "14435": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_SandMemoria.png",
+      "kind": "weapon"
+    },
+    "14436": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_GlintstoneCatalyst.png",
+      "kind": "weapon"
+    },
+    "14437": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_FrostScepter.png",
+      "kind": "weapon"
+    },
+    "14501": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Dvalin.png",
+      "kind": "weapon"
+    },
+    "14502": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Fourwinds.png",
+      "kind": "weapon"
+    },
+    "14504": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Kunwu.png",
+      "kind": "weapon"
+    },
+    "14505": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Morax.png",
+      "kind": "weapon"
+    },
+    "14506": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Kaleido.png",
+      "kind": "weapon"
+    },
+    "14509": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Narukami.png",
+      "kind": "weapon"
+    },
+    "14511": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Ayus.png",
+      "kind": "weapon"
+    },
+    "14512": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Alaya.png",
+      "kind": "weapon"
+    },
+    "14513": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Wheatley.png",
+      "kind": "weapon"
+    },
+    "14514": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Iudex.png",
+      "kind": "weapon"
+    },
+    "14515": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_MountainGale.png",
+      "kind": "weapon"
+    },
+    "14516": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_MechaPufferfish.png",
+      "kind": "weapon"
+    },
+    "14517": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Figurines.png",
+      "kind": "weapon"
+    },
+    "14518": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_SakuraFan.png",
+      "kind": "weapon"
+    },
+    "14519": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_VaresaTransformer.png",
+      "kind": "weapon"
+    },
+    "14520": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_MenulisRing.png",
+      "kind": "weapon"
+    },
+    "14521": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Sistrum.png",
+      "kind": "weapon"
+    },
+    "14522": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Brisingamen.png",
+      "kind": "weapon"
+    },
+    "14523": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_FairyGarden.png",
+      "kind": "weapon"
+    },
+    "14524": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Bludnye.png",
+      "kind": "weapon"
+    },
+    "14525": {
+      "icon": "/ui/UI_EquipIcon_Catalyst_Chernaya.png",
+      "kind": "weapon"
+    },
+    "15101": {
+      "icon": "/ui/UI_EquipIcon_Bow_Hunters.png",
+      "kind": "weapon"
+    },
+    "15201": {
+      "icon": "/ui/UI_EquipIcon_Bow_Old.png",
+      "kind": "weapon"
+    },
+    "15301": {
+      "icon": "/ui/UI_EquipIcon_Bow_Crowfeather.png",
+      "kind": "weapon"
+    },
+    "15302": {
+      "icon": "/ui/UI_EquipIcon_Bow_Arjuna.png",
+      "kind": "weapon"
+    },
+    "15303": {
+      "icon": "/ui/UI_EquipIcon_Bow_Curve.png",
+      "kind": "weapon"
+    },
+    "15304": {
+      "icon": "/ui/UI_EquipIcon_Bow_Sling.png",
+      "kind": "weapon"
+    },
+    "15305": {
+      "icon": "/ui/UI_EquipIcon_Bow_Msg.png",
+      "kind": "weapon"
+    },
+    "15401": {
+      "icon": "/ui/UI_EquipIcon_Bow_Zephyrus.png",
+      "kind": "weapon"
+    },
+    "15402": {
+      "icon": "/ui/UI_EquipIcon_Bow_Troupe.png",
+      "kind": "weapon"
+    },
+    "15403": {
+      "icon": "/ui/UI_EquipIcon_Bow_Fossil.png",
+      "kind": "weapon"
+    },
+    "15404": {
+      "icon": "/ui/UI_EquipIcon_Bow_Theocrat.png",
+      "kind": "weapon"
+    },
+    "15405": {
+      "icon": "/ui/UI_EquipIcon_Bow_Recluse.png",
+      "kind": "weapon"
+    },
+    "15406": {
+      "icon": "/ui/UI_EquipIcon_Bow_Proto.png",
+      "kind": "weapon"
+    },
+    "15407": {
+      "icon": "/ui/UI_EquipIcon_Bow_Exotic.png",
+      "kind": "weapon"
+    },
+    "15408": {
+      "icon": "/ui/UI_EquipIcon_Bow_Blackrock.png",
+      "kind": "weapon"
+    },
+    "15409": {
+      "icon": "/ui/UI_EquipIcon_Bow_Viridescent.png",
+      "kind": "weapon"
+    },
+    "15410": {
+      "icon": "/ui/UI_EquipIcon_Bow_Outlaw.png",
+      "kind": "weapon"
+    },
+    "15411": {
+      "icon": "/ui/UI_EquipIcon_Bow_Fallensun.png",
+      "kind": "weapon"
+    },
+    "15412": {
+      "icon": "/ui/UI_EquipIcon_Bow_Nachtblind.png",
+      "kind": "weapon"
+    },
+    "15413": {
+      "icon": "/ui/UI_EquipIcon_Bow_Fleurfair.png",
+      "kind": "weapon"
+    },
+    "15414": {
+      "icon": "/ui/UI_EquipIcon_Bow_Bakufu.png",
+      "kind": "weapon"
+    },
+    "15415": {
+      "icon": "/ui/UI_EquipIcon_Bow_Predator.png",
+      "kind": "weapon"
+    },
+    "15416": {
+      "icon": "/ui/UI_EquipIcon_Bow_Maria.png",
+      "kind": "weapon"
+    },
+    "15417": {
+      "icon": "/ui/UI_EquipIcon_Bow_Arakalari.png",
+      "kind": "weapon"
+    },
+    "15418": {
+      "icon": "/ui/UI_EquipIcon_Bow_Fin.png",
+      "kind": "weapon"
+    },
+    "15419": {
+      "icon": "/ui/UI_EquipIcon_Bow_Ibis.png",
+      "kind": "weapon"
+    },
+    "15424": {
+      "icon": "/ui/UI_EquipIcon_Bow_Gurabad.png",
+      "kind": "weapon"
+    },
+    "15425": {
+      "icon": "/ui/UI_EquipIcon_Bow_Vorpal.png",
+      "kind": "weapon"
+    },
+    "15426": {
+      "icon": "/ui/UI_EquipIcon_Bow_Ultimatum.png",
+      "kind": "weapon"
+    },
+    "15427": {
+      "icon": "/ui/UI_EquipIcon_Bow_Mechanic.png",
+      "kind": "weapon"
+    },
+    "15430": {
+      "icon": "/ui/UI_EquipIcon_Bow_Umpakati.png",
+      "kind": "weapon"
+    },
+    "15431": {
+      "icon": "/ui/UI_EquipIcon_Bow_Isikhulu.png",
+      "kind": "weapon"
+    },
+    "15432": {
+      "icon": "/ui/UI_EquipIcon_Bow_Stinger.png",
+      "kind": "weapon"
+    },
+    "15433": {
+      "icon": "/ui/UI_EquipIcon_Bow_Ilmarinen.png",
+      "kind": "weapon"
+    },
+    "15434": {
+      "icon": "/ui/UI_EquipIcon_Bow_ElegguaBow.png",
+      "kind": "weapon"
+    },
+    "15435": {
+      "icon": "/ui/UI_EquipIcon_Bow_ShatteredMirror.png",
+      "kind": "weapon"
+    },
+    "15436": {
+      "icon": "/ui/UI_EquipIcon_Bow_GlintstoneBow.png",
+      "kind": "weapon"
+    },
+    "15437": {
+      "icon": "/ui/UI_EquipIcon_Bow_Windtalker.png",
+      "kind": "weapon"
+    },
+    "15501": {
+      "icon": "/ui/UI_EquipIcon_Bow_Dvalin.png",
+      "kind": "weapon"
+    },
+    "15502": {
+      "icon": "/ui/UI_EquipIcon_Bow_Amos.png",
+      "kind": "weapon"
+    },
+    "15503": {
+      "icon": "/ui/UI_EquipIcon_Bow_Widsith.png",
+      "kind": "weapon"
+    },
+    "15504": {
+      "icon": "/ui/UI_EquipIcon_Bow_Hunters.png",
+      "kind": "weapon"
+    },
+    "15505": {
+      "icon": "/ui/UI_EquipIcon_Bow_Hunters.png",
+      "kind": "weapon"
+    },
+    "15507": {
+      "icon": "/ui/UI_EquipIcon_Bow_Worldbane.png",
+      "kind": "weapon"
+    },
+    "15508": {
+      "icon": "/ui/UI_EquipIcon_Bow_Kirin.png",
+      "kind": "weapon"
+    },
+    "15509": {
+      "icon": "/ui/UI_EquipIcon_Bow_Narukami.png",
+      "kind": "weapon"
+    },
+    "15511": {
+      "icon": "/ui/UI_EquipIcon_Bow_Ayus.png",
+      "kind": "weapon"
+    },
+    "15512": {
+      "icon": "/ui/UI_EquipIcon_Bow_Pledge.png",
+      "kind": "weapon"
+    },
+    "15513": {
+      "icon": "/ui/UI_EquipIcon_Bow_Arcdange.png",
+      "kind": "weapon"
+    },
+    "15514": {
+      "icon": "/ui/UI_EquipIcon_Bow_Qoyllorsnova.png",
+      "kind": "weapon"
+    },
+    "15515": {
+      "icon": "/ui/UI_EquipIcon_Bow_Arianna.png",
+      "kind": "weapon"
+    },
+    "15516": {
+      "icon": "/ui/UI_EquipIcon_Bow_Alkonost.png",
+      "kind": "weapon"
+    },
+    "10000002": {
+      "icon": "/ui/UI_AvatarIcon_Ayaka.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Ayaka.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000003": {
+      "icon": "/ui/UI_AvatarIcon_Qin.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Qin.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000005": {
+      "icon": "/ui/UI_AvatarIcon_PlayerBoy.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_PlayerBoy.png",
+      "kind": "character",
+      "element": "None"
+    },
+    "10000006": {
+      "icon": "/ui/UI_AvatarIcon_Lisa.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Lisa.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000007": {
+      "icon": "/ui/UI_AvatarIcon_PlayerGirl.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_PlayerGirl.png",
+      "kind": "character",
+      "element": "None"
+    },
+    "10000014": {
+      "icon": "/ui/UI_AvatarIcon_Barbara.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Barbara.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000015": {
+      "icon": "/ui/UI_AvatarIcon_Kaeya.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Kaeya.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000016": {
+      "icon": "/ui/UI_AvatarIcon_Diluc.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Diluc.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000020": {
+      "icon": "/ui/UI_AvatarIcon_Razor.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Razor.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000021": {
+      "icon": "/ui/UI_AvatarIcon_Ambor.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Ambor.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000022": {
+      "icon": "/ui/UI_AvatarIcon_Venti.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Venti.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000023": {
+      "icon": "/ui/UI_AvatarIcon_Xiangling.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Xiangling.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000024": {
+      "icon": "/ui/UI_AvatarIcon_Beidou.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Beidou.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000025": {
+      "icon": "/ui/UI_AvatarIcon_Xingqiu.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Xingqiu.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000026": {
+      "icon": "/ui/UI_AvatarIcon_Xiao.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Xiao.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000027": {
+      "icon": "/ui/UI_AvatarIcon_Ningguang.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Ningguang.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000029": {
+      "icon": "/ui/UI_AvatarIcon_Klee.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Klee.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000030": {
+      "icon": "/ui/UI_AvatarIcon_Zhongli.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Zhongli.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000031": {
+      "icon": "/ui/UI_AvatarIcon_Fischl.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Fischl.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000032": {
+      "icon": "/ui/UI_AvatarIcon_Bennett.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Bennett.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000033": {
+      "icon": "/ui/UI_AvatarIcon_Tartaglia.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Tartaglia.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000034": {
+      "icon": "/ui/UI_AvatarIcon_Noel.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Noel.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000035": {
+      "icon": "/ui/UI_AvatarIcon_Qiqi.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Qiqi.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000036": {
+      "icon": "/ui/UI_AvatarIcon_Chongyun.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Chongyun.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000037": {
+      "icon": "/ui/UI_AvatarIcon_Ganyu.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Ganyu.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000038": {
+      "icon": "/ui/UI_AvatarIcon_Albedo.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Albedo.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000039": {
+      "icon": "/ui/UI_AvatarIcon_Diona.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Diona.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000041": {
+      "icon": "/ui/UI_AvatarIcon_Mona.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Mona.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000042": {
+      "icon": "/ui/UI_AvatarIcon_Keqing.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Keqing.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000043": {
+      "icon": "/ui/UI_AvatarIcon_Sucrose.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Sucrose.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000044": {
+      "icon": "/ui/UI_AvatarIcon_Xinyan.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Xinyan.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000045": {
+      "icon": "/ui/UI_AvatarIcon_Rosaria.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Rosaria.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000046": {
+      "icon": "/ui/UI_AvatarIcon_Hutao.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Hutao.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000047": {
+      "icon": "/ui/UI_AvatarIcon_Kazuha.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Kazuha.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000048": {
+      "icon": "/ui/UI_AvatarIcon_Feiyan.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Feiyan.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000049": {
+      "icon": "/ui/UI_AvatarIcon_Yoimiya.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Yoimiya.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000050": {
+      "icon": "/ui/UI_AvatarIcon_Tohma.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Tohma.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000051": {
+      "icon": "/ui/UI_AvatarIcon_Eula.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Eula.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000052": {
+      "icon": "/ui/UI_AvatarIcon_Shougun.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Shougun.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000053": {
+      "icon": "/ui/UI_AvatarIcon_Sayu.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Sayu.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000054": {
+      "icon": "/ui/UI_AvatarIcon_Kokomi.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Kokomi.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000055": {
+      "icon": "/ui/UI_AvatarIcon_Gorou.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Gorou.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000056": {
+      "icon": "/ui/UI_AvatarIcon_Sara.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Sara.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000057": {
+      "icon": "/ui/UI_AvatarIcon_Itto.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Itto.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000058": {
+      "icon": "/ui/UI_AvatarIcon_Yae.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Yae.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000059": {
+      "icon": "/ui/UI_AvatarIcon_Heizo.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Heizo.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000060": {
+      "icon": "/ui/UI_AvatarIcon_Yelan.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Yelan.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000061": {
+      "icon": "/ui/UI_AvatarIcon_Momoka.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Momoka.png",
+      "kind": "character",
+      "element": "Grass"
+    },
+    "10000062": {
+      "icon": "/ui/UI_AvatarIcon_Aloy.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Aloy.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000063": {
+      "icon": "/ui/UI_AvatarIcon_Shenhe.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Shenhe.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000064": {
+      "icon": "/ui/UI_AvatarIcon_Yunjin.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Yunjin.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000065": {
+      "icon": "/ui/UI_AvatarIcon_Shinobu.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Shinobu.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000066": {
+      "icon": "/ui/UI_AvatarIcon_Ayato.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Ayato.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000067": {
+      "icon": "/ui/UI_AvatarIcon_Collei.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Collei.png",
+      "kind": "character",
+      "element": "Grass"
+    },
+    "10000068": {
+      "icon": "/ui/UI_AvatarIcon_Dori.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Dori.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000069": {
+      "icon": "/ui/UI_AvatarIcon_Tighnari.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Tighnari.png",
+      "kind": "character",
+      "element": "Grass"
+    },
+    "10000070": {
+      "icon": "/ui/UI_AvatarIcon_Nilou.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Nilou.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000071": {
+      "icon": "/ui/UI_AvatarIcon_Cyno.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Cyno.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000072": {
+      "icon": "/ui/UI_AvatarIcon_Candace.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Candace.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000073": {
+      "icon": "/ui/UI_AvatarIcon_Nahida.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Nahida.png",
+      "kind": "character",
+      "element": "Grass"
+    },
+    "10000074": {
+      "icon": "/ui/UI_AvatarIcon_Layla.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Layla.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000075": {
+      "icon": "/ui/UI_AvatarIcon_Wanderer.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Wanderer.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000076": {
+      "icon": "/ui/UI_AvatarIcon_Faruzan.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Faruzan.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000077": {
+      "icon": "/ui/UI_AvatarIcon_Yaoyao.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Yaoyao.png",
+      "kind": "character",
+      "element": "Grass"
+    },
+    "10000078": {
+      "icon": "/ui/UI_AvatarIcon_Alhatham.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Alhatham.png",
+      "kind": "character",
+      "element": "Grass"
+    },
+    "10000079": {
+      "icon": "/ui/UI_AvatarIcon_Dehya.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Dehya.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000080": {
+      "icon": "/ui/UI_AvatarIcon_Mika.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Mika.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000081": {
+      "icon": "/ui/UI_AvatarIcon_Kaveh.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Kaveh.png",
+      "kind": "character",
+      "element": "Grass"
+    },
+    "10000082": {
+      "icon": "/ui/UI_AvatarIcon_Baizhuer.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Baizhuer.png",
+      "kind": "character",
+      "element": "Grass"
+    },
+    "10000083": {
+      "icon": "/ui/UI_AvatarIcon_Linette.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Linette.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000084": {
+      "icon": "/ui/UI_AvatarIcon_Liney.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Liney.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000085": {
+      "icon": "/ui/UI_AvatarIcon_Freminet.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Freminet.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000086": {
+      "icon": "/ui/UI_AvatarIcon_Wriothesley.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Wriothesley.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000087": {
+      "icon": "/ui/UI_AvatarIcon_Neuvillette.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Neuvillette.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000088": {
+      "icon": "/ui/UI_AvatarIcon_Charlotte.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Charlotte.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000089": {
+      "icon": "/ui/UI_AvatarIcon_Furina.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Furina.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000090": {
+      "icon": "/ui/UI_AvatarIcon_Chevreuse.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Chevreuse.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000091": {
+      "icon": "/ui/UI_AvatarIcon_Navia.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Navia.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000092": {
+      "icon": "/ui/UI_AvatarIcon_Gaming.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Gaming.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000093": {
+      "icon": "/ui/UI_AvatarIcon_Liuyun.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Liuyun.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000094": {
+      "icon": "/ui/UI_AvatarIcon_Chiori.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Chiori.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000095": {
+      "icon": "/ui/UI_AvatarIcon_Sigewinne.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Sigewinne.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000096": {
+      "icon": "/ui/UI_AvatarIcon_Arlecchino.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Arlecchino.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000097": {
+      "icon": "/ui/UI_AvatarIcon_Sethos.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Sethos.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000098": {
+      "icon": "/ui/UI_AvatarIcon_Clorinde.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Clorinde.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000099": {
+      "icon": "/ui/UI_AvatarIcon_Emilie.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Emilie.png",
+      "kind": "character",
+      "element": "Grass"
+    },
+    "10000100": {
+      "icon": "/ui/UI_AvatarIcon_Kachina.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Kachina.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000101": {
+      "icon": "/ui/UI_AvatarIcon_Kinich.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Kinich.png",
+      "kind": "character",
+      "element": "Grass"
+    },
+    "10000102": {
+      "icon": "/ui/UI_AvatarIcon_Mualani.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Mualani.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000103": {
+      "icon": "/ui/UI_AvatarIcon_Xilonen.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Xilonen.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000104": {
+      "icon": "/ui/UI_AvatarIcon_Chasca.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Chasca.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000105": {
+      "icon": "/ui/UI_AvatarIcon_Olorun.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Olorun.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000106": {
+      "icon": "/ui/UI_AvatarIcon_Mavuika.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Mavuika.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000107": {
+      "icon": "/ui/UI_AvatarIcon_Citlali.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Citlali.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000108": {
+      "icon": "/ui/UI_AvatarIcon_Lanyan.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Lanyan.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000109": {
+      "icon": "/ui/UI_AvatarIcon_Mizuki.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Mizuki.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000110": {
+      "icon": "/ui/UI_AvatarIcon_Iansan.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Iansan.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000111": {
+      "icon": "/ui/UI_AvatarIcon_Varesa.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Varesa.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000112": {
+      "icon": "/ui/UI_AvatarIcon_Escoffier.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Escoffier.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000113": {
+      "icon": "/ui/UI_AvatarIcon_Ifa.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Ifa.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000114": {
+      "icon": "/ui/UI_AvatarIcon_SkirkNew.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_SkirkNew.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000115": {
+      "icon": "/ui/UI_AvatarIcon_Dahlia.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Dahlia.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000116": {
+      "icon": "/ui/UI_AvatarIcon_Ineffa.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Ineffa.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000119": {
+      "icon": "/ui/UI_AvatarIcon_Lauma.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Lauma.png",
+      "kind": "character",
+      "element": "Grass"
+    },
+    "10000120": {
+      "icon": "/ui/UI_AvatarIcon_Flins.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Flins.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000121": {
+      "icon": "/ui/UI_AvatarIcon_Aino.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Aino.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000122": {
+      "icon": "/ui/UI_AvatarIcon_Nefer.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Nefer.png",
+      "kind": "character",
+      "element": "Grass"
+    },
+    "10000123": {
+      "icon": "/ui/UI_AvatarIcon_Durin.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Durin.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000124": {
+      "icon": "/ui/UI_AvatarIcon_Jahoda.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Jahoda.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000125": {
+      "icon": "/ui/UI_AvatarIcon_Columbina.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Columbina.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000126": {
+      "icon": "/ui/UI_AvatarIcon_Zibai.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Zibai.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000127": {
+      "icon": "/ui/UI_AvatarIcon_Illuga.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Illuga.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000128": {
+      "icon": "/ui/UI_AvatarIcon_Varka.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Varka.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000129": {
+      "icon": "/ui/UI_AvatarIcon_Lohen.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Lohen.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000130": {
+      "icon": "/ui/UI_AvatarIcon_Linnea.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Linnea.png",
+      "kind": "character",
+      "element": "Rock"
+    },
+    "10000131": {
+      "icon": "/ui/UI_AvatarIcon_Nicole.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Nicole.png",
+      "kind": "character",
+      "element": "Fire"
+    },
+    "10000132": {
+      "icon": "/ui/UI_AvatarIcon_Prune.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Prune.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000133": {
+      "icon": "/ui/UI_AvatarIcon_MarionetteNew.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_MarionetteNew.png",
+      "kind": "character",
+      "element": "Ice"
+    },
+    "10000136": {
+      "icon": "/ui/UI_AvatarIcon_Mitya.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Mitya.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000137": {
+      "icon": "/ui/UI_AvatarIcon_Valeriy.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Valeriy.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000140": {
+      "icon": "/ui/UI_AvatarIcon_Vodyanitsa.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Vodyanitsa.png",
+      "kind": "character",
+      "element": "Water"
+    },
+    "10000143": {
+      "icon": "/ui/UI_AvatarIcon_Vesna.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Vesna.png",
+      "kind": "character",
+      "element": "Wind"
+    },
+    "10000148": {
+      "icon": "/ui/UI_AvatarIcon_Alyosha.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Alyosha.png",
+      "kind": "character",
+      "element": "Electric"
+    },
+    "10000150": {
+      "icon": "/ui/UI_AvatarIcon_Odette.png",
+      "fallback": "/ui/UI_AvatarIcon_Side_Odette.png",
+      "kind": "character",
+      "element": "Ice"
+    }
+  }
+}

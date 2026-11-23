@@ -1,0 +1,14 @@
+**
+!Dockerfile
+!package.json
+!package-lock.json
+!src/
+!src/**
+!assets/
+!assets/**
+!connect/
+!connect/**
+!exporter/
+!exporter/**
+!ops/
+!ops/**
