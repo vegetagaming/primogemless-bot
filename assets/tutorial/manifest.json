@@ -1,0 +1,26 @@
+[
+  {
+    "file": "windows-1.png",
+    "sha256": "d1a8c0f3dc7127d3f519d63e83e45a1562eaf287d4d8b3548d35ad542f364518"
+  },
+  {
+    "file": "windows-2.png",
+    "sha256": "878b5056300c86e79e836f98705d816dca6769037e83ad459cc863aceb7d0131"
+  },
+  {
+    "file": "windows-3.png",
+    "sha256": "5eaaf9d5787c01c9f3a60c6e5a41acd57c32105c9b6cb9bb873cafe7b69a0dd0"
+  },
+  {
+    "file": "windows-4.png",
+    "sha256": "37ae237bde9ed3e8baf419bb6816e98516c10ab9e65995a165ab769ee3aea11f"
+  },
+  {
+    "file": "windows-5.png",
+    "sha256": "ec78be260bd172c6698cc7d1d1e1843e2e3883ddead6402d157c62fb2e62d2b9"
+  },
+  {
+    "file": "windows-6.png",
+    "sha256": "d8b3263c88bf33be589aec44834cba63066319b53fa13cb1c43932ac867364be"
+  }
+]

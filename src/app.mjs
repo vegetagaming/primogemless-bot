@@ -14,6 +14,7 @@ import {CookieLogin} from './cookie-login.mjs';
 import {cookieCapabilities} from './vault.mjs';
 import {weaponById} from './roster-data.mjs';
 import {tutorialLink} from './tutorial-link.mjs';
+import {tutorialPage} from './tutorial.mjs';
 const btn=(text,callback_data)=>({text,callback_data});
 const kb=rows=>({inline_keyboard:rows});
 const esc=x=>String(x??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
@@ -21,7 +22,7 @@ const home=[btn('⌂ Home','start')];
 const date=x=>x?String(x).slice(0,16).replace('T',' ')+' UTC':'Not checked yet';
 export const MENU=kb([[btn('✦ Tutorial','tutorial'),btn('✧ Wish History','history')],[btn('✪ Earned Primogems','primogems'),btn('✩ Owned Characters','characters')]]);
 export const COMMANDS=[['tutorial','Step 1: HoYoLAB · Step 2: Wish History'],['history','Wish History — explore wishes by game patch'],['primogems','Earned Primogems — your HoYoLAB monthly income'],['characters','Owned Characters — constellations and 5-star weapons']].map(([command,description])=>({command,description}));
-export const TUTORIAL=`<b>✦ YOUR JOURNEY STARTS HERE</b>\n\n<b>Step 1 · HoYoLAB tutorial</b>\nSet up your connection for owned characters, constellations and available monthly Primogem income.\n\n<b>Step 2 · Wish History tutorial</b>\nEnable wish syncing or import a saved history file, then explore all wishes or a single patch.\n\nStart with Step 1 below. Connection settings live inside the tutorial. Your game can be closed after setup; the bot server must remain online.`;
+export const TUTORIAL=`<b>✦ YOUR JOURNEY STARTS HERE</b>\n\n<b>1 · HoYoLAB tutorial</b>\nSix picture steps: download the Windows helper, sign in, and connect your account. Use Previous / Next below each image.\n\n<b>2 · Wish History tutorial</b>\nCheck your connection, open all history or a patch, and refresh your saved pulls.\n\nYour game can stay closed during setup. After connecting, your PC can be off too.\n\n<i>Start with Step 1. Read Privacy & data before connecting.</i>`;
 export const PRIVACY=`<b>◈ YOUR DATA</b>\n\nThe bot stores your Telegram ID, Genshin UIDs, wishes, manually saved currency balances, diary income summaries, roster snapshots, manual weapon entries and achievement journal. Connected HoYoverse sessions are encrypted on the bot server. The operator can use them to access account data; these are broader credentials than a wish-history key.\n\nThe helper signs you in on official HoYoverse pages in an isolated browser. It does not collect your password. The Windows helper sends only an encrypted connection package through Telegram. Never send passwords or wish links. Advanced cookie entry is accepted only after you explicitly start it in /login; it passes raw cookies through Telegram, requests message deletion and encrypts the session on the server.\n\nDisconnect erases the bot's session and stops syncing. Delete data removes your saved records too. Telegram messages and external backups are separate.\n\nIndependent fan project; unofficial interfaces. No game clicking, process-memory access or game-file edits. Session expiry and upstream changes can interrupt syncing.`;
 const artMap=JSON.parse(readFileSync(new URL('../assets/enka-icons.json',import.meta.url))).items;
 const itemIds=JSON.parse(readFileSync(new URL('../exporter/item-dictionary.json',import.meta.url)));
@@ -47,16 +48,22 @@ export class BotApp {
  }
  async guide(chat,owner,step){
   this.store.setUI(owner,{});
-  if(step==='hoyolab')return this.say(chat,'<b>Step 1 · HoYoLAB tutorial</b>\n\n<b>1. Open Connect HoYoLAB below.</b>\nChoose the Windows encrypted helper, or advanced cookie entry if you already have your own fresh cookies.\n\n<b>2. Complete the connection.</b>\nWith Windows: save the ZIP → Extract All → run Connect.cmd from the extracted folder. Sign in on the official pages, then send the generated Primogemless.connect.json to this bot.\n\nCookie entry has a separate privacy notice before you paste anything. Never send your password.\n\n<b>3. After “Connected”</b>\nOpen Owned Characters for your roster and constellations, or Earned Primogems for available HoYoLAB monthly income. Reconnect if the session expires.\n\n<i>HoYoLAB-only cookies do not enable wish syncing. Continue to Step 2 for that.</i>',kb([[btn('◈ Connect HoYoLAB / settings','login')],[btn('Next: 2 · Wish History','guide:wishes')],[btn('✩ Owned Characters','characters'),btn('✪ Earned Primogems','primogems')],[btn('← Tutorial','tutorial')]]));
+  if(step==='hoyolab')return this.screenshotGuide(chat,owner,0);
   if(step==='wishes')return this.wishGuide(chat,owner);
   throw new UserError('Choose Step 1 or Step 2 from Tutorial.');
+ }
+ async screenshotGuide(chat,owner,index){
+  const page=tutorialPage(index);this.store.setUI(owner,{});
+  const nav=[...(index?[btn('← Previous','walk:'+(index-1))]:[]),btn((index+1)+' / '+page.total,'walk:'+index),...(index+1<page.total?[btn('Next →','walk:'+(index+1))]:[])];
+  const rows=[nav,[btn('◈ Connect HoYoLAB / settings','login'),btn('Privacy & data','privacy')],...(index===page.total-1?[[btn('✧ Wish History','history'),btn('✩ Owned Characters','characters')],[btn('✪ Earned Primogems','primogems')]]:[]),[btn('2 · Wish History tutorial','guide:wishes'),btn('← Tutorial','tutorial')]];
+  return this.visual(chat,'<b>Windows picture guide · '+(index+1)+' / '+page.total+'</b>\n<b>'+esc(page.title)+'</b>\n\n'+page.text,kb(rows),{type:'tutorial',index});
  }
  async wishGuide(chat,owner){
   const connection=this.store.connection(owner),caps=this.connectionCapabilities(owner),account=this.store.selected(owner),enabled=!!connection&&caps.wishes,ready=enabled&&connection.status==='active';
   let link=null;try{const saved=this.store.getMeta('tutorial_link:wishes');if(saved)link=tutorialLink(saved);}catch{}
   const summary=ready?'<b>Your wish history is connected.</b>':enabled?'<b>Your wish connection needs attention.</b>':connection?'<b>HoYoLAB is connected. Wish syncing still needs setup.</b>':'<b>Connect your wish history to get started.</b>';
   const text='<b>Step 2 · Wish History</b>\n\n'+summary+(account?'\n'+account.count+' pulls saved for this account.':'')+(connection?.last_sync?'\nLast successful check: '+date(connection.last_sync):'')+'\n\n'+(link?'Tap Watch tutorial for the video guide.':ready?'Open your wishes below, or tap Sync now for a new check.':'Use Set up wish syncing below, or upload an existing UIGF history file.')+(ready?'\nAutomatic checks run every 6 hours while the server is online.':'');
-  return this.say(chat,text,kb([...(link?[[{text:'▶ Watch tutorial',url:link}]]:[]),[btn('✧ Open Wish History','history')],ready? [btn('↻ Sync now','sync')]:[btn(enabled?'Reconnect wish syncing':'Set up wish syncing','login')],...(String(owner)===this.ownerId?[[btn(link?'Change video / channel link':'Add video / channel link','guidelink:wishes'),...(link?[btn('Remove link','guideclear:wishes')]:[])]]:[]),[btn('← 1 · HoYoLAB','guide:hoyolab'),btn('Tutorial','tutorial')]]));
+  return this.say(chat,text,kb([...(link?[[{text:'▶ Watch tutorial',url:link}]]:[]),[btn('View setup screenshots','walk:0')],[btn('✧ Open Wish History','history')],ready? [btn('↻ Sync now','sync')]:[btn(enabled?'Reconnect wish syncing':'Set up wish syncing','login')],...(String(owner)===this.ownerId?[[btn(link?'Change video / channel link':'Add video / channel link','guidelink:wishes'),...(link?[btn('Remove link','guideclear:wishes')]:[])]]:[]),[btn('← 1 · HoYoLAB','guide:hoyolab'),btn('Tutorial','tutorial')]]));
  }
  requireGuideOwner(owner){if(!this.ownerId||String(owner)!==this.ownerId)throw new UserError('Only the bot owner can edit tutorial links.');}
  async editGuideLink(chat,owner){this.requireGuideOwner(owner);this.store.setUI(owner,{editingGuideLink:'wishes'});return this.say(chat,'<b>Add a video tutorial</b>\n\nPost your tutorial video in a public Telegram channel, copy its post link, and send that link here. You can also use the public channel link.\n\nExample: <code>https://t.me/YourChannel/123</code>\n\nPlayers will see a Watch tutorial button. Only you can change it.',kb([[btn('Cancel','guide:wishes')]]));}
@@ -151,6 +158,7 @@ export class BotApp {
    if(!cb&&/^\/achievements(?:@\w+)?\s+/i.test(text))return await this.search(chat,owner,text.replace(/^\/achievements(?:@\w+)?\s+/i,''));
    if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).awaitingSearch){this.store.setUI(owner,{});return await this.search(chat,owner,text);}
    const bits=action.split(':');
+   if(bits[0]==='walk'){if(bits.length!==2||!/^\d$/.test(bits[1]))throw new UserError('Choose a page from the screenshot guide.');return await this.screenshotGuide(chat,owner,Number(bits[1]));}
    if(bits[0]==='guidelink'&&bits[1]==='wishes')return await this.editGuideLink(chat,owner);
    if(bits[0]==='guideclear'&&bits[1]==='wishes'){this.requireGuideOwner(owner);this.store.setMeta('tutorial_link:wishes','');this.store.setUI(owner,{});return await this.wishGuide(chat,owner);}
    if(bits[0]==='guide')return await this.guide(chat,owner,bits[1]);

@@ -1,4 +1,4 @@
-# Primogemless 2.6
+# Primogemless 2.7
 
 For hosting without a PC, see [Northflank deployment](NORTHFLANK.md). The Docker
 image starts in migration hold mode and uses PostgreSQL or a persistent disk. It does not
@@ -8,6 +8,11 @@ Four public commands: `/tutorial`, `/history`, `/primogems`, `/characters`.
 The home buttons are Tutorial, Wish History, Earned Primogems and Owned Characters.
 Connect is inside Tutorial, with Step 1: HoYoLAB tutorial and Step 2: Wish History
 tutorial. The unlisted `/login` shortcut remains available for existing users.
+Step 1 opens a six-page illustrated Windows guide with Previous / Next navigation.
+Step 2 also links to the setup screenshots. Cards cover both official sign-ins,
+ZIP extraction, the exact connection filename, and the 30-minute pairing expiry.
+Images are bundled in `assets/tutorial`; their hashes version the Telegram cache.
+Captions include the complete instructions if an image cannot be displayed.
 The home screen uses a two-by-two menu and a navy/gold image dashboard. Account
 switching, backups, refresh, disconnect and deletion live inside those screens.
 
@@ -305,4 +310,3 @@ The bot owner can open Tutorial -> 2: Wish History -> Add video / channel link.
 Post the tutorial video in a public Telegram channel, then send its public post
 link to the bot in that editor. A channel link also works. Players see Watch
 tutorial once the link is saved. Only the owner can change or remove the link.
-
