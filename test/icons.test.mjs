@@ -58,6 +58,6 @@ test('only the configured owner can edit icons; public commands remain four',asy
  await run(message('/start'));assert.equal(raw.calls.at(-1).reply_markup.inline_keyboard.flat().find(x=>x.callback_data==='history').icon_custom_emoji_id,custom.custom_emoji_id);
  await run(callback('ir:history',2));assert.deepEqual(theme.value('history'),custom);
  await run(callback('ir:history'));assert.equal(theme.value('history').text,'✧');
- assert.deepEqual(COMMANDS.map(x=>x.command),['tutorial','history','primogems','characters']);
+ assert.deepEqual(COMMANDS.map(x=>x.command),['connect','history','primogems','characters']);
 });
 

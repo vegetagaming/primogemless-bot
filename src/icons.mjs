@@ -1,7 +1,7 @@
 import {UserError} from './history.mjs';
 
 export const ICONS=[
- {key:'brand',name:'Title / Tutorial',symbol:'✦'},
+ {key:'brand',name:'Title / Connect',symbol:'✦'},
  {key:'connect',name:'Connect',symbol:'◈'},
  {key:'history',name:'Wish History',symbol:'✧'},
  {key:'primogems',name:'Earned Primogems',symbol:'✪'},

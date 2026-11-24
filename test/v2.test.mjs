@@ -20,7 +20,7 @@ function envelope(vault,owner,config,session=cookies){
  return {kind:'primogemless-connect-v1',challenge:config.challenge,key:publicEncrypt({key:createPublicKey(vault.privateKey),oaepHash:'sha256',padding:constants.RSA_PKCS1_OAEP_PADDING},keys).toString('base64'),iv:iv64,data,mac:createHmac('sha256',keys.subarray(32)).update(`${owner}.${config.challenge}.${iv64}.${data}`).digest('base64')};
 }
 test('exactly four public commands and four home buttons',()=>{
- assert.deepEqual(COMMANDS.map(x=>x.command),['tutorial','history','primogems','characters']);assert.equal(MENU.inline_keyboard.flat().length,4);
+ assert.deepEqual(COMMANDS.map(x=>x.command),['connect','history','primogems','characters']);assert.equal(MENU.inline_keyboard.flat().length,4);
 });
 test('patch boundaries convert server time to UTC; unknown dates stay unclassified',()=>{
  assert.equal(patchFor({...row,time:'2026-09-22 22:59:59'},1).id,'7.0');

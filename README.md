@@ -1,15 +1,23 @@
-# Primogemless 2.8
+# Primogemless 2.9
 
 For hosting without a PC, see [Northflank deployment](NORTHFLANK.md). The Docker
 image starts in migration hold mode and uses PostgreSQL or a persistent disk. It does not
 start a second Telegram poller until the archive and existing secrets are restored.
 
-Four public commands: `/tutorial`, `/history`, `/primogems`, `/characters`.
-The home buttons are Tutorial, Wish History, Earned Primogems and Owned Characters.
-Connect is inside Tutorial. The unlisted `/login` shortcut remains available.
-Tutorial displays the owner's video/channel link, or a coming-soon message until
-one is added. The screenshot guide has been removed from bot navigation; old image
-buttons redirect to the video tutorial. Its image files remain archived locally.
+Four public commands: `/connect`, `/history`, `/primogems`, `/characters`.
+The home buttons are Connect, Wish History, Earned Primogems and Owned Characters.
+Opening Connect sends the owner's uploaded video inline, then a personal Windows
+ZIP. Until the video is added, it sends short text instructions and the ZIP.
+The owner uses **Connect → Set video** and sends a normal Telegram video. The bot
+stores its Telegram file ID and reuses it without downloading the video to the
+server. Replace/remove controls are owner-only and require an explicit edit action.
+A public channel/post link remains an optional fallback when no video is uploaded.
+If Telegram rejects a saved video, the connection ZIP remains available.
+Each new ZIP replaces only the requesting user's pairing challenge and expires in
+30 minutes. Video editing and preview navigation do not request new ZIPs.
+Connection settings and advanced login remain under Connect; the unlisted
+`/login` and old `/tutorial` shortcuts still work. Old screenshot buttons open
+Connect without changing pairing. The screenshot files remain archived locally.
 Only the configured bot owner gets an extra **My Game Profile** home button for
 manually recorded currency balances. `/profile` and `/savings` open the same page;
 all balance entry, history and export routes enforce this owner restriction.
@@ -18,8 +26,7 @@ switching, backups, refresh, disconnect and deletion live inside those screens.
 
 ## Connect once
 
-1. Open **Tutorial → Connect HoYoLAB / settings** and choose
-   **Windows encrypted helper**.
+1. Open **Connect** to receive the video guide and your personal Windows ZIP.
 2. Extract the personal ZIP and run `Connect.cmd` on Windows with Edge or Chrome.
 3. Sign in on the official HoYoLAB and Genshin redemption pages in the isolated
    browser. Complete any CAPTCHA or verification there.
@@ -163,7 +170,7 @@ A player without an account is offered account connection. The owner also sees
 
 ## Customize icons
 
-The owner opens **Tutorial → Customize icons** (or the unlisted `/icons` shortcut),
+The owner opens **Connect → Customize icons** (or the unlisted `/icons` shortcut),
 chooses one of 14 symbols, and sends one regular or premium emoji. Telegram's
 `custom_emoji` entity supplies the ID, so the user does not copy IDs manually.
 Each icon can also be removed or reset. Changes persist and apply to future screens
@@ -183,7 +190,7 @@ and [button fields](https://core.telegram.org/bots/api#inlinekeyboardbutton).
 
 ## Artwork studio
 
-The owner opens **Tutorial → Artwork & emojis**, or **Edit artwork / emoji** under
+The owner opens **Connect → Artwork & emojis**, or **Edit artwork / emoji** under
 a character's card. Upload PNG/JPEG artwork as a photo or file to replace the large
 card image globally. A landscape image with the character toward the right works
 best. A separate control sets a regular/premium emoji beside that character's button.
@@ -307,13 +314,13 @@ expiry, request scoping, four-command UI, and personal connection archives.
 Update the item dictionary, artwork mapping and achievement catalogue as the game
 adds content. New unknown items still remain in wish history without artwork.
 
-5-star weapon emojis: /tutorial -> Artwork & emojis -> 5-star Weapons.
+5-star weapon emojis: /connect -> Artwork & emojis -> 5-star Weapons.
 All 76 supported weapons are available to the owner, regardless of ownership.
 Choose a weapon, press Set button emoji and send one premium emoji.
 
 VIDEO / CHANNEL TUTORIAL
 Step 2 now shows wish connection status and short action buttons.
-The bot owner can open Tutorial -> Add video / channel link.
+The bot owner can open Connect -> Add channel link.
 Post the tutorial video in a public Telegram channel, then send its public post
 link to the bot in that editor. A channel link also works. Players see Watch
-tutorial once the link is saved. Only the owner can change or remove the link.
+video once the link is saved. Only the owner can change or remove the link.

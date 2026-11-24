@@ -19,9 +19,9 @@ const kb=rows=>({inline_keyboard:rows});
 const esc=x=>String(x??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 const home=[btn('⌂ Home','start')];
 const date=x=>x?String(x).slice(0,16).replace('T',' ')+' UTC':'Not checked yet';
-export const MENU=kb([[btn('✦ Tutorial','tutorial'),btn('✧ Wish History','history')],[btn('✪ Earned Primogems','primogems'),btn('✩ Owned Characters','characters')]]);
-export const COMMANDS=[['tutorial','Video guide and account connection'],['history','Wish History — explore wishes by game patch'],['primogems','Earned Primogems — your HoYoLAB monthly income'],['characters','Owned Characters — constellations and 5-star weapons']].map(([command,description])=>({command,description}));
-export const TUTORIAL=`<b>✦ TUTORIAL</b>\n\nThe video tutorial is coming soon.\n\nYou can connect your account or manage an existing connection below.`;
+export const MENU=kb([[btn('✦ Connect','connect'),btn('✧ Wish History','history')],[btn('✪ Earned Primogems','primogems'),btn('✩ Owned Characters','characters')]]);
+export const COMMANDS=[['connect','Connect — video guide and personal Windows ZIP'],['history','Wish History — explore wishes by game patch'],['primogems','Earned Primogems — your HoYoLAB monthly income'],['characters','Owned Characters — constellations and 5-star weapons']].map(([command,description])=>({command,description}));
+export const TUTORIAL=`<b>✦ CONNECT</b>\n\nThe video guide is coming soon. Your personal Windows ZIP is available now.\n\nExtract the ZIP, run Connect.cmd, sign in on both official pages, then send Primogemless.connect.json here. Your game can stay closed.`;
 export const PRIVACY=`<b>◈ YOUR DATA</b>\n\nThe bot stores your Telegram ID, Genshin UIDs, wishes, manually saved currency balances, diary income summaries, roster snapshots, manual weapon entries and achievement journal. Connected HoYoverse sessions are encrypted on the bot server. The operator can use them to access account data; these are broader credentials than a wish-history key.\n\nThe helper signs you in on official HoYoverse pages in an isolated browser. It does not collect your password. The Windows helper sends only an encrypted connection package through Telegram. Never send passwords or wish links. Advanced cookie entry is accepted only after you explicitly start it in /login; it passes raw cookies through Telegram, requests message deletion and encrypts the session on the server.\n\nDisconnect erases the bot's session and stops syncing. Delete data removes your saved records too. Telegram messages and external backups are separate.\n\nIndependent fan project; unofficial interfaces. No game clicking, process-memory access or game-file edits. Session expiry and upstream changes can interrupt syncing.`;
 const artMap=JSON.parse(readFileSync(new URL('../assets/enka-icons.json',import.meta.url))).items;
 const itemIds=JSON.parse(readFileSync(new URL('../exporter/item-dictionary.json',import.meta.url)));
@@ -40,28 +40,36 @@ export class BotApp {
   if(cached)try{return remember(messageId?await this.tg.call('editMessageMedia',{chat_id:chat,message_id:messageId,media:{type:'photo',media:cached,caption,parse_mode:'HTML'},reply_markup:markup}):await this.tg.call('sendPhoto',{...params,photo:cached}));}catch(error){if(error.notModified)return;if(error.code!==400)throw error;}
   try{return remember(await this.tg.photo(params,card.png()));}catch(error){if(error.notModified)return;if(error.code!==400)throw error;return this.say(chat,caption,markup);}
  }
- async tutorial(chat,owner){
+ async tutorial(chat,owner,sendZip=false){
   this.store.setUI(owner,{});
-  const admin=this.isOwner(owner),link=this.savedGuideLink();
-  return this.say(chat,link?'<b>✦ TUTORIAL</b>\n\nWatch the video guide below, then connect your account.':TUTORIAL,
-   kb([...(link?[[{text:'▶ Watch tutorial',url:link}]]:[]),[btn('◈ Connect HoYoLAB / settings','login')],[btn('Wish connection status','guide:wishes')],[btn('Privacy & data','privacy')],...(admin?[[btn(link?'Change video / channel link':'Add video / channel link','guidelink:wishes'),...(link?[btn('Remove video link','guideclear:wishes')]:[])]]:[]),...(admin&&this.icons?[[btn('Customize icons','icons'),...(this.art?[btn('Artwork & emojis','art:0')]:[])]]:[]),home]),false);
+  const admin=this.isOwner(owner),link=this.savedGuideLink(),video=this.savedConnectVideo();
+  const markup=kb([...(link&&!video?[[{text:'▶ Watch video',url:link}]]:[]),[btn('Download personal ZIP','beginlogin')],[btn('◈ Connection settings','login'),btn('Privacy & data','privacy')],...(admin?[[btn(video?'Replace video':'Set video','setconnectvideo'),...(video?[btn('Remove video','clearconnectvideo')]:[])],[btn(link?'Change channel link':'Add channel link','guidelink:wishes'),...(link?[btn('Remove link','guideclear:wishes')]:[])]]:[]),...(admin&&this.icons?[[btn('Customize icons','icons'),...(this.art?[btn('Artwork & emojis','art:0')]:[])]]:[]),home]);
+  const caption='<b>✦ CONNECT</b>\n\nWatch the video, then extract your personal ZIP and run Connect.cmd. Sign in on both official pages and send Primogemless.connect.json here.\n\nWindows · your game can stay closed.\nYour personal ZIP expires in 30 minutes. Read Privacy & data before signing in.';
+  if(video){
+   try{await this.tg.call('sendVideo',{chat_id:chat,video:video.file_id,caption,parse_mode:'HTML',supports_streaming:true,reply_markup:markup});}
+   catch(error){if(error.code!==400)throw error;await this.say(chat,'<b>✦ CONNECT</b>\n\nThe video is temporarily unavailable. You can still download your personal ZIP below.',markup,false);}
+  }else await this.say(chat,link?caption:TUTORIAL,markup,false);
+  if(sendZip&&this.vault)return this.connectionPackage(chat,owner);
  }
+ savedConnectVideo(){try{const value=JSON.parse(this.store.getMeta('connect_video_v1')??'null');return typeof value?.file_id==='string'&&/^[A-Za-z0-9_-]{1,512}$/.test(value.file_id)?value:null;}catch{return null;}}
+ async editConnectVideo(chat,owner){this.requireGuideOwner(owner);this.store.setUI(owner,{editingConnectVideo:true});return this.say(chat,'<b>Set the Connect video</b>\n\nSend your recording here as a Telegram video (not as a file). It will appear for everyone who opens Connect, followed by their personal ZIP.\n\nOnly you can replace or remove it.',kb([[btn('Cancel','connectpreview')]]));}
+ async saveConnectVideo(chat,owner,message){this.requireGuideOwner(owner);if(!this.store.getUI(owner).editingConnectVideo)throw new UserError('Open Connect → Set video first.');const video=message.video;if(!video||typeof video.file_id!=='string'||!/^[A-Za-z0-9_-]{1,512}$/.test(video.file_id))throw new UserError('Send the recording as a Telegram video, not a document or link.');this.store.setMeta('connect_video_v1',JSON.stringify({file_id:video.file_id,saved_at:new Date().toISOString()}));this.store.setUI(owner,{});return this.tutorial(chat,owner);}
  savedGuideLink(){try{const saved=this.store.getMeta('tutorial_link:wishes');return saved?tutorialLink(saved):null;}catch{return null;}}
  async guide(chat,owner,step){
   this.store.setUI(owner,{});
   if(step==='hoyolab')return this.login(chat,owner);
   if(step==='wishes')return this.wishGuide(chat,owner);
-  throw new UserError('Open Tutorial to watch the guide or connect your account.');
+  throw new UserError('Open Connect to watch the guide and download your personal ZIP.');
  }
  async wishGuide(chat,owner){
   const connection=this.store.connection(owner),caps=this.connectionCapabilities(owner),account=this.store.selected(owner),enabled=!!connection&&caps.wishes,ready=enabled&&connection.status==='active';
   const link=this.savedGuideLink();
   const summary=ready?'<b>Your wish history is connected.</b>':enabled?'<b>Your wish connection needs attention.</b>':connection?'<b>HoYoLAB is connected. Wish syncing still needs setup.</b>':'<b>Connect your wish history to get started.</b>';
   const text='<b>Wish connection status</b>\n\n'+summary+(account?'\n'+account.count+' pulls saved for this account.':'')+(connection?.last_sync?'\nLast successful check: '+date(connection.last_sync):'')+'\n\n'+(link?'Tap Watch tutorial for the video guide.':ready?'Open your wishes below, or tap Sync now for a new check.':'Use Set up wish syncing below, or upload an existing UIGF history file.')+(ready?'\nAutomatic checks run every 6 hours while the server is online.':'');
-  return this.say(chat,text,kb([...(link?[[{text:'▶ Watch tutorial',url:link}]]:[]),[btn('✧ Open Wish History','history')],ready? [btn('↻ Sync now','sync')]:[btn(enabled?'Reconnect wish syncing':'Set up wish syncing','login')],[btn('◈ Connection settings','login'),btn('← Tutorial','tutorial')]]));
+  return this.say(chat,text,kb([...(link?[[{text:'▶ Watch video',url:link}]]:[]),[btn('✧ Open Wish History','history')],ready? [btn('↻ Sync now','sync')]:[btn(enabled?'Reconnect wish syncing':'Set up wish syncing','connect')],[btn('◈ Connection settings','login'),btn('← Connect','connectpreview')]]));
  }
- requireGuideOwner(owner){if(!this.ownerId||String(owner)!==this.ownerId)throw new UserError('Only the bot owner can edit tutorial links.');}
- async editGuideLink(chat,owner){this.requireGuideOwner(owner);this.store.setUI(owner,{editingGuideLink:'wishes'});return this.say(chat,'<b>Add a video tutorial</b>\n\nPost your tutorial video in a public Telegram channel, copy its post link, and send that link here. You can also use the public channel link.\n\nExample: <code>https://t.me/YourChannel/123</code>\n\nPlayers will see a Watch tutorial button. Only you can change it.',kb([[btn('Cancel','tutorial')]]));}
+ requireGuideOwner(owner){if(!this.ownerId||String(owner)!==this.ownerId)throw new UserError('Only the bot owner can edit the Connect video or links.');}
+ async editGuideLink(chat,owner){this.requireGuideOwner(owner);this.store.setUI(owner,{editingGuideLink:'wishes'});return this.say(chat,'<b>Add a video channel link</b>\n\nSend a public Telegram video post or channel link.\nExample: <code>https://t.me/YourChannel/123</code>\n\nThis is a fallback link. To play the video inside the bot, use Connect → Set video and send the recording directly.',kb([[btn('Cancel','connectpreview')]]));}
  async saveGuideLink(chat,owner,text){this.requireGuideOwner(owner);const link=tutorialLink(text);this.store.setMeta('tutorial_link:wishes',link);this.store.setUI(owner,{});return this.tutorial(chat,owner);}
  requireArtOwner(owner){if(!this.art||!this.ownerId||String(owner)!==this.ownerId)throw new UserError('Only the bot owner can change artwork.');}
  artNavigation(owner,item=null){const ui=this.store.getUI(owner);return {artKind:ui.artKind??(item?.kind==='weapon'&&weaponById.has(item.id)?'w':'c'),artQuery:ui.artQuery??'',artPage:ui.artPage??0};}
@@ -127,6 +135,8 @@ export class BotApp {
   if(!m.document&&++lim.count>4)return;
   if(this.limits.size>10000)for(const [key,x]of this.limits)if(now-x.window>300000)this.limits.delete(key);
   try{
+   if(!cb&&(m.video||m.document||m.photo)&&this.store.getUI(owner).editingConnectVideo)return await this.saveConnectVideo(chat,owner,m);
+   if(!cb&&m.video)return await this.say(chat,this.isOwner(owner)?'Open Connect → Set video, then send your recording.':'Open Connect to get the video guide and your personal ZIP.');
    if(!cb&&(m.photo||m.document)&&this.store.getUI(owner).editingArt)return await this.saveArtwork(chat,owner,m);
    if(!cb&&m.document){
     if(now-lim.upload<3000)throw new UserError('Wait a few seconds before sending another file.');lim.upload=now;
@@ -142,6 +152,7 @@ export class BotApp {
    if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).cookieLogin)return await this.cookieLogin.accept(chat,owner,m);
    if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).editingGuideLink)return await this.saveGuideLink(chat,owner,text);
    if(!cb&&hasSecret(text)){await this.tg.call('deleteMessage',{chat_id:chat,message_id:m.message_id}).catch(()=>{});throw new UserError('Cookie entry is not active. Open /login first. Do not send passwords or wish links.');}
+   if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).editingConnectVideo)return await this.saveConnectVideo(chat,owner,m);
    if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).editingIcon)return await this.saveIcon(chat,owner,m);
    if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).editingItemEmoji)return await this.saveItemEmoji(chat,owner,m);
    if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).artSearch){return await this.artSettings(chat,owner,0,text);}
@@ -149,7 +160,7 @@ export class BotApp {
    if(!cb&&text&&!text.startsWith('/')&&(this.store.getUI(owner).manualWeapon||this.store.getUI(owner).rosterSearchUid))return await this.roster.accept(chat,owner,text);
    const action=cb?.data??text.split(/\s/)[0].replace(/^\//,'').replace(/@\w+$/,'').toLowerCase();
    if(this.store.getUI(owner).editingIcon&&!/^(i|ir|in):/.test(action))this.store.setUI(owner,{});
-   if(cb||text.startsWith('/')){const ui=this.store.getUI(owner);if(ui.editingArt||ui.editingItemEmoji||ui.artSearch||ui.savingsUid||ui.manualWeapon||ui.rosterSearchUid||ui.cookieLogin||ui.editingGuideLink)this.store.setUI(owner,ui.editingArt||ui.editingItemEmoji||ui.artSearch?this.artNavigation(owner):{});}
+   if(cb||text.startsWith('/')){const ui=this.store.getUI(owner);if(ui.editingArt||ui.editingItemEmoji||ui.artSearch||ui.savingsUid||ui.manualWeapon||ui.rosterSearchUid||ui.cookieLogin||ui.editingGuideLink||ui.editingConnectVideo)this.store.setUI(owner,ui.editingArt||ui.editingItemEmoji||ui.artSearch?this.artNavigation(owner):{});}
    if(!cb&&/^\/achievements(?:@\w+)?\s+/i.test(text))return await this.search(chat,owner,text.replace(/^\/achievements(?:@\w+)?\s+/i,''));
    if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).awaitingSearch){this.store.setUI(owner,{});return await this.search(chat,owner,text);}
    const bits=action.split(':');
@@ -184,11 +195,14 @@ export class BotApp {
    if(bits[0]==='d'){this.store.deleteUser(owner,bits[1]);return await this.say(chat,'<b>Data deleted</b>\nYour session, wish archive, savings, diary summaries, roster and manual weapons, and achievement journal have been removed from the bot.');}
    switch(action){
     case 'start':case 'menu':case 'help':return await this.landing(chat,owner);
-    case 'tutorial':return await this.tutorial(chat,owner);
+    case 'connect':case 'tutorial':return await this.tutorial(chat,owner,true);
+    case 'connectpreview':return await this.tutorial(chat,owner);
+    case 'setconnectvideo':return await this.editConnectVideo(chat,owner);
+    case 'clearconnectvideo':this.requireGuideOwner(owner);this.store.setMeta('connect_video_v1','');return await this.tutorial(chat,owner);
     case 'artsearch':this.requireArtOwner(owner);this.store.setUI(owner,{...this.artNavigation(owner),artSearch:true});return await this.say(chat,'<b>Find artwork / emoji</b>\nSend a character or weapon name.',kb([[btn('Cancel','art:0')]]));
     case 'artall':this.store.setUI(owner,{});return await this.artSettings(chat,owner,0,'');
     case 'icons':return await this.iconSettings(chat,owner);
-    case 'login':case 'connect':return await this.login(chat,owner);
+    case 'login':return await this.login(chat,owner);
     case 'cookielogin':return await this.cookieLogin.info(chat,owner);
     case 'cookiebegin':return await this.cookieLogin.begin(chat,owner);
     case 'cookieguide':return await this.cookieLogin.guide(chat);
@@ -246,7 +260,7 @@ export class BotApp {
   const caps=this.connectionCapabilities(owner);
   return this.say(chat,'<b>◈ YOUR CONNECTION</b>\n\nStatus: <b>'+(c.status==='active'?'Connected':c.status==='expired'?'Sign-in expired':'Retrying')+'</b>\nMode: <b>'+(caps.wishes?'Wish sync + available HoYoLAB data':'HoYoLAB only · wish auto-sync disabled')+'</b>\nLast successful check: '+date(c.last_sync)+'\nAutomatic checks: every 6 hours\n\nYour PC and game can be closed. The bot server must stay online.',kb([[btn('↻ Sync now','sync'),btn('Accounts','accounts')],[btn('Owned Characters','characters')],[btn('Windows helper','beginlogin'),btn('Cookie connection','cookielogin')],[btn('Disconnect','disconnect'),btn('Privacy & data','privacy')],home]));
  }
- async connectionPackage(chat,owner){if(!this.vault)throw new UserError('Account connection is not configured by the operator yet.');const config=this.vault.publicConfig(owner),root=new URL('../connect/',import.meta.url),files={};for(const name of ['Connect.ps1','Connect.cmd','README.txt'])files[name]=readFileSync(new URL(name,root));files['connection.json']=JSON.stringify(config,null,2);return this.tg.document(chat,zipFiles(files),'Connect-Primogemless.zip','Save ZIP → right-click it in File Explorer → Extract All → open the extracted folder → run Connect.cmd. Do not run it inside the ZIP. Sign in on the official pages, then send Primogemless.connect.json here once. Expires in 30 minutes.');}
+ async connectionPackage(chat,owner){if(!this.vault)throw new UserError('Account connection is not configured by the operator yet.');const config=this.vault.publicConfig(owner),root=new URL('../connect/',import.meta.url),files={};for(const name of ['Connect.ps1','Connect.cmd','README.txt'])files[name]=readFileSync(new URL(name,root));files['connection.json']=JSON.stringify(config,null,2);return this.tg.document(chat,zipFiles(files),'Connect-Primogemless.zip','Your personal ZIP · valid for 30 minutes. Use the newest ZIP if you request another.\n\nExtract All → open the extracted folder → run Connect.cmd. Sign in on HoYoLAB and the Genshin redemption page, then send Primogemless.connect.json here from this Telegram account.');}
  async connectFile(chat,owner,doc,size,messageId){
   if(!this.vault||!this.hoyo)throw new UserError('Account linking is unavailable.');if(size>160000)throw new UserError('Invalid connection package size.');
   const cookies=this.vault.decryptPackage(owner,doc);
