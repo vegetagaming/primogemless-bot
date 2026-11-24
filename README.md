@@ -1,8 +1,12 @@
-# Primogemless 2.12.1
+# Primogemless 2.12.2
 
 For hosting without a PC, see [Northflank deployment](NORTHFLANK.md). The Docker
 image starts in migration hold mode and uses PostgreSQL or a persistent disk. It does not
 start a second Telegram poller until the archive and existing secrets are restored.
+
+The Telegram bio and description credit **Creator: @Wr_Vegeta**. Their source is
+`src/bot-profile.mjs`; profile setup uses these values. The short bio stays within
+Telegram’s 120-character limit.
 
 Five public commands: `/connect`, `/history`, `/primogems`, `/characters`, `/akasha`.
 The home buttons are Connect, Wish History, Earned Primogems, Owned Characters and AKASHA.

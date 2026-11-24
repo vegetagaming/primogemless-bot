@@ -13,6 +13,7 @@ import { loadSchedule } from './patches.mjs';
 import { IconTheme, ThemedTelegram } from './icons.mjs';
 import { Artwork } from './artwork.mjs';
 import { CardRenderer } from './render.mjs';
+import { BOT_PROFILE } from './bot-profile.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const runtime=resolve(process.env.BOT_DATA_DIR??resolve(root,'.local'));
@@ -47,8 +48,8 @@ async function run() {
   if(process.argv.includes('--setup')) {
     await tg.call('setMyCommands',{commands:COMMANDS,scope:{type:'all_private_chats'}});
     await tg.call('setMyCommands',{commands:COMMANDS});
-    await tg.call('setMyDescription',{description:'Your Genshin companion: Connect · Wish History · Earned Primogems · Owned Characters · AKASHA. Open Connect for the video guide and your personal Windows ZIP. Track monthly income, constellations and 5-star weapons. View build cards and open Akasha rankings. Independent fan project.'});
-    await tg.call('setMyShortDescription',{short_description:'Wishes · Primogems · Characters · AKASHA builds. Start with /connect for the video guide and personal ZIP.'});
+    await tg.call('setMyDescription',{description:BOT_PROFILE.description});
+    await tg.call('setMyShortDescription',{short_description:BOT_PROFILE.short_description});
     await tg.call('setChatMenuButton',{menu_button:{type:'commands'}});
     const registered=await tg.call('getMyCommands',{scope:{type:'all_private_chats'}}),defaults=await tg.call('getMyCommands');
     if(JSON.stringify(registered)!==JSON.stringify(COMMANDS)||JSON.stringify(defaults)!==JSON.stringify(COMMANDS))throw new Error('COMMAND_REGISTRATION_MISMATCH');
