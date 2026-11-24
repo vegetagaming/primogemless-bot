@@ -5,6 +5,7 @@ import { randomBytes } from 'node:crypto';
 import { sameWish, sortWishes, UserError } from './history.mjs';
 import {balances,CURRENCIES} from './savings.mjs';
 import {validateRoster,manualWeapon} from './roster-data.mjs';
+import {welkinRecord} from './welkin.mjs';
 
 export class Store {
   constructor(path,{database}={}) {
@@ -25,6 +26,7 @@ export class Store {
       CREATE TABLE IF NOT EXISTS savings (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT NOT NULL, uid TEXT NOT NULL, primogems INTEGER NOT NULL, crystals INTEGER NOT NULL, intertwined INTEGER NOT NULL, acquaint INTEGER NOT NULL, recorded_at TEXT NOT NULL, FOREIGN KEY(owner,uid) REFERENCES accounts(owner,uid) ON DELETE CASCADE);
       CREATE INDEX IF NOT EXISTS savings_owner_uid ON savings(owner,uid,id);
       CREATE TABLE IF NOT EXISTS diary_months (owner TEXT NOT NULL, uid TEXT NOT NULL, period TEXT NOT NULL, data TEXT NOT NULL, checked_at TEXT NOT NULL, PRIMARY KEY(owner,uid,period), FOREIGN KEY(owner,uid) REFERENCES accounts(owner,uid) ON DELETE CASCADE);
+      CREATE TABLE IF NOT EXISTS welkin (owner TEXT NOT NULL, uid TEXT NOT NULL, days INTEGER NOT NULL CHECK(days >= 0 AND days <= 180), recorded_at TEXT NOT NULL, PRIMARY KEY(owner,uid), FOREIGN KEY(owner,uid) REFERENCES accounts(owner,uid) ON DELETE CASCADE);
       CREATE TABLE IF NOT EXISTS roster_snapshots (owner TEXT NOT NULL, uid TEXT NOT NULL, data TEXT NOT NULL, checked_at TEXT NOT NULL, PRIMARY KEY(owner,uid), FOREIGN KEY(owner,uid) REFERENCES accounts(owner,uid) ON DELETE CASCADE);
       CREATE TABLE IF NOT EXISTS manual_weapons (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT NOT NULL, uid TEXT NOT NULL, weapon_id TEXT NOT NULL, quantity INTEGER NOT NULL, refinement INTEGER NOT NULL, level INTEGER NOT NULL, updated_at TEXT NOT NULL, UNIQUE(owner,uid,weapon_id,refinement,level), FOREIGN KEY(owner,uid) REFERENCES accounts(owner,uid) ON DELETE CASCADE);
     `);
@@ -51,6 +53,12 @@ export class Store {
   }
   removeManualWeapon(owner,uid,rowId){if(!this.db.prepare('DELETE FROM manual_weapons WHERE owner=? AND uid=? AND id=?').run(String(owner),String(uid),rowId).changes)throw new UserError('That manual weapon is unavailable.');}
   savingsRows(owner,uid,limit=5000){return this.db.prepare('SELECT * FROM savings WHERE owner=? AND uid=? ORDER BY id DESC LIMIT ?').all(String(owner),String(uid),limit);}
+  welkin(owner,uid){return this.db.prepare('SELECT days,recorded_at FROM welkin WHERE owner=? AND uid=?').get(String(owner),String(uid))??null;}
+  saveWelkin(owner,uid,days,now=Date.now()){
+    if(!this.accounts(owner).some(a=>a.uid===uid))throw new UserError('Choose your own saved account.');
+    const record=welkinRecord(days,now);
+    this.db.prepare('INSERT INTO welkin(owner,uid,days,recorded_at) VALUES (?,?,?,?) ON CONFLICT(owner,uid) DO UPDATE SET days=excluded.days,recorded_at=excluded.recorded_at').run(String(owner),uid,record.days,record.recorded_at);
+  }
   saveSavings(owner,uid,input){
     if(!this.accounts(owner).some(a=>a.uid===uid))throw new UserError('Choose your own saved account.');
     const value=balances(input),prior=this.savingsRows(owner,uid,1)[0];

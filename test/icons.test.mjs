@@ -32,7 +32,7 @@ test('theme persists across reloads, renders custom icons, and preserves HTML at
  reloaded.set('history',{text:''});assert.equal(reloaded.html('✧ History'),' History');
  reloaded.set('history',null);assert.equal(reloaded.html('✧ History'),'✧ History');
  assert.throws(()=>reloaded.set('invented',custom),UserError);
- assert.equal(ICONS.length,18);
+ assert.equal(ICONS.length,19);
 });
 
 test('Telegram rejection falls back to regular icons for captions and buttons without dropping messages',async t=>{
@@ -66,14 +66,14 @@ test('each currency has an independent owner-only premium emoji on profile text 
  const uid='712345678';store.import('1',{accounts:[{uid,timezone:1,lang:'en-us',list:[]}]});store.saveSavings('1',uid,{primogems:160,crystals:300,acquaint:10,intertwined:25});
  const run=async update=>{app.limits.clear();await app.handle(update);};
  await run(message('/currencyicons',2));assert.match(raw.calls.at(-1).text,/only to the bot owner/);
- const fields=['primogems','crystals','acquaint','intertwined'];
+ const fields=['primogems','crystals','acquaint','intertwined','welkin'];
  for(const [index,field]of fields.entries()){
   await run(callback('i:currency_'+field,2));assert.match(raw.calls.at(-1).text,/Only the bot owner/);
   await run(message('/currencyicons'));assert.ok(raw.calls.at(-1).reply_markup.inline_keyboard.flat().some(b=>b.callback_data==='i:currency_'+field));
   await run(callback('i:currency_'+field));await run(message('🌟',1,{entities:[{type:'custom_emoji',offset:0,length:2,custom_emoji_id:String(1234567890+index)}]}));
  }
  await run(message('/profile'));const profile=raw.calls.at(-1),buttons=profile.reply_markup.inline_keyboard.flat();
- for(const [index,field]of fields.entries()){assert.equal(buttons.find(b=>b.callback_data==='savfield:'+field).icon_custom_emoji_id,String(1234567890+index));assert.ok(profile.text.includes('emoji-id="'+(1234567890+index)+'"'));}
+ for(const [index,field]of fields.entries()){assert.equal(buttons.find(b=>b.callback_data===(field==='welkin'?'welkin':'savfield:'+field)).icon_custom_emoji_id,String(1234567890+index));assert.ok(profile.text.includes('emoji-id="'+(1234567890+index)+'"'));}
  assert.match(profile.text,/Acquaint Fates/);assert.match(profile.text,/Intertwined Fates/);assert.equal(new IconTheme(store).value('currency_acquaint').custom_emoji_id,'1234567892');
  await run(callback('ir:currency_acquaint',2));assert.equal(theme.value('currency_acquaint').custom_emoji_id,'1234567892');
  await run(callback('in:currency_acquaint'));assert.equal(theme.value('currency_acquaint').text,'');assert.equal(theme.value('currency_intertwined').custom_emoji_id,'1234567893');

@@ -22,7 +22,7 @@ const date=x=>x?String(x).slice(0,16).replace('T',' ')+' UTC':'Not checked yet';
 export const MENU=kb([[btn('✦ Connect','connect'),btn('✧ Wish History','history')],[btn('✪ Earned Primogems','primogems'),btn('✩ Owned Characters','characters')]]);
 export const COMMANDS=[['connect','Connect — video guide and personal Windows ZIP'],['history','Wish History — explore wishes by game patch'],['primogems','Earned Primogems — your HoYoLAB monthly income'],['characters','Owned Characters — constellations and 5-star weapons']].map(([command,description])=>({command,description}));
 export const TUTORIAL=`<b>✦ CONNECT</b>\n\nThe video guide is coming soon. Your personal Windows ZIP is available now.\n\nExtract the ZIP, run Connect.cmd, sign in on both official pages, then send Primogemless.connect.json here. Your game can stay closed.`;
-export const PRIVACY=`<b>◈ YOUR DATA</b>\n\nThe bot stores your Telegram ID, Genshin UIDs, wishes, manually saved currency balances, diary income summaries, roster snapshots, manual weapon entries and achievement journal. Connected HoYoverse sessions are encrypted on the bot server. The operator can use them to access account data; these are broader credentials than a wish-history key.\n\nThe helper signs you in on official HoYoverse pages in an isolated browser. It does not collect your password. The Windows helper sends only an encrypted connection package through Telegram. Never send passwords or wish links. Advanced cookie entry is accepted only after you explicitly start it in /login; it passes raw cookies through Telegram, requests message deletion and encrypts the session on the server.\n\nDisconnect erases the bot's session and stops syncing. Delete data removes your saved records too. Telegram messages and external backups are separate.\n\nIndependent fan project; unofficial interfaces. No game clicking, process-memory access or game-file edits. Session expiry and upstream changes can interrupt syncing.`;
+export const PRIVACY=`<b>◈ YOUR DATA</b>\n\nThe bot stores your Telegram ID, Genshin UIDs, wishes, manually saved currency balances, Welkin countdowns, diary income summaries, roster snapshots, manual weapon entries and achievement journal. Connected HoYoverse sessions are encrypted on the bot server. The operator can use them to access account data; these are broader credentials than a wish-history key.\n\nThe helper signs you in on official HoYoverse pages in an isolated browser. It does not collect your password. The Windows helper sends only an encrypted connection package through Telegram. Never send passwords or wish links. Advanced cookie entry is accepted only after you explicitly start it in /login; it passes raw cookies through Telegram, requests message deletion and encrypts the session on the server.\n\nDisconnect erases the bot's session and stops syncing. Delete data removes your saved records too. Telegram messages and external backups are separate.\n\nIndependent fan project; unofficial interfaces. No game clicking, process-memory access or game-file edits. Session expiry and upstream changes can interrupt syncing.`;
 const artMap=JSON.parse(readFileSync(new URL('../assets/enka-icons.json',import.meta.url))).items;
 const itemIds=JSON.parse(readFileSync(new URL('../exporter/item-dictionary.json',import.meta.url)));
 export class BotApp {
@@ -157,10 +157,11 @@ export class BotApp {
    if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).editingItemEmoji)return await this.saveItemEmoji(chat,owner,m);
    if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).artSearch){return await this.artSettings(chat,owner,0,text);}
    if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).savingsUid)return await this.savings.accept(chat,owner,text);
+   if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).welkinUid)return await this.savings.acceptWelkin(chat,owner,text);
    if(!cb&&text&&!text.startsWith('/')&&(this.store.getUI(owner).manualWeapon||this.store.getUI(owner).rosterSearchUid))return await this.roster.accept(chat,owner,text);
    const action=cb?.data??text.split(/\s/)[0].replace(/^\//,'').replace(/@\w+$/,'').toLowerCase();
    if(this.store.getUI(owner).editingIcon&&!/^(i|ir|in):/.test(action))this.store.setUI(owner,{});
-   if(cb||text.startsWith('/')){const ui=this.store.getUI(owner);if(ui.editingArt||ui.editingItemEmoji||ui.artSearch||ui.savingsUid||ui.manualWeapon||ui.rosterSearchUid||ui.cookieLogin||ui.editingGuideLink||ui.editingConnectVideo)this.store.setUI(owner,ui.editingArt||ui.editingItemEmoji||ui.artSearch?this.artNavigation(owner):{});}
+   if(cb||text.startsWith('/')){const ui=this.store.getUI(owner);if(ui.editingArt||ui.editingItemEmoji||ui.artSearch||ui.savingsUid||ui.welkinUid||ui.manualWeapon||ui.rosterSearchUid||ui.cookieLogin||ui.editingGuideLink||ui.editingConnectVideo)this.store.setUI(owner,ui.editingArt||ui.editingItemEmoji||ui.artSearch?this.artNavigation(owner):{});}
    if(!cb&&/^\/achievements(?:@\w+)?\s+/i.test(text))return await this.search(chat,owner,text.replace(/^\/achievements(?:@\w+)?\s+/i,''));
    if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).awaitingSearch){this.store.setUI(owner,{});return await this.search(chat,owner,text);}
    const bits=action.split(':');
@@ -192,7 +193,7 @@ export class BotApp {
    if(bits[0]==='al')return await this.achievementList(chat,owner,bits[1],Number(bits[2]),bits[3]);
    if(bits[0]==='ad')return await this.achievement(chat,owner,Number(bits[1]));
    if(bits[0]==='am'){const a=this.account(owner),id=Number(bits[1]);if(!achievementById.has(id)||!['0','1'].includes(bits[2]))throw new UserError('Invalid achievement.');this.store.setAchievements(owner,a.uid,[{id,current:0,status:bits[2]==='1'?3:1,timestamp:253402271999}],'manual');return await this.achievement(chat,owner,id);}
-   if(bits[0]==='d'){this.store.deleteUser(owner,bits[1]);return await this.say(chat,'<b>Data deleted</b>\nYour session, wish archive, savings, diary summaries, roster and manual weapons, and achievement journal have been removed from the bot.');}
+   if(bits[0]==='d'){this.store.deleteUser(owner,bits[1]);return await this.say(chat,'<b>Data deleted</b>\nYour session, wish archive, savings, Welkin countdowns, diary summaries, roster and manual weapons, and achievement journal have been removed from the bot.');}
    switch(action){
     case 'start':case 'menu':case 'help':return await this.landing(chat,owner);
     case 'connect':case 'tutorial':return await this.tutorial(chat,owner,true);
@@ -215,6 +216,7 @@ export class BotApp {
     case 'primogems':this.store.setUI(owner,{});return await this.savings.diary(chat,owner);
     case 'characters':case 'roster':return await this.roster.characters(chat,owner);
     case 'profile':case 'savings':return await this.savings.show(chat,owner);
+    case 'welkin':return await this.savings.editWelkin(chat,owner);
     case 'savedit':return await this.savings.edit(chat,owner);
     case 'savexport':return await this.savings.export(chat,owner);
     case 'accounts':return await this.accounts(chat,owner);
@@ -226,7 +228,7 @@ export class BotApp {
     case 'aexport':{const a=this.account(owner);return await this.tg.document(chat,Buffer.from(JSON.stringify(exportUIAF(this.store.achievementRows(owner,a.uid)),null,2)),`achievements-${a.uid}.uiaf.json`,'Your portable achievement checklist.');}
     case 'export':this.account(owner);return await this.tg.document(chat,Buffer.from(JSON.stringify(this.store.export(owner),null,2)),'Primogemless-wishes.uigf.json','All your saved wishes. Keep this backup private.');
     case 'privacy':return await this.say(chat,PRIVACY,kb([[btn('Download wishes','export')],[btn('Delete my bot data','delete_me')],home]));
-    case 'delete_me':return await this.say(chat,'<b>Delete all your bot data?</b>\nThis erases your session, wishes, savings, diary summaries, roster and manual weapons, and achievement journal. Download backups first. This cannot be undone.',kb([[btn('Delete everything',`d:${this.store.confirmation(owner)}`)],[btn('Cancel','canceldelete')]]));
+    case 'delete_me':return await this.say(chat,'<b>Delete all your bot data?</b>\nThis erases your session, wishes, savings, Welkin countdowns, diary summaries, roster and manual weapons, and achievement journal. Download backups first. This cannot be undone.',kb([[btn('Delete everything',`d:${this.store.confirmation(owner)}`)],[btn('Cancel','canceldelete')]]));
     case 'canceldelete':this.store.cancelDelete(owner);return await this.landing(chat,owner);
     default:return await this.landing(chat,owner);
    }

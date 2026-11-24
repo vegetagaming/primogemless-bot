@@ -34,6 +34,7 @@ test('Postgres persists the complete Store, rolls back conflicts, isolates owner
   assert.ok(s.connection('1').last_sync);assert.ok(s.connection('1').next_sync>Date.now());assert.equal(s.connection('1').secret,undefined);
   s.syncState('1',{next:0});assert.equal(s.dueConnections().length,1);
   const cash={primogems:160,crystals:1,intertwined:2,acquaint:3};s.saveSavings('1',uid,cash);assert.equal(s.saveSavings('1',uid,cash).changed,false);
+  const welkinStart=Date.now()-172800000;s.saveWelkin('1',uid,180,welkinStart);s.saveWelkin('2',uid,7,welkinStart);assert.equal(s.welkin('1',uid).days,180);assert.throws(()=>s.saveWelkin('1',uid,181));
   s.saveDiary('1',uid,{period:'2026-11',primogems:500});assert.equal(s.diaryRows('1',uid).length,1);
   const roster=normalizeRoster({list:[{id:10000069,name:'Tighnari',rarity:5,level:90,actived_constellation_num:2,weapon:{id:15501,name:'Skyward Harp',rarity:5,level:90,affix_level:1}}]},{uid,region:'os_euro',timezone:1,lang:'en-us'});
   s.saveRoster('1',uid,roster);
@@ -46,9 +47,11 @@ test('Postgres persists the complete Store, rolls back conflicts, isolates owner
   assert.equal(s.export('1').hk4e[0].list[0].id,'9007199254740993001');
   assert.equal(s.getMeta('item_emoji:10000069'),'premium-test');assert.equal(s.getUI('1').page,2);
   assert.equal(s.roster('1',uid).characters[0].constellation,2);assert.equal(s.savingsRows('1',uid)[0].primogems,160);
+  assert.equal(s.welkin('1',uid).recorded_at,new Date(welkinStart).toISOString());
   assert.equal(s.achievementRows('1',uid)[0].id,123);assert.equal(s.achievementTotal('1',uid).total,1234);
   assert.deepEqual(s.loadArtwork('test'),Buffer.from([1,2,3,255]));
   s.deleteUser('1',s.confirmation('1'));assert.equal(s.accounts('1').length,0);assert.equal(s.connection('1'),null);assert.equal(s.savingsRows('1',uid).length,0);assert.equal(s.accounts('2').length,1);
+  assert.equal(s.welkin('1',uid),null);assert.equal(s.welkin('2',uid).days,7);
   s.disconnect('2');s.cancelDelete('2');
  }finally{s.db.exec('TRUNCATE users,meta,artwork_blobs CASCADE');s.close();}
 });

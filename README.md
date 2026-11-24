@@ -1,4 +1,4 @@
-# Primogemless 2.9.1
+# Primogemless 2.10
 
 For hosting without a PC, see [Northflank deployment](NORTHFLANK.md). The Docker
 image starts in migration hold mode and uses PostgreSQL or a persistent disk. It does not
@@ -171,7 +171,7 @@ A player without an account is offered account connection. The owner also sees
 ## Customize icons
 
 The owner opens **Connect → Customize icons** (or the unlisted `/icons` shortcut),
-chooses one of 18 symbols, and sends one regular or premium emoji. Telegram's
+chooses one of 19 symbols, and sends one regular or premium emoji. Telegram's
 `custom_emoji` entity supplies the ID, so the user does not copy IDs manually.
 Each icon can also be removed or reset. Changes persist and apply to future screens
 for all players. Existing messages update when opened again.
@@ -235,6 +235,23 @@ available, but fresh requests are limited to recent month/year pairs to avoid th
 upstream API's month-only ambiguity. Live authenticated diary access still needs the
 player's successful connection. This is an income report, not a complete inventory
 or spending ledger. Delete data cascades to savings snapshots and saved diary summaries.
+
+## Welkin countdown
+
+The owner opens **My Game Profile → Welkin** and enters 0–180 remaining days.
+The bot stores the entered number and its UTC timestamp separately for each UID.
+Remaining days = max(0, saved days − floor(elapsed milliseconds / 86,400,000)).
+The first decrease happens exactly 24 hours after saving. Setting a new number
+restarts that interval; 0 marks it inactive. The counter catches up after downtime
+and survives restarts without requiring a daily database update or a scheduler.
+Reopen or tap **Refresh profile** to see the current count and next decrease time.
+Existing Telegram messages remain snapshots. No daily notification is sent.
+
+Welkin tracks days only; it does not credit Primogems to a manual currency balance.
+It can be set before any currency balances are saved. The balance JSON export
+includes the original day count, timestamp, current remaining days and expiry.
+Deleting account data removes the counter. Set its emoji under **Set currency
+emojis → Welkin Moon**. The feature remains owner-only.
 
 ## Run
 
