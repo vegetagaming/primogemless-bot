@@ -1,9 +1,11 @@
 import {Resvg} from '@resvg/resvg-js';
 import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {artwork,itemId} from './artwork.mjs';
 const esc=x=>String(x??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const colors={Grass:'#a5d86f',Wind:'#72dcca',Fire:'#f4a086',Water:'#7cbaf5',Ice:'#a0dfe9',Electric:'#bd9af2',Rock:'#e9c989'};
 const element={Grass:'DENDRO',Wind:'ANEMO',Fire:'PYRO',Water:'HYDRO',Ice:'CRYO',Electric:'ELECTRO',Rock:'GEO'};
+const currencyArt=Object.fromEntries(['primogems','crystals','acquaint','intertwined'].map(key=>[key,{mime:'image/png',bytes:readFileSync(new URL('../assets/currencies/'+key+'.png',import.meta.url))}]));
 export function pityColor(rank,value){
  if(String(rank)==='4')return '#c3a2f3';
  const count=Number.parseInt(String(value),10);
@@ -32,6 +34,7 @@ export class CardRenderer{
   if(m.type==='ownedDetail')return this.ownedDetail(m);
   if(m.type==='artpreview')return this.artPreview(m);
   if(m.type==='showcase')return this.showcase(m);
+  if(m.type==='balance')return this.balance(m);
   return this.dashboard(m);
  }
  async artPreview(m){const a=await this.art.source(m.id),meta=artwork[m.id]??{},accent=colors[meta.element]??'#e5c78d';return shell(650,image(a,310,-5,1000,660,a?.custom?'xMidYMid slice':'xMidYMid meet')+rect(0,0,630,650,0,'url(#shade)')+star(49,48,10)+t(72,55,17,'ARTWORK STUDIO','#ddc99f',600,'letter-spacing="3"')+t(48,210,m.name.length>21?34:48,m.name,'#f3f0e7',600)+t(48,252,19,a?.custom?'Your custom artwork':'Official character artwork','#9cabc0')+t(48,540,17,'One image. Every wish card.','#cbd5e3')+t(48,574,15,'Only the bot owner can change this image.','#8fa1b8'),accent);}
@@ -58,6 +61,23 @@ export class CardRenderer{
   [54,281,471,703,919,1139].forEach((x,i)=>body+=star(x,[349,326,366,329,365,332][i],i%2?5:8,'#b5a178'));
   body+=t(49,414,16,m.footer??'A little luck. A lasting memory.','#a8b4c5')+t(1150,414,13,m.uid?'UID '+m.uid:'PRIMOGEMLESS','#72839b',400,'text-anchor="end"');
   return shell(450,body,m.accent);
+ }
+ async balance(m){
+  const palettes={primogems:'#a4dfff',crystals:'#b9b0ff',acquaint:'#8bbafa',intertwined:'#efb8e3'};
+  const notes={primogems:'160 Primogems = 1 wish',crystals:'Top-up currency',acquaint:'Standard wishes',intertwined:'Event wishes'};
+  let body=header('Your balance, in view.','MY GAME PROFILE')+t(49,153,18,m.subtitle,'#95a6bd');
+  m.metrics.slice(0,4).forEach((v,i)=>{
+   const x=48+(i%2)*564,y=184+Math.floor(i/2)*174,accent=palettes[v.key],value=String(v.value),size=Math.min(53,Math.floor(350/Math.max(value.length,1)*1.65));
+   body+=rect(x,y,540,154,19,'#172638','#34475b')+rect(x+18,y+22,4,110,2,accent);
+   body+=`<circle cx="${x+84}" cy="${y+75}" r="53" fill="${accent}" opacity=".08"/>`+image(currencyArt[v.key],x+31,y+24,106,106);
+   body+=t(x+158,y+39,19,v.label,accent,500)+t(x+155,y+101,size,value,'#f2f4f8',600)+t(x+158,y+132,14,notes[v.key],'#91a6bf');
+  });
+  body+=rect(48,532,1104,108,19,'#19263c','#40516d');
+  body+='<circle cx="104" cy="585" r="28" fill="#cbd6ff"/><circle cx="117" cy="574" r="25" fill="#19263c"/>'+star(137,600,6,'#e8d8a6')+star(83,555,4,'#cbd6ff');
+  body+=t(161,574,25,'Blessing of the Welkin Moon','#d9def5',600)+t(161,608,17,m.welkinDays===null?'Set your remaining days in the buttons below.':'Automatically decreases by 1 day every 24 hours.','#9eafc9');
+  body+=t(1085,585,44,m.welkinDays===null?'—':String(m.welkinDays),'#e5d5a6',600,'text-anchor="end"')+t(1085,613,12,m.welkinDays===null?'NOT SET':'DAYS LEFT','#a7b7ce',500,'text-anchor="end" letter-spacing="2"');
+  body+=t(49,685,16,m.footer,'#a8b4c5')+t(1150,685,14,'UID '+m.uid,'#8296af',500,'text-anchor="end"');
+  return shell(720,body,'#a8baf1');
  }
  async showcase(m){
   const [art,artifactImages]=await Promise.all([this.art?.source(m.id),Promise.all(m.artifacts.map(async a=>{try{return a.icon&&this.art?.fetchAsset?{bytes:await this.art.fetchAsset(a.icon),mime:'image/png'}:null;}catch{return null;}}))]),accent=colors[artwork[m.id]?.element]??'#a5d8c5';

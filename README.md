@@ -1,4 +1,4 @@
-# Primogemless 2.11
+# Primogemless 2.11.1
 
 For hosting without a PC, see [Northflank deployment](NORTHFLANK.md). The Docker
 image starts in migration hold mode and uses PostgreSQL or a persistent disk. It does not
@@ -21,6 +21,10 @@ Connect without changing pairing. The screenshot files remain archived locally.
 Only the configured bot owner gets an extra **My Game Profile** home button for
 manually recorded currency balances. `/profile` and `/savings` open the same page;
 all balance entry, history and export routes enforce this owner restriction.
+The balance card includes bundled Primogem, Genesis Crystal, Acquaint Fate and
+Intertwined Fate artwork, large amounts, and a separate Welkin countdown panel.
+Rendering uses local assets and does not require a network request. Currency
+premium emoji settings continue to control captions and buttons independently.
 The home screen uses a two-column menu and a navy/gold image dashboard. Account
 switching, backups, refresh, disconnect and deletion live inside those screens.
 
