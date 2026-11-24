@@ -12,3 +12,10 @@ connection.json
 data/
 backups/
 work/
+Exports/
+*.uigf.json
+*.uiaf.json
+*.pem
+*.key
+Connect-Primogemless*.zip
+Primogemless.connect*

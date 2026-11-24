@@ -12,6 +12,7 @@ COPY assets ./assets
 COPY connect ./connect
 COPY exporter ./exporter
 COPY ops ./ops
+COPY LICENSE THIRD_PARTY_NOTICES.md ./
 RUN mkdir -p /data && chown node:node /data
 
 ENV NODE_ENV=production \

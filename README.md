@@ -1,5 +1,27 @@
 # Primogemless 2.12.2
 
+An open-source Telegram companion for Genshin Impact, created by
+[@Wr_Vegeta](https://t.me/Wr_Vegeta).
+
+[Use the bot](https://t.me/Primogemless_bot) · [Run your own](#run) ·
+[Contribute](CONTRIBUTING.md) · [Security](SECURITY.md) · [MIT license](LICENSE)
+
+- **Connect:** a personal Windows helper with encrypted account connection.
+- **Wish History:** automatic checks, UIGF backups, patch filters and pity cards.
+- **Earned Primogems:** available HoYoLAB Traveler's Diary monthly income.
+- **Owned Characters:** constellations, levels and five-star weapons.
+- **AKASHA:** Enka showcase build cards and links to Akasha rankings.
+- **Owner preview:** manual currency balances and a Welkin day countdown.
+
+Requires Node.js 24+, persistent SQLite or PostgreSQL storage, and your own
+Telegram bot token. The public repository contains source, not the hosted bot's
+database, tokens, encryption keys or connected accounts. Game artwork and other
+third-party material retain their own rights; see [notices](THIRD_PARTY_NOTICES.md).
+
+This is an independent fan project. HoYoLAB integrations are unofficial and may
+change or expire; only history still available from the upstream server can be
+fetched. Saved older records remain in the archive.
+
 For hosting without a PC, see [Northflank deployment](NORTHFLANK.md). The Docker
 image starts in migration hold mode and uses PostgreSQL or a persistent disk. It does not
 start a second Telegram poller until the archive and existing secrets are restored.
@@ -325,8 +347,13 @@ are specific to this Windows account and PC. Keep the runtime directory private.
 The process execution-policy option does not permanently change Windows settings.
 
 `Start-Bot.ps1` accepts `-TokenFile`, `-DataDirectory`, `-NodePath`, and `-Mode Check`.
-For this workspace, the parent outputs folder has Start-My-Bot.cmd and
-Stop-My-Bot.cmd. The stop helper uses a control file, avoiding unsafe PID reuse.
+Stop the foreground process with Ctrl+C and wait for it to exit before restarting.
+
+Set `BOT_OWNER_ID` to your numeric Telegram user ID in the launch environment to
+enable icon/artwork administration, tutorial video editing and the balance preview.
+For example, in PowerShell, set `$env:BOT_OWNER_ID = 'YOUR_NUMERIC_TELEGRAM_ID'`
+before launching. Replace the placeholder; a Telegram username is not a numeric ID.
+Without this setting, a fresh installation has no administrator.
 
 On other hosting systems, provide `TELEGRAM_BOT_TOKEN`, a stable `BOT_VAULT_KEY`
 (base64-encoded 32 random bytes) through a secret manager, and `BOT_DATA_DIR` on
@@ -384,7 +411,11 @@ expiry, request scoping, five-command UI, and personal connection archives.
 - [Paimon.moe weapon catalogue](https://github.com/MadeBaruna/paimon-moe/blob/main/src/data/weaponList.js) supplies the 5-star picker; the same MIT license is included.
 - [Enka.Network](https://api.enka.network/) for public artwork and
   [icon metadata](https://github.com/EnkaNetwork/API-docs/tree/master/store/gi).
-  No player UIDs are sent to Enka; Telegram fetches static artwork and caches file IDs.
+  Static artwork uses item identifiers. AKASHA build cards send the selected public
+  Genshin UID to Enka's showcase API; no HoYoverse cookies are sent to Enka.
+
+Original code and documentation are licensed under [MIT](LICENSE). Preserve the
+separate [third-party notices](THIRD_PARTY_NOTICES.md) when redistributing.
 
 Update the item dictionary, artwork mapping and achievement catalogue as the game
 adds content. New unknown items still remain in wish history without artwork.

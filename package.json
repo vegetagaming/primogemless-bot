@@ -13,5 +13,12 @@
   "dependencies": {
     "@resvg/resvg-js": "2.6.2",
     "pg": "8.23.1"
+  },
+  "description": "Telegram companion for Genshin wishes, Primogem income, characters and public builds",
+  "license": "MIT",
+  "author": "vegetagaming (@Wr_Vegeta)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vegetagaming/primogemless-bot.git"
   }
 }
