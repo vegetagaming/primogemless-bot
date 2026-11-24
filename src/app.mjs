@@ -14,21 +14,22 @@ import {CookieLogin} from './cookie-login.mjs';
 import {cookieCapabilities} from './vault.mjs';
 import {weaponById} from './roster-data.mjs';
 import {tutorialLink} from './tutorial-link.mjs';
-import {tutorialPage} from './tutorial.mjs';
 const btn=(text,callback_data)=>({text,callback_data});
 const kb=rows=>({inline_keyboard:rows});
 const esc=x=>String(x??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 const home=[btn('⌂ Home','start')];
 const date=x=>x?String(x).slice(0,16).replace('T',' ')+' UTC':'Not checked yet';
 export const MENU=kb([[btn('✦ Tutorial','tutorial'),btn('✧ Wish History','history')],[btn('✪ Earned Primogems','primogems'),btn('✩ Owned Characters','characters')]]);
-export const COMMANDS=[['tutorial','Step 1: HoYoLAB · Step 2: Wish History'],['history','Wish History — explore wishes by game patch'],['primogems','Earned Primogems — your HoYoLAB monthly income'],['characters','Owned Characters — constellations and 5-star weapons']].map(([command,description])=>({command,description}));
-export const TUTORIAL=`<b>✦ YOUR JOURNEY STARTS HERE</b>\n\n<b>1 · HoYoLAB tutorial</b>\nSix picture steps: download the Windows helper, sign in, and connect your account. Use Previous / Next below each image.\n\n<b>2 · Wish History tutorial</b>\nCheck your connection, open all history or a patch, and refresh your saved pulls.\n\nYour game can stay closed during setup. After connecting, your PC can be off too.\n\n<i>Start with Step 1. Read Privacy & data before connecting.</i>`;
+export const COMMANDS=[['tutorial','Video guide and account connection'],['history','Wish History — explore wishes by game patch'],['primogems','Earned Primogems — your HoYoLAB monthly income'],['characters','Owned Characters — constellations and 5-star weapons']].map(([command,description])=>({command,description}));
+export const TUTORIAL=`<b>✦ TUTORIAL</b>\n\nThe video tutorial is coming soon.\n\nYou can connect your account or manage an existing connection below.`;
 export const PRIVACY=`<b>◈ YOUR DATA</b>\n\nThe bot stores your Telegram ID, Genshin UIDs, wishes, manually saved currency balances, diary income summaries, roster snapshots, manual weapon entries and achievement journal. Connected HoYoverse sessions are encrypted on the bot server. The operator can use them to access account data; these are broader credentials than a wish-history key.\n\nThe helper signs you in on official HoYoverse pages in an isolated browser. It does not collect your password. The Windows helper sends only an encrypted connection package through Telegram. Never send passwords or wish links. Advanced cookie entry is accepted only after you explicitly start it in /login; it passes raw cookies through Telegram, requests message deletion and encrypts the session on the server.\n\nDisconnect erases the bot's session and stops syncing. Delete data removes your saved records too. Telegram messages and external backups are separate.\n\nIndependent fan project; unofficial interfaces. No game clicking, process-memory access or game-file edits. Session expiry and upstream changes can interrupt syncing.`;
 const artMap=JSON.parse(readFileSync(new URL('../assets/enka-icons.json',import.meta.url))).items;
 const itemIds=JSON.parse(readFileSync(new URL('../exporter/item-dictionary.json',import.meta.url)));
 export class BotApp {
  constructor({telegram,store,vault=null,hoyo=null,sync=null,icons=null,ownerId=null,art=null,renderer=null}){this.tg=telegram;this.store=store;this.vault=vault;this.hoyo=hoyo;this.sync=sync;this.icons=icons;this.ownerId=ownerId?String(ownerId):null;this.art=art;this.renderer=renderer;this.savings=new Savings(this);this.roster=new Roster(this);this.cookieLogin=new CookieLogin(this);this.limits=new Map();this.context=new AsyncLocalStorage();}
- async say(chat,text,markup=MENU,edit=true){const target=edit?this.context.getStore()?.message:null;const extra={parse_mode:'HTML',reply_markup:markup};if(target&&String(target.chat.id)===String(chat)){try{if(target.text)return await this.tg.call('editMessageText',{chat_id:chat,message_id:target.message_id,text,...extra,link_preview_options:{is_disabled:true}});if(target.photo&&text.length<950)return await this.tg.call('editMessageCaption',{chat_id:chat,message_id:target.message_id,caption:text,...extra});}catch(error){if(error.notModified)return;if(error.code!==400)throw error;}}return this.tg.message(chat,text,extra);}
+ isOwner(owner){return !!this.ownerId&&String(owner)===this.ownerId;}
+ menu(owner){return kb([...MENU.inline_keyboard,...(this.isOwner(owner)?[[btn('My Game Profile','savings')]]:[])]);}
+ async say(chat,text,markup=this.menu(chat),edit=true){const target=edit?this.context.getStore()?.message:null;const extra={parse_mode:'HTML',reply_markup:markup};if(target&&String(target.chat.id)===String(chat)){try{if(target.text)return await this.tg.call('editMessageText',{chat_id:chat,message_id:target.message_id,text,...extra,link_preview_options:{is_disabled:true}});if(target.photo&&text.length<950)return await this.tg.call('editMessageCaption',{chat_id:chat,message_id:target.message_id,caption:text,...extra});}catch(error){if(error.notModified)return;if(error.code!==400)throw error;}}return this.tg.message(chat,text,extra);}
  async visual(chat,caption,markup,model){
   if(!this.renderer)return this.say(chat,caption,markup);
   await this.tg.call('sendChatAction',{chat_id:chat,action:'upload_photo'}).catch(()=>{});
@@ -41,33 +42,27 @@ export class BotApp {
  }
  async tutorial(chat,owner){
   this.store.setUI(owner,{});
-  const admin=this.ownerId===owner;
-  return this.visual(chat,TUTORIAL,
-   kb([[btn('1 · HoYoLAB tutorial','guide:hoyolab')],[btn('2 · Wish History tutorial','guide:wishes')],[btn('Privacy & data','privacy')],...(admin&&this.icons?[[btn('Customize icons','icons'),...(this.art?[btn('Artwork & emojis','art:0')]:[])]]:[]),home]),
-   {type:'dashboard',title:'Your journey starts here.',subtitle:'Two steps to your Genshin companion.',metrics:[{value:'01',label:'HOYOLAB'},{value:'02',label:'WISH HISTORY'}],footer:'Start with HoYoLAB, then bring your wishes along.'});
+  const admin=this.isOwner(owner),link=this.savedGuideLink();
+  return this.say(chat,link?'<b>✦ TUTORIAL</b>\n\nWatch the video guide below, then connect your account.':TUTORIAL,
+   kb([...(link?[[{text:'▶ Watch tutorial',url:link}]]:[]),[btn('◈ Connect HoYoLAB / settings','login')],[btn('Wish connection status','guide:wishes')],[btn('Privacy & data','privacy')],...(admin?[[btn(link?'Change video / channel link':'Add video / channel link','guidelink:wishes'),...(link?[btn('Remove video link','guideclear:wishes')]:[])]]:[]),...(admin&&this.icons?[[btn('Customize icons','icons'),...(this.art?[btn('Artwork & emojis','art:0')]:[])]]:[]),home]),false);
  }
+ savedGuideLink(){try{const saved=this.store.getMeta('tutorial_link:wishes');return saved?tutorialLink(saved):null;}catch{return null;}}
  async guide(chat,owner,step){
   this.store.setUI(owner,{});
-  if(step==='hoyolab')return this.screenshotGuide(chat,owner,0);
+  if(step==='hoyolab')return this.login(chat,owner);
   if(step==='wishes')return this.wishGuide(chat,owner);
-  throw new UserError('Choose Step 1 or Step 2 from Tutorial.');
- }
- async screenshotGuide(chat,owner,index){
-  const page=tutorialPage(index);this.store.setUI(owner,{});
-  const nav=[...(index?[btn('← Previous','walk:'+(index-1))]:[]),btn((index+1)+' / '+page.total,'walk:'+index),...(index+1<page.total?[btn('Next →','walk:'+(index+1))]:[])];
-  const rows=[nav,[btn('◈ Connect HoYoLAB / settings','login'),btn('Privacy & data','privacy')],...(index===page.total-1?[[btn('✧ Wish History','history'),btn('✩ Owned Characters','characters')],[btn('✪ Earned Primogems','primogems')]]:[]),[btn('2 · Wish History tutorial','guide:wishes'),btn('← Tutorial','tutorial')]];
-  return this.visual(chat,'<b>Windows picture guide · '+(index+1)+' / '+page.total+'</b>\n<b>'+esc(page.title)+'</b>\n\n'+page.text,kb(rows),{type:'tutorial',index});
+  throw new UserError('Open Tutorial to watch the guide or connect your account.');
  }
  async wishGuide(chat,owner){
   const connection=this.store.connection(owner),caps=this.connectionCapabilities(owner),account=this.store.selected(owner),enabled=!!connection&&caps.wishes,ready=enabled&&connection.status==='active';
-  let link=null;try{const saved=this.store.getMeta('tutorial_link:wishes');if(saved)link=tutorialLink(saved);}catch{}
+  const link=this.savedGuideLink();
   const summary=ready?'<b>Your wish history is connected.</b>':enabled?'<b>Your wish connection needs attention.</b>':connection?'<b>HoYoLAB is connected. Wish syncing still needs setup.</b>':'<b>Connect your wish history to get started.</b>';
-  const text='<b>Step 2 · Wish History</b>\n\n'+summary+(account?'\n'+account.count+' pulls saved for this account.':'')+(connection?.last_sync?'\nLast successful check: '+date(connection.last_sync):'')+'\n\n'+(link?'Tap Watch tutorial for the video guide.':ready?'Open your wishes below, or tap Sync now for a new check.':'Use Set up wish syncing below, or upload an existing UIGF history file.')+(ready?'\nAutomatic checks run every 6 hours while the server is online.':'');
-  return this.say(chat,text,kb([...(link?[[{text:'▶ Watch tutorial',url:link}]]:[]),[btn('View setup screenshots','walk:0')],[btn('✧ Open Wish History','history')],ready? [btn('↻ Sync now','sync')]:[btn(enabled?'Reconnect wish syncing':'Set up wish syncing','login')],...(String(owner)===this.ownerId?[[btn(link?'Change video / channel link':'Add video / channel link','guidelink:wishes'),...(link?[btn('Remove link','guideclear:wishes')]:[])]]:[]),[btn('← 1 · HoYoLAB','guide:hoyolab'),btn('Tutorial','tutorial')]]));
+  const text='<b>Wish connection status</b>\n\n'+summary+(account?'\n'+account.count+' pulls saved for this account.':'')+(connection?.last_sync?'\nLast successful check: '+date(connection.last_sync):'')+'\n\n'+(link?'Tap Watch tutorial for the video guide.':ready?'Open your wishes below, or tap Sync now for a new check.':'Use Set up wish syncing below, or upload an existing UIGF history file.')+(ready?'\nAutomatic checks run every 6 hours while the server is online.':'');
+  return this.say(chat,text,kb([...(link?[[{text:'▶ Watch tutorial',url:link}]]:[]),[btn('✧ Open Wish History','history')],ready? [btn('↻ Sync now','sync')]:[btn(enabled?'Reconnect wish syncing':'Set up wish syncing','login')],[btn('◈ Connection settings','login'),btn('← Tutorial','tutorial')]]));
  }
  requireGuideOwner(owner){if(!this.ownerId||String(owner)!==this.ownerId)throw new UserError('Only the bot owner can edit tutorial links.');}
- async editGuideLink(chat,owner){this.requireGuideOwner(owner);this.store.setUI(owner,{editingGuideLink:'wishes'});return this.say(chat,'<b>Add a video tutorial</b>\n\nPost your tutorial video in a public Telegram channel, copy its post link, and send that link here. You can also use the public channel link.\n\nExample: <code>https://t.me/YourChannel/123</code>\n\nPlayers will see a Watch tutorial button. Only you can change it.',kb([[btn('Cancel','guide:wishes')]]));}
- async saveGuideLink(chat,owner,text){this.requireGuideOwner(owner);const link=tutorialLink(text);this.store.setMeta('tutorial_link:wishes',link);this.store.setUI(owner,{});return this.wishGuide(chat,owner);}
+ async editGuideLink(chat,owner){this.requireGuideOwner(owner);this.store.setUI(owner,{editingGuideLink:'wishes'});return this.say(chat,'<b>Add a video tutorial</b>\n\nPost your tutorial video in a public Telegram channel, copy its post link, and send that link here. You can also use the public channel link.\n\nExample: <code>https://t.me/YourChannel/123</code>\n\nPlayers will see a Watch tutorial button. Only you can change it.',kb([[btn('Cancel','tutorial')]]));}
+ async saveGuideLink(chat,owner,text){this.requireGuideOwner(owner);const link=tutorialLink(text);this.store.setMeta('tutorial_link:wishes',link);this.store.setUI(owner,{});return this.tutorial(chat,owner);}
  requireArtOwner(owner){if(!this.art||!this.ownerId||String(owner)!==this.ownerId)throw new UserError('Only the bot owner can change artwork.');}
  artNavigation(owner,item=null){const ui=this.store.getUI(owner);return {artKind:ui.artKind??(item?.kind==='weapon'&&weaponById.has(item.id)?'w':'c'),artQuery:ui.artQuery??'',artPage:ui.artPage??0};}
  async artSettings(chat,owner,page=0,query=null,kind=null){
@@ -158,12 +153,13 @@ export class BotApp {
    if(!cb&&/^\/achievements(?:@\w+)?\s+/i.test(text))return await this.search(chat,owner,text.replace(/^\/achievements(?:@\w+)?\s+/i,''));
    if(!cb&&text&&!text.startsWith('/')&&this.store.getUI(owner).awaitingSearch){this.store.setUI(owner,{});return await this.search(chat,owner,text);}
    const bits=action.split(':');
-   if(bits[0]==='walk'){if(bits.length!==2||!/^\d$/.test(bits[1]))throw new UserError('Choose a page from the screenshot guide.');return await this.screenshotGuide(chat,owner,Number(bits[1]));}
+   if(bits[0]==='walk')return await this.tutorial(chat,owner);
    if(bits[0]==='guidelink'&&bits[1]==='wishes')return await this.editGuideLink(chat,owner);
-   if(bits[0]==='guideclear'&&bits[1]==='wishes'){this.requireGuideOwner(owner);this.store.setMeta('tutorial_link:wishes','');this.store.setUI(owner,{});return await this.wishGuide(chat,owner);}
+   if(bits[0]==='guideclear'&&bits[1]==='wishes'){this.requireGuideOwner(owner);this.store.setMeta('tutorial_link:wishes','');this.store.setUI(owner,{});return await this.tutorial(chat,owner);}
    if(bits[0]==='guide')return await this.guide(chat,owner,bits[1]);
    if(this.roster.handles(bits[0]))return await this.roster.route(chat,owner,bits);
    if(bits[0]==='savlog')return await this.savings.log(chat,owner,Number(bits[1]));
+   if(bits[0]==='savfield')return await this.savings.editField(chat,owner,bits[1]);
    if(bits[0]==='diary'||bits[0]==='df')return await this.savings.diary(chat,owner,bits[1],bits[0]==='df');
    if(bits[0]==='g')return await this.grid(chat,owner,bits[1],bits[2],bits[3],bits[4],Number(bits[5]));
    if(bits[0]==='v')return await this.itemCard(chat,owner,bits[1],bits[2],bits[3],Number(bits[4]),Number(bits[5]??0),bits[6]??'a');
@@ -203,7 +199,7 @@ export class BotApp {
     case 'history':return await this.history(chat,owner);
     case 'primogems':this.store.setUI(owner,{});return await this.savings.diary(chat,owner);
     case 'characters':case 'roster':return await this.roster.characters(chat,owner);
-    case 'savings':return await this.savings.show(chat,owner);
+    case 'profile':case 'savings':return await this.savings.show(chat,owner);
     case 'savedit':return await this.savings.edit(chat,owner);
     case 'savexport':return await this.savings.export(chat,owner);
     case 'accounts':return await this.accounts(chat,owner);
@@ -240,7 +236,7 @@ export class BotApp {
  }
  async landing(chat,owner){
   this.store.setUI(owner,{});const accounts=this.store.accounts(owner),rows=accounts.flatMap(a=>this.store.rows(owner,a.uid)),n=rows.length,c=this.store.connection(owner),five=rows.filter(r=>r.rank_type==='5').length,four=rows.filter(r=>r.rank_type==='4').length;
-  return this.visual(chat,'<b>✦ P R I M O G E M L E S S</b>\nYour journey, remembered.\n\n'+(n?'<b>'+n+'</b> wishes saved':'Your archive begins here.')+' · '+(c?.status==='active'?'sync connected':c?'connection needs attention':'connect whenever you’re ready'),MENU,
+  return this.visual(chat,'<b>✦ P R I M O G E M L E S S</b>\nYour journey, remembered.\n\n'+(n?'<b>'+n+'</b> wishes saved':'Your archive begins here.')+' · '+(c?.status==='active'?'sync connected':c?'connection needs attention':'connect whenever you’re ready'),this.menu(owner),
    {type:'dashboard',title:'A little luck. A lasting memory.',subtitle:'Your wishes, earned Primogems & owned characters.',metrics:[{value:n,label:'WISHES SAVED'},{value:five,label:'FIVE-STAR MOMENTS'},{value:four,label:'FOUR-STAR FINDS',color:'#bfa8e7'},{value:accounts.length,label:'ACCOUNTS'}],footer:'Choose your next destination below.'});
  }
  connectionCapabilities(owner){try{return cookieCapabilities(this.vault?.load(owner));}catch{return {hoyolab:false,wishes:false};}}
@@ -275,7 +271,7 @@ export class BotApp {
   const five=rows.filter(r=>r.rank_type==='5').length,four=rows.filter(r=>r.rank_type==='4').length,patches=[];
   for(let i=0;i<groups.length;i+=2)patches.push(groups.slice(i,i+2).map(g=>btn(g.label+' · '+g.total,'p:'+a.uid+':'+g.id)));
   return this.visual(chat,'<b>✧ YOUR WISH HISTORY</b>\n<b>'+rows.length+'</b> total wishes · UID '+a.uid+'\n\nOpen your complete collection or choose a patch.\n'+(c?(caps.wishes?'Last wish sync: ':'HoYoLAB-only connection · wish auto-sync disabled\nLast HoYoLAB check: ')+date(c.last_sync):'<i>Archive saved · connect for automatic checks</i>'),
-   kb([[{...btn('✦ All history · '+rows.length+' wishes','p:'+a.uid+':all'),style:'primary'}],...patches,[btn('Owned Characters','characters'),btn('Savings & Primogems','savings')],[btn('Pity overview','stats'),btn('Accounts','accounts')],[btn('↻ Refresh','sync'),btn('Backup','export')],home]),
+   kb([[{...btn('✦ All history · '+rows.length+' wishes','p:'+a.uid+':all'),style:'primary'}],...patches,[btn('Owned Characters','characters'),...(this.isOwner(owner)?[btn('My Game Profile','savings')]:[])],[btn('Pity overview','stats'),btn('Accounts','accounts')],[btn('↻ Refresh','sync'),btn('Backup','export')],home]),
    {type:'dashboard',title:'Every wish has a story.',subtitle:'All history, or one chapter at a time.',metrics:[{value:rows.length,label:'TOTAL WISHES'},{value:five,label:'FIVE-STARS'},{value:four,label:'FOUR-STARS',color:'#bfa8e7'},{value:groups.length,label:'SAVED PATCHES'}],uid:a.uid,footer:'Select a patch below to discover your characters.'});
  }
  group(owner,uid,id){

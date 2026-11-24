@@ -1,7 +1,6 @@
 import {Resvg} from '@resvg/resvg-js';
 import {createHash} from 'node:crypto';
 import {artwork,itemId} from './artwork.mjs';
-import {tutorialCard} from './tutorial.mjs';
 const esc=x=>String(x??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const colors={Grass:'#a5d86f',Wind:'#72dcca',Fire:'#f4a086',Water:'#7cbaf5',Ice:'#a0dfe9',Electric:'#bd9af2',Rock:'#e9c989'};
 const element={Grass:'DENDRO',Wind:'ANEMO',Fire:'PYRO',Water:'HYDRO',Ice:'CRYO',Electric:'ELECTRO',Rock:'GEO'};
@@ -24,7 +23,6 @@ function metric(x,y,value,label,width=180,color='#e7cc98') {const size=Math.min(
 export class CardRenderer{
  constructor(art){this.art=art;}
  async render(model){
-  if(model.type==='tutorial')return tutorialCard(model.index);
   const svg=await this.svg(model),key=createHash('sha256').update('ui-v3.1').update(svg).digest('hex');
   return {key,svg,png:()=>Buffer.from(new Resvg(svg,{font:{loadSystemFonts:true,defaultFontFamily:process.platform==='win32'?'Segoe UI':'DejaVu Sans'}}).render().asPng())};
  }

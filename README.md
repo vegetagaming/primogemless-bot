@@ -1,4 +1,4 @@
-# Primogemless 2.7
+# Primogemless 2.8
 
 For hosting without a PC, see [Northflank deployment](NORTHFLANK.md). The Docker
 image starts in migration hold mode and uses PostgreSQL or a persistent disk. It does not
@@ -6,19 +6,19 @@ start a second Telegram poller until the archive and existing secrets are restor
 
 Four public commands: `/tutorial`, `/history`, `/primogems`, `/characters`.
 The home buttons are Tutorial, Wish History, Earned Primogems and Owned Characters.
-Connect is inside Tutorial, with Step 1: HoYoLAB tutorial and Step 2: Wish History
-tutorial. The unlisted `/login` shortcut remains available for existing users.
-Step 1 opens a six-page illustrated Windows guide with Previous / Next navigation.
-Step 2 also links to the setup screenshots. Cards cover both official sign-ins,
-ZIP extraction, the exact connection filename, and the 30-minute pairing expiry.
-Images are bundled in `assets/tutorial`; their hashes version the Telegram cache.
-Captions include the complete instructions if an image cannot be displayed.
+Connect is inside Tutorial. The unlisted `/login` shortcut remains available.
+Tutorial displays the owner's video/channel link, or a coming-soon message until
+one is added. The screenshot guide has been removed from bot navigation; old image
+buttons redirect to the video tutorial. Its image files remain archived locally.
+Only the configured bot owner gets an extra **My Game Profile** home button for
+manually recorded currency balances. `/profile` and `/savings` open the same page;
+all balance entry, history and export routes enforce this owner restriction.
 The home screen uses a two-by-two menu and a navy/gold image dashboard. Account
 switching, backups, refresh, disconnect and deletion live inside those screens.
 
 ## Connect once
 
-1. Open **Tutorial → 1 · HoYoLAB tutorial → Connect HoYoLAB / settings** and choose
+1. Open **Tutorial → Connect HoYoLAB / settings** and choose
    **Windows encrypted helper**.
 2. Extract the personal ZIP and run `Connect.cmd` on Windows with Edge or Chrome.
 3. Sign in on the official HoYoLAB and Genshin redemption pages in the isolated
@@ -158,8 +158,8 @@ automatic achievement scan. Individual states are manual or imported.
 
 The main **Earned Primogems** button and `/primogems` open HoYoLAB Traveler’s Diary
 for the selected account. Browse saved months or refresh available recent income.
-A player without an account is directed to Step 1 in Tutorial. **My saved balances**
-keeps the manual wallet snapshots accessible separately; income does not change them.
+A player without an account is offered account connection. The owner also sees
+**My Game Profile** for manual balances; income does not change those balances.
 
 ## Customize icons
 
@@ -199,11 +199,18 @@ captions/buttons; the decorative star in the PNG artwork is part of the graphic.
 
 ## Savings and Traveler's Diary
 
-Open **History → Savings & Primogems**. Save four numbers in this order:
+The bot owner opens **Home → My Game Profile** or the same button inside Wish
+History / Earned Primogems. Other users cannot access this preview, even through
+old buttons or direct commands. Balances are associated with the selected Genshin
+UID. Save four numbers in this order:
 Primogems, Genesis Crystals, Intertwined Fates, Acquaint Fates. Changed values create
 dated snapshots; identical values do not duplicate a snapshot. The dashboard shows
 the latest balances and change since the previous snapshot. History and JSON export
-are scoped to the current Telegram user and selected Genshin account.
+are scoped to the current Telegram user and selected Genshin account. After the
+first save, tap Primogems, Genesis Crystals, Standard pulls or Event pulls to replace
+just that balance. Single-field edits preserve the other balances and remain bound
+to the account selected when editing began. Standard pulls mean Acquaint Fates;
+event pulls mean Intertwined Fates.
 
 The event-wish budget is Intertwined Fates plus floor(Primogems / 160). Standard
 tickets remain separate. A second, explicitly hypothetical figure includes crystals
@@ -306,7 +313,7 @@ Choose a weapon, press Set button emoji and send one premium emoji.
 
 VIDEO / CHANNEL TUTORIAL
 Step 2 now shows wish connection status and short action buttons.
-The bot owner can open Tutorial -> 2: Wish History -> Add video / channel link.
+The bot owner can open Tutorial -> Add video / channel link.
 Post the tutorial video in a public Telegram channel, then send its public post
 link to the bot in that editor. A channel link also works. Players see Watch
 tutorial once the link is saved. Only the owner can change or remove the link.

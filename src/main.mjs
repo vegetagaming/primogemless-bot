@@ -47,7 +47,7 @@ async function run() {
   if(process.argv.includes('--setup')) {
     await tg.call('setMyCommands',{commands:COMMANDS,scope:{type:'all_private_chats'}});
     await tg.call('setMyCommands',{commands:COMMANDS});
-    await tg.call('setMyDescription',{description:'Your Genshin companion: Tutorial · Wish History · Earned Primogems · Owned Characters. Start with Tutorial: Step 1 sets up HoYoLAB; Step 2 explains wish history. Track monthly income, constellations and 5-star weapons. Independent fan project.'});
+    await tg.call('setMyDescription',{description:'Your Genshin companion: Tutorial · Wish History · Earned Primogems · Owned Characters. Open Tutorial for the video guide and account connection. Track monthly income, constellations and 5-star weapons. Independent fan project.'});
     await tg.call('setMyShortDescription',{short_description:'Wish History · Earned Primogems · Owned Characters. Start with /tutorial for HoYoLAB setup.'});
     await tg.call('setChatMenuButton',{menu_button:{type:'commands'}});
     const registered=await tg.call('getMyCommands',{scope:{type:'all_private_chats'}}),defaults=await tg.call('getMyCommands');
