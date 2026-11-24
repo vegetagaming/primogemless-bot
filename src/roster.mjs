@@ -1,5 +1,6 @@
 import {UserError} from './history.mjs';
 import {weaponCatalogue,weaponById,parseManualWeapon,equippedFiveStars} from './roster-data.mjs';
+import {CHARACTER_PAGE_SIZE} from './gallery.mjs';
 
 const esc=x=>String(x??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 const btn=(text,callback_data)=>({text,callback_data});
@@ -36,7 +37,7 @@ export class Roster{
  footer(uid){return [[btn('Refresh roster','orf:'+uid),btn('Export roster','oexport:'+uid)],[btn('History','history'),btn('⌂ Home','start')]];}
  async characters(chat,owner,uid=null,rank='a',page=0){
   const a=this.app.account(owner,uid);uid=a.uid;if(!['a','4','5'].includes(rank))throw new UserError('Choose all, 5★ or 4★ characters.');this.store.setUI(owner,{});
-  const snapshot=this.store.roster(owner,uid),all=snapshot?.characters??[],list=all.filter(c=>rank==='a'||String(c.rank)===rank).sort((a,b)=>b.rank-a.rank||b.level-a.level||a.name.localeCompare(b.name)),{visible,pages}=pageOf(list,page);
+  const snapshot=this.store.roster(owner,uid),all=snapshot?.characters??[],list=all.filter(c=>rank==='a'||String(c.rank)===rank).sort((a,b)=>b.rank-a.rank||b.level-a.level||a.name.localeCompare(b.name)),{visible,pages}=pageOf(list,page,CHARACTER_PAGE_SIZE);
   const rows=chunks(visible.map(c=>this.itemButton(short(c.name,18)+' · C'+c.constellation,'od:'+uid+':'+c.id+':'+page+':'+rank,c.id)));
   return this.app.visual(chat,'<b>Your owned characters</b>\nUID '+uid+' · '+all.length+' characters\n\n'+(snapshot?'HoYoLAB snapshot: '+date(snapshot.checked_at)+'\nConstellations come from your roster.':'Connect HoYoLAB, then tap Refresh roster to fetch your characters and constellation levels.\nManual unequipped weapons can be added now.'),kb([
    this.tabs(uid,'c'),[btn('All','oc:'+uid+':a:0'),btn('5★','oc:'+uid+':5:0'),btn('4★','oc:'+uid+':4:0')],...rows,...nav(page,pages,p=>'oc:'+uid+':'+rank+':'+p),...(!this.store.connection(owner)?[[btn('Connect HoYoLAB','login')]]:[]),...this.footer(uid)

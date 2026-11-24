@@ -15,6 +15,7 @@ import {cookieCapabilities} from './vault.mjs';
 import {weaponById} from './roster-data.mjs';
 import {tutorialLink} from './tutorial-link.mjs';
 import {Akasha} from './akasha.mjs';
+import {galleryPageSize} from './gallery.mjs';
 const btn=(text,callback_data)=>({text,callback_data});
 const kb=rows=>({inline_keyboard:rows});
 const esc=x=>String(x??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
@@ -99,9 +100,9 @@ export class BotApp {
  }
  async saveItemEmoji(chat,owner,message){this.requireArtOwner(owner);const id=this.store.getUI(owner).editingItemEmoji;this.art.setEmoji(id,iconFromMessage(message));this.store.setUI(owner,this.artNavigation(owner));return this.artItem(chat,owner,id);}
  async grid(chat,owner,uid,id,kind='c',rank='a',page=0){
-  const g=this.group(owner,uid,id),list=collection(g.rows,kind,rank),pages=Math.max(1,Math.ceil(list.length/9));
+  const g=this.group(owner,uid,id),list=collection(g.rows,kind,rank),size=galleryPageSize(kind),pages=Math.max(1,Math.ceil(list.length/size));
   if(!Number.isInteger(page)||page<0||page>=pages)throw new UserError('That collection page is unavailable.');
-  const visible=list.slice(page*9,page*9+9),buttons=visible.map(x=>({...btn(x.name.length>19?x.name.slice(0,18)+'…':x.name,'v:'+uid+':'+id+':'+x.id+':0:'+page+':'+rank),ui_icon:this.art?.emoji(x.id)})),rows=[];
+  const visible=list.slice(page*size,page*size+size),buttons=visible.map(x=>({...btn(x.name.length>19?x.name.slice(0,18)+'…':x.name,'v:'+uid+':'+id+':'+x.id+':0:'+page+':'+rank),ui_icon:this.art?.emoji(x.id)})),rows=[];
   for(let i=0;i<buttons.length;i+=3)rows.push(buttons.slice(i,i+3));
   const route=(k,r,p=0)=>'g:'+uid+':'+id+':'+k+':'+r+':'+p,nav=[];
   if(page)nav.push(btn('← Previous',route(kind,rank,page-1)));if(page+1<pages)nav.push(btn('Next →',route(kind,rank,page+1)));
