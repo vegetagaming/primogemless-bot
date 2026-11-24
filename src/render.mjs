@@ -1,8 +1,17 @@
 import {Resvg} from '@resvg/resvg-js';
 import {createHash} from 'node:crypto';
-import {readFileSync} from 'node:fs';
+import {readFileSync,existsSync} from 'node:fs';
 import {artwork,itemId} from './artwork.mjs';
 const esc=x=>String(x??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+const cardFont=process.platform==='win32'?'Segoe UI':'DejaVu Sans';
+const fontOptions={loadSystemFonts:true,defaultFontFamily:cardFont,sansSerifFamily:cardFont,...(process.platform==='linux'?{fontFiles:['/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf','/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'].filter(existsSync)}:{})};
+let fontReady=false;
+export function assertCardFont(options=fontOptions){
+ const probe='<svg xmlns="http://www.w3.org/2000/svg" width="200" height="40"><text x="2" y="30" font-family="'+esc(options.defaultFontFamily)+'" font-size="26">0123456789</text></svg>';
+ const pixels=new Resvg(probe,{font:options}).render().pixels;
+ for(let i=3;i<pixels.length;i+=4)if(pixels[i]>0)return;
+ throw new Error('CARD_FONT_UNAVAILABLE');
+}
 const colors={Grass:'#a5d86f',Wind:'#72dcca',Fire:'#f4a086',Water:'#7cbaf5',Ice:'#a0dfe9',Electric:'#bd9af2',Rock:'#e9c989'};
 const element={Grass:'DENDRO',Wind:'ANEMO',Fire:'PYRO',Water:'HYDRO',Ice:'CRYO',Electric:'ELECTRO',Rock:'GEO'};
 const currencyArt=Object.fromEntries(['primogems','crystals','acquaint','intertwined'].map(key=>[key,{mime:'image/png',bytes:readFileSync(new URL('../assets/currencies/'+key+'.png',import.meta.url))}]));
@@ -12,7 +21,7 @@ export function pityColor(rank,value){
  if(String(rank)!=='5'||!Number.isFinite(count)||count<1)return '#f0ede5';
  return count<=35?'#76dba1':count<=65?'#f3d275':'#ff858a';
 }
-const t=(x,y,size,text,fill='#edf0f5',weight=400,extra='')=>`<text x="${x}" y="${y}" font-family="Segoe UI, Arial, sans-serif" font-size="${size}" font-weight="${weight}" fill="${fill}" ${extra}>${esc(text)}</text>`;
+const t=(x,y,size,text,fill='#edf0f5',weight=400,extra='')=>`<text x="${x}" y="${y}" font-family="${cardFont}" font-size="${size}" font-weight="${weight}" fill="${fill}" ${extra}>${esc(text)}</text>`;
 const rect=(x,y,w,h,r,fill,stroke='none')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}" stroke="${stroke}"/>`;
 const image=(a,x,y,w,h,fit='xMidYMid meet',extra='')=>a?`<image x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="${fit}" href="data:${a.mime};base64,${a.bytes.toString('base64')}" ${extra}/>`:'';
 function star(x,y,s,color='#e5c78d'){return `<path d="M${x} ${y-s} L${x+s*.25} ${y-s*.25} L${x+s} ${y} L${x+s*.25} ${y+s*.25} L${x} ${y+s} L${x-s*.25} ${y+s*.25} L${x-s} ${y} L${x-s*.25} ${y-s*.25} Z" fill="${color}"/>`;}
@@ -25,8 +34,9 @@ function metric(x,y,value,label,width=180,color='#e7cc98') {const size=Math.min(
 export class CardRenderer{
  constructor(art){this.art=art;}
  async render(model){
-  const svg=await this.svg(model),key=createHash('sha256').update('ui-v3.1').update(svg).digest('hex');
-  return {key,svg,png:()=>Buffer.from(new Resvg(svg,{font:{loadSystemFonts:true,defaultFontFamily:process.platform==='win32'?'Segoe UI':'DejaVu Sans'}}).render().asPng())};
+  if(!fontReady){assertCardFont();fontReady=true;}
+  const svg=await this.svg(model),key=createHash('sha256').update('ui-v3.2-fonts').update(svg).digest('hex');
+  return {key,svg,png:()=>Buffer.from(new Resvg(svg,{font:fontOptions}).render().asPng())};
  }
  async svg(m){
   if(m.type==='hit')return this.hit(m);

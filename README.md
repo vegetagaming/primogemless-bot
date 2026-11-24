@@ -1,4 +1,4 @@
-# Primogemless 2.11.1
+# Primogemless 2.11.2
 
 For hosting without a PC, see [Northflank deployment](NORTHFLANK.md). The Docker
 image starts in migration hold mode and uses PostgreSQL or a persistent disk. It does not
@@ -23,7 +23,10 @@ manually recorded currency balances. `/profile` and `/savings` open the same pag
 all balance entry, history and export routes enforce this owner restriction.
 The balance card includes bundled Primogem, Genesis Crystal, Acquaint Fate and
 Intertwined Fate artwork, large amounts, and a separate Welkin countdown panel.
-Rendering uses local assets and does not require a network request. Currency
+Rendering uses local assets and does not require a network request.
+Cards use an explicitly loaded DejaVu Sans font on Linux, with a numeric-glyph
+probe before rendering. Missing fonts fall back to the text response instead of
+sending a blank-text image. Render-cache versioning replaces older broken cards. Currency
 premium emoji settings continue to control captions and buttons independently.
 The home screen uses a two-column menu and a navy/gold image dashboard. Account
 switching, backups, refresh, disconnect and deletion live inside those screens.
