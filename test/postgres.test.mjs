@@ -33,6 +33,13 @@ test('Postgres persists the complete Store, rolls back conflicts, isolates owner
   s.saveConnection('1','encrypted-test');s.syncState('1',{next:Date.now()+21600000,success:true});
   assert.ok(s.connection('1').last_sync);assert.ok(s.connection('1').next_sync>Date.now());assert.equal(s.connection('1').secret,undefined);
   s.syncState('1',{next:0});assert.equal(s.dueConnections().length,1);
+  const reminderRole={uid,region:'os_euro'},notes={resin:200,maxResin:200,recoverySeconds:0,total:4,finished:0,bonusClaimed:false,dailyComplete:false};
+  s.setReminder('1',reminderRole,'daily',true,0);s.setReminder('1',reminderRole,'resin',true,0);s.setReminder('2',reminderRole,'resin',true,0);
+  let reminder=s.reminder('1',uid);assert.equal(s.dueReminders().length,1);
+  s.attemptReminder('1',uid,reminder.revision,Date.now());s.recordReminder('1',uid,reminder.revision,{notes,checked:Date.now(),next:0,error:null});
+  assert.equal(s.claimReminder('1',uid,reminder.revision,'daily','123'),true);assert.equal(s.claimReminder('1',uid,reminder.revision,'daily','123'),false);
+  assert.equal(s.claimReminder('1',uid,reminder.revision,'resin',null),true);assert.equal(s.claimReminder('1',uid,reminder.revision,'resin',null),false);
+  s.releaseReminder('1',uid,reminder.revision,'resin',null);assert.equal(s.claimReminder('1',uid,reminder.revision,'resin',null),true);
   const cash={primogems:160,crystals:1,intertwined:2,acquaint:3};s.saveSavings('1',uid,cash);assert.equal(s.saveSavings('1',uid,cash).changed,false);
   const welkinStart=Date.now()-172800000;s.saveWelkin('1',uid,180,welkinStart);s.saveWelkin('2',uid,7,welkinStart);assert.equal(s.welkin('1',uid).days,180);assert.throws(()=>s.saveWelkin('1',uid,181));
   s.saveDiary('1',uid,{period:'2026-11',primogems:500});assert.equal(s.diaryRows('1',uid).length,1);
@@ -48,10 +55,13 @@ test('Postgres persists the complete Store, rolls back conflicts, isolates owner
   assert.equal(s.getMeta('item_emoji:10000069'),'premium-test');assert.equal(s.getUI('1').page,2);
   assert.equal(s.roster('1',uid).characters[0].constellation,2);assert.equal(s.savingsRows('1',uid)[0].primogems,160);
   assert.equal(s.welkin('1',uid).recorded_at,new Date(welkinStart).toISOString());
+  assert.deepEqual(s.reminder('1',uid).notes,notes);assert.equal(s.reminder('1',uid).daily_cycle,'123');assert.equal(s.reminder('1',uid).resin_notified,1);
+  s.disableReminder('1',uid,'resin');assert.equal(s.claimReminder('1',uid,reminder.revision,'daily','124'),false);
   assert.equal(s.achievementRows('1',uid)[0].id,123);assert.equal(s.achievementTotal('1',uid).total,1234);
   assert.deepEqual(s.loadArtwork('test'),Buffer.from([1,2,3,255]));
   s.deleteUser('1',s.confirmation('1'));assert.equal(s.accounts('1').length,0);assert.equal(s.connection('1'),null);assert.equal(s.savingsRows('1',uid).length,0);assert.equal(s.accounts('2').length,1);
   assert.equal(s.welkin('1',uid),null);assert.equal(s.welkin('2',uid).days,7);
-  s.disconnect('2');s.cancelDelete('2');
+  assert.equal(s.reminder('1',uid),null);assert.equal(s.reminder('2',uid).resin_enabled,1);
+  s.disconnect('2');assert.equal(s.reminder('2',uid),null);s.cancelDelete('2');
  }finally{s.db.exec('TRUNCATE users,meta,artwork_blobs CASCADE');s.close();}
 });

@@ -21,6 +21,9 @@ export const ICONS=[
  {key:'currency_intertwined',name:'Intertwined Fates',symbol:'🌠'},
  {key:'currency_welkin',name:'Welkin Moon',symbol:'🌙'},
  {key:'akasha',name:'AKASHA',symbol:'🏆'},
+ {key:'reminders',name:'Reminders',symbol:'🔔'},
+ {key:'daily',name:'Daily Commissions',symbol:'📅'},
+ {key:'resin',name:'Original Resin',symbol:'💧'},
 ];
 const escape=value=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const pattern=new RegExp('['+ICONS.map(x=>x.symbol).join('')+']','gu');

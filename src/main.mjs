@@ -14,6 +14,7 @@ import { IconTheme, ThemedTelegram } from './icons.mjs';
 import { Artwork } from './artwork.mjs';
 import { CardRenderer } from './render.mjs';
 import { BOT_PROFILE } from './bot-profile.mjs';
+import { ReminderService } from './reminder-service.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const runtime=resolve(process.env.BOT_DATA_DIR??resolve(root,'.local'));
@@ -33,7 +34,9 @@ const icons=new IconTheme(store);
 const configuredOwner=process.env.BOT_OWNER_ID??store.getMeta('bot_owner_id');
 const ownerId=/^\d+$/.test(configuredOwner??'')?configuredOwner:null;
 const art=new Artwork(store,resolve(runtime,'artwork'));
-const app=new BotApp({telegram:new ThemedTelegram(tg,icons),store,vault,hoyo,sync,icons,ownerId,art,renderer:new CardRenderer(art)});
+const themedTelegram=new ThemedTelegram(tg,icons);
+const reminders=new ReminderService({store,vault,hoyo,telegram:themedTelegram});
+const app=new BotApp({reminderService:reminders,telegram:themedTelegram,store,vault,hoyo,sync,icons,ownerId,art,renderer:new CardRenderer(art)});
 let stopping=false;
 const stopPath=resolve(runtime,'stop.request'),healthPath=resolve(runtime,'health.json');
 process.on('SIGINT',()=>{stopping=true;});process.on('SIGTERM',()=>{stopping=true;});
@@ -64,6 +67,7 @@ async function run() {
   log('BOT_RUNNING');
   heartbeat();
   sync.start();
+  reminders.start();
   let offset=Number(store.getMeta('telegram_offset')??0),failures=0;
   try {
     while(!shouldStop()) {
@@ -91,7 +95,7 @@ async function run() {
       }
     }
   } finally {
-    await sync.stop();
+    await Promise.all([sync.stop(),reminders.stop()]);
     try{if(readFileSync(pidPath,'utf8')===String(process.pid))unlinkSync(pidPath);}catch{}
     try{if(JSON.parse(readFileSync(healthPath,'utf8')).pid===process.pid)heartbeat('stopped');}catch{}
     log('BOT_STOPPED');

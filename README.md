@@ -1,4 +1,4 @@
-# Primogemless 2.12.2
+# Primogemless 2.13.0
 
 An open-source Telegram companion for Genshin Impact, created by
 [@Wr_Vegeta](https://t.me/Wr_Vegeta).
@@ -11,6 +11,7 @@ An open-source Telegram companion for Genshin Impact, created by
 - **Earned Primogems:** available HoYoLAB Traveler's Diary monthly income.
 - **Owned Characters:** constellations, levels and five-star weapons.
 - **AKASHA:** Enka showcase build cards and links to Akasha rankings.
+- **Reminders:** Daily Commission and full Original Resin alerts per account.
 - **Owner preview:** manual currency balances and a Welkin day countdown.
 
 Requires Node.js 24+, persistent SQLite or PostgreSQL storage, and your own
@@ -30,8 +31,8 @@ The Telegram bio and description credit **Creator: @Wr_Vegeta**. Their source is
 `src/bot-profile.mjs`; profile setup uses these values. The short bio stays within
 Telegram’s 120-character limit.
 
-Five public commands: `/connect`, `/history`, `/primogems`, `/characters`, `/akasha`.
-The home buttons are Connect, Wish History, Earned Primogems, Owned Characters and AKASHA.
+Six public commands: `/connect`, `/history`, `/primogems`, `/characters`, `/akasha`, `/reminders`.
+The home buttons are Connect, Wish History, Earned Primogems, Owned Characters, AKASHA and Reminders.
 Opening Connect sends the owner's uploaded video inline, then a personal Windows
 ZIP. Until the video is added, it sends short text instructions and the ZIP.
 The owner uses **Connect → Set video** and sends a normal Telegram video. The bot
@@ -69,6 +70,45 @@ portrait, constellation, level and element. Pulled entries show copies and the
 latest saved pity, preserving the five-star green/yellow/red scale and purple
 four-star pity. Character buttons and Next/Previous pages cover the same entries.
 Weapon galleries retain nine entries per page.
+
+## Daily and Original Resin reminders
+
+Open **Reminders** or `/reminders`, choose a saved UID, and enable either switch.
+Both are off by default. Enabling requires the UID to belong to the current
+authenticated HoYoLAB account; importing someone else's wish file is insufficient.
+
+- **Daily Commissions:** one alert during the final two hours before that account's
+  04:00 server reset, only while daily tasks or their bonus reward remain unclaimed.
+  Modern HoYoLAB task totals take priority over legacy counters, including Encounter
+  Point completion. Claimed bonus rewards suppress the alert.
+- **Original Resin:** one alert when a fresh HoYoLAB response reports resin at or
+  above its reported cap. Checks run about every ten minutes. Another alert requires
+  the bot to observe resin below the cap first. Spending and refilling entirely
+  between checks cannot be detected.
+
+Server offsets are fixed: America UTC−5, Europe UTC+1, Asia and TW/HK/MO UTC+8.
+Scheduling does not use the player's computer timezone or daylight saving time.
+Checks resume after an outage; daily catch-up stays within the current day's
+two-hour window. HoYoLAB caching, network delays and queued requests can delay alerts.
+No notification is inferred from an old snapshot or a calculated refill time.
+
+Real-Time Notes must be available in HoYoLAB Battle Chronicle. If unavailable,
+the settings panel explains how to enable it or reconnect; the bot does not change
+HoYoLAB privacy settings. Errors back off, and Check now is limited to once a minute.
+The latest snapshot, preferences and duplicate-prevention markers persist in SQLite
+or PostgreSQL. Disconnect clears reminders; deleting data cascades to them too.
+Blocking the bot disables that Telegram user's reminders.
+
+The bot records an alert before delivery to prevent duplicates across restarts.
+Definite Telegram rejection can be retried, respecting rate limits; ambiguous network
+failures are not resent because delivery may already have succeeded. This favors
+avoiding duplicate notifications and does not promise exactly-once delivery.
+Only subscribed accounts receive background messages. Owner-editable premium icons
+are available for Reminders, Daily Commissions and Original Resin.
+
+Field and endpoint references:
+[genshin.py Real-Time Notes model](https://github.com/seriaati/genshin.py/blob/master/genshin/models/genshin/chronicle/notes.py)
+and [read-only dailyNote request](https://github.com/seriaati/genshin.py/blob/master/genshin/client/components/chronicle/genshin.py).
 
 ## AKASHA: builds and rankings
 
@@ -247,12 +287,12 @@ A player without an account is offered account connection. The owner also sees
 ## Customize icons
 
 The owner opens **Connect → Customize icons** (or the unlisted `/icons` shortcut),
-chooses one of 20 symbols, and sends one regular or premium emoji. Telegram's
+chooses one of 23 symbols, and sends one regular or premium emoji. Telegram's
 `custom_emoji` entity supplies the ID, so the user does not copy IDs manually.
 Each icon can also be removed or reset. Changes persist and apply to future screens
 for all players. Existing messages update when opened again.
 
-AKASHA adds a fifth public command. Only `BOT_OWNER_ID`, or the explicitly
+Only `BOT_OWNER_ID`, or the explicitly
 configured `bot_owner_id` runtime setting, can manage icons. Fresh installations
 have no icon administrator until configured; the first visitor never gains that role.
 
@@ -384,7 +424,7 @@ Only one Telegram polling process may run for a token.
   Account cookies are not sent to the wish-history endpoint or artwork providers.
 - Disconnect deletes the saved session and stops future sync. A job in flight cannot
   recreate disconnected/deleted data. Delete data also cascades to wishes, journals,
-  totals, savings, diary summaries, roster snapshots, manual weapon entries and connection challenges. Telegram files/messages and external backups
+  totals, savings, diary summaries, roster snapshots, manual weapon entries, reminders and connection challenges. Telegram files/messages and external backups
   are separate. No automatic database backups are created by this code.
 - Uploads are processed in memory, with size limits and strict field validation.
   Credential-looking file uploads and accidental token messages outside the explicit cookie-entry flow are rejected. Operational logs contain codes,
@@ -397,7 +437,8 @@ Only one Telegram polling process may run for a token.
 Tests cover exact IDs, deduplication, transactional rollback, owner isolation,
 database persistence, patch time zones, announcement parsing, UIAF round trips,
 envelope tampering/replay, credential encryption, disconnect races, authentication
-expiry, request scoping, five-command UI, and personal connection archives.
+expiry, request scoping, six-command UI, personal connection archives, reminder
+reset boundaries, persistent duplicate prevention and disconnect/toggle races.
 
 ## Data sources and credits
 

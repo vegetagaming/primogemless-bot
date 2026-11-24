@@ -11,7 +11,7 @@ test('tutorial waits for a video, keeps account setup and owner editing, and nev
  await app.tutorial(2,'2');buttons=calls.at(-1).reply_markup.inline_keyboard.flat();assert.ok(!buttons.some(b=>b.callback_data?.startsWith('guidelink:')));
  store.setMeta('tutorial_link:wishes','https://t.me/ExampleChannel/123');await app.tutorial(2,'2');assert.doesNotMatch(calls.at(-1).text,/coming soon/);assert.ok(calls.at(-1).reply_markup.inline_keyboard.flat().some(b=>b.url==='https://t.me/ExampleChannel/123'));
  await app.wishGuide(2,'2');assert.ok(!calls.at(-1).reply_markup.inline_keyboard.flat().some(b=>b.callback_data?.startsWith('walk:')));
- assert.deepEqual(COMMANDS.map(x=>x.command),['connect','history','primogems','characters','akasha']);
+ assert.deepEqual(COMMANDS.map(x=>x.command),['connect','history','primogems','characters','akasha','reminders']);
 });
 
 test('old screenshot buttons open the video tutorial without reusing the screenshot or changing pairing',async t=>{

@@ -7,6 +7,7 @@ import {balances,CURRENCIES} from './savings.mjs';
 import {validateRoster,manualWeapon} from './roster-data.mjs';
 import {welkinRecord} from './welkin.mjs';
 import {characterName} from './character-names.mjs';
+import {SERVER_OFFSETS} from './notes.mjs';
 
 export class Store {
   constructor(path,{database}={}) {
@@ -30,9 +31,37 @@ export class Store {
       CREATE TABLE IF NOT EXISTS welkin (owner TEXT NOT NULL, uid TEXT NOT NULL, days INTEGER NOT NULL CHECK(days >= 0 AND days <= 180), recorded_at TEXT NOT NULL, PRIMARY KEY(owner,uid), FOREIGN KEY(owner,uid) REFERENCES accounts(owner,uid) ON DELETE CASCADE);
       CREATE TABLE IF NOT EXISTS roster_snapshots (owner TEXT NOT NULL, uid TEXT NOT NULL, data TEXT NOT NULL, checked_at TEXT NOT NULL, PRIMARY KEY(owner,uid), FOREIGN KEY(owner,uid) REFERENCES accounts(owner,uid) ON DELETE CASCADE);
       CREATE TABLE IF NOT EXISTS manual_weapons (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT NOT NULL, uid TEXT NOT NULL, weapon_id TEXT NOT NULL, quantity INTEGER NOT NULL, refinement INTEGER NOT NULL, level INTEGER NOT NULL, updated_at TEXT NOT NULL, UNIQUE(owner,uid,weapon_id,refinement,level), FOREIGN KEY(owner,uid) REFERENCES accounts(owner,uid) ON DELETE CASCADE);
+      CREATE TABLE IF NOT EXISTS reminders (owner TEXT NOT NULL, uid TEXT NOT NULL, region TEXT NOT NULL, daily_enabled INTEGER NOT NULL DEFAULT 0, resin_enabled INTEGER NOT NULL DEFAULT 0, revision TEXT NOT NULL, next_check INTEGER NOT NULL DEFAULT 0, attempted_at INTEGER, checked_at INTEGER, data TEXT, daily_cycle TEXT, resin_notified INTEGER NOT NULL DEFAULT 0, error_code TEXT, PRIMARY KEY(owner,uid), FOREIGN KEY(owner,uid) REFERENCES accounts(owner,uid) ON DELETE CASCADE);
+      CREATE INDEX IF NOT EXISTS reminders_due ON reminders(next_check);
     `);
   }
   close() { this.db.close(); }
+  reminder(owner,uid){const r=this.db.prepare('SELECT * FROM reminders WHERE owner=? AND uid=?').get(String(owner),String(uid));return r?{...r,notes:r.data?JSON.parse(r.data):null}:null;}
+  setReminder(owner,role,kind,enabled,now=Date.now()){
+    if(!['daily','resin'].includes(kind)||typeof enabled!=='boolean'||SERVER_OFFSETS[role.region]===undefined||!this.accounts(owner).some(a=>a.uid===role.uid))throw new UserError('Choose your own connected account and reminder.');
+    const old=this.reminder(owner,role.uid),daily=kind==='daily'?Number(enabled):old?.daily_enabled??0,resin=kind==='resin'?Number(enabled):old?.resin_enabled??0;
+    this.db.prepare('INSERT INTO reminders(owner,uid,region,daily_enabled,resin_enabled,revision,next_check) VALUES (?,?,?,?,?,?,?) ON CONFLICT(owner,uid) DO UPDATE SET region=excluded.region,daily_enabled=excluded.daily_enabled,resin_enabled=excluded.resin_enabled,revision=excluded.revision,next_check=excluded.next_check,error_code=NULL').run(String(owner),role.uid,role.region,daily,resin,randomBytes(16).toString('hex'),now);
+  }
+  disableReminder(owner,uid,kind){
+    if(!['daily','resin'].includes(kind)||!this.accounts(owner).some(a=>a.uid===uid))throw new UserError('Choose your own reminder.');
+    const column=kind==='daily'?'daily_enabled':'resin_enabled';
+    this.db.prepare(`UPDATE reminders SET ${column}=0,revision=? WHERE owner=? AND uid=?`).run(randomBytes(16).toString('hex'),String(owner),uid);
+  }
+  disableAllReminders(owner,error){this.db.prepare('UPDATE reminders SET daily_enabled=0,resin_enabled=0,revision=?,error_code=? WHERE owner=?').run(randomBytes(16).toString('hex'),error,String(owner));}
+  dueReminders(now=Date.now()){return this.db.prepare("SELECT r.owner,r.uid FROM reminders r JOIN connections c ON c.owner=r.owner WHERE (r.daily_enabled=1 OR r.resin_enabled=1) AND c.status IN ('active','retry') AND r.next_check<=? ORDER BY r.next_check LIMIT 25").all(now);}
+  attemptReminder(owner,uid,revision,now){this.db.prepare('UPDATE reminders SET attempted_at=? WHERE owner=? AND uid=? AND revision=?').run(now,String(owner),uid,revision);}
+  recordReminder(owner,uid,revision,{notes,checked,next,error}){this.db.prepare('UPDATE reminders SET data=?,checked_at=?,next_check=?,error_code=? WHERE owner=? AND uid=? AND revision=?').run(JSON.stringify(notes),checked,next,error,String(owner),uid,revision);}
+  deferReminder(owner,uid,revision,next,error){this.db.prepare('UPDATE reminders SET next_check=?,error_code=? WHERE owner=? AND uid=? AND revision=?').run(next,error,String(owner),uid,revision);}
+  setResinNotified(owner,uid,revision,value){this.db.prepare('UPDATE reminders SET resin_notified=? WHERE owner=? AND uid=? AND revision=?').run(Number(value),String(owner),uid,revision);}
+  claimReminder(owner,uid,revision,kind,cycle){
+    if(kind==='daily')return !!this.db.prepare('UPDATE reminders SET daily_cycle=? WHERE owner=? AND uid=? AND revision=? AND daily_enabled=1 AND (daily_cycle IS NULL OR daily_cycle<>?)').run(cycle,String(owner),uid,revision,cycle).changes;
+    if(kind==='resin')return !!this.db.prepare('UPDATE reminders SET resin_notified=1 WHERE owner=? AND uid=? AND revision=? AND resin_enabled=1 AND resin_notified=0').run(String(owner),uid,revision).changes;
+    return false;
+  }
+  releaseReminder(owner,uid,revision,kind,cycle){
+    if(kind==='daily')this.db.prepare('UPDATE reminders SET daily_cycle=NULL WHERE owner=? AND uid=? AND revision=? AND daily_cycle=?').run(String(owner),uid,revision,cycle);
+    if(kind==='resin')this.setResinNotified(owner,uid,revision,false);
+  }
   saveArtwork(hash,bytes){this.db.prepare('INSERT INTO artwork_blobs VALUES (?,?) ON CONFLICT(hash) DO NOTHING').run(hash,bytes);}
   loadArtwork(hash){const row=this.db.prepare('SELECT bytes FROM artwork_blobs WHERE hash=?').get(hash);return row?Buffer.from(row.bytes):null;}
   roster(owner,uid){const r=this.db.prepare('SELECT data,checked_at FROM roster_snapshots WHERE owner=? AND uid=?').get(String(owner),String(uid));return r?{characters:JSON.parse(r.data).map(c=>({...c,name:characterName(c.id,c.name)})),checked_at:r.checked_at}:null;}
@@ -132,8 +161,8 @@ export class Store {
   challenge(owner) {this.ensureUser(owner);const challenge=randomBytes(24).toString('hex');this.db.prepare('INSERT INTO login_challenges VALUES (?,?,?) ON CONFLICT(owner) DO UPDATE SET challenge=excluded.challenge,expires=excluded.expires').run(String(owner),challenge,Date.now()+1800000);return challenge;}
   checkChallenge(owner,challenge) {const c=this.db.prepare('SELECT * FROM login_challenges WHERE owner=?').get(String(owner));if(!c||c.expires<Date.now()||c.challenge!==challenge)throw new UserError('This connection request expired or belongs to another Telegram user. Open /login and start again.');}
   connection(owner,includeSecret=false) {const c=this.db.prepare('SELECT * FROM connections WHERE owner=?').get(String(owner));if(c&&!includeSecret)delete c.secret;return c??null;}
-  saveConnection(owner,secret) {this.ensureUser(owner);this.db.prepare("INSERT INTO connections(owner,secret,status,linked_at,next_sync) VALUES (?,?,'active',?,0) ON CONFLICT(owner) DO UPDATE SET secret=excluded.secret,status='active',linked_at=excluded.linked_at,next_sync=0,error_code=NULL").run(String(owner),secret,new Date().toISOString());this.db.prepare('DELETE FROM login_challenges WHERE owner=?').run(String(owner));}
-  disconnect(owner) {this.db.prepare('DELETE FROM connections WHERE owner=?').run(String(owner));this.db.prepare('DELETE FROM login_challenges WHERE owner=?').run(String(owner));}
+  saveConnection(owner,secret) {this.ensureUser(owner);this.db.prepare("INSERT INTO connections(owner,secret,status,linked_at,next_sync) VALUES (?,?,'active',?,0) ON CONFLICT(owner) DO UPDATE SET secret=excluded.secret,status='active',linked_at=excluded.linked_at,next_sync=0,error_code=NULL").run(String(owner),secret,new Date().toISOString());this.db.prepare('UPDATE reminders SET next_check=0 WHERE owner=?').run(String(owner));this.db.prepare('DELETE FROM login_challenges WHERE owner=?').run(String(owner));}
+  disconnect(owner) {this.db.prepare('DELETE FROM reminders WHERE owner=?').run(String(owner));this.db.prepare('DELETE FROM connections WHERE owner=?').run(String(owner));this.db.prepare('DELETE FROM login_challenges WHERE owner=?').run(String(owner));}
   syncState(owner,{status='active',next=Date.now()+21600000,error=null,success=false}={}) {this.db.prepare('UPDATE connections SET status=?,next_sync=?,error_code=?,last_sync=CASE WHEN ? THEN ? ELSE last_sync END WHERE owner=?').run(status,next,error,success?1:0,new Date().toISOString(),String(owner));}
   dueConnections(now=Date.now()) {return this.db.prepare("SELECT owner FROM connections WHERE status IN ('active','retry') AND next_sync<=? ORDER BY next_sync LIMIT 10").all(now);}
   achievementRows(owner,uid) {return this.db.prepare('SELECT id,current,status,timestamp,source FROM achievement_records WHERE owner=? AND uid=? ORDER BY id').all(String(owner),String(uid));}

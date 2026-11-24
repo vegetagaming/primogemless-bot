@@ -16,23 +16,24 @@ import {weaponById} from './roster-data.mjs';
 import {tutorialLink} from './tutorial-link.mjs';
 import {Akasha} from './akasha.mjs';
 import {galleryPageSize} from './gallery.mjs';
+import {Reminders} from './reminders.mjs';
 const btn=(text,callback_data)=>({text,callback_data});
 const kb=rows=>({inline_keyboard:rows});
 const esc=x=>String(x??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 const home=[btn('⌂ Home','start')];
 const date=x=>x?String(x).slice(0,16).replace('T',' ')+' UTC':'Not checked yet';
-export const MENU=kb([[btn('✦ Connect','connect'),btn('✧ Wish History','history')],[btn('✪ Earned Primogems','primogems'),btn('✩ Owned Characters','characters')],[btn('🏆 AKASHA','akasha')]]);
-export const COMMANDS=[['connect','Connect — video guide and personal Windows ZIP'],['history','Wish History — explore wishes by game patch'],['primogems','Earned Primogems — your HoYoLAB monthly income'],['characters','Owned Characters — constellations and 5-star weapons'],['akasha','AKASHA — build cards and links to your rankings']].map(([command,description])=>({command,description}));
+export const MENU=kb([[btn('✦ Connect','connect'),btn('✧ Wish History','history')],[btn('✪ Earned Primogems','primogems'),btn('✩ Owned Characters','characters')],[btn('🏆 AKASHA','akasha'),btn('🔔 Reminders','reminders')]]);
+export const COMMANDS=[['connect','Connect — video guide and personal Windows ZIP'],['history','Wish History — explore wishes by game patch'],['primogems','Earned Primogems — your HoYoLAB monthly income'],['characters','Owned Characters — constellations and 5-star weapons'],['akasha','AKASHA — build cards and links to your rankings'],['reminders','Reminders — Daily Commissions and Resin full alerts']].map(([command,description])=>({command,description}));
 export const TUTORIAL=`<b>✦ CONNECT</b>\n\nThe video guide is coming soon. Your personal Windows ZIP is available now.\n\nExtract the ZIP, run Connect.cmd, sign in on both official pages, then send Primogemless.connect.json here. Your game can stay closed.`;
-export const PRIVACY=`<b>◈ YOUR DATA</b>\n\nThe bot stores your Telegram ID, Genshin UIDs, wishes, manually saved currency balances, Welkin countdowns, diary income summaries, roster snapshots, manual weapon entries and achievement journal. Connected HoYoverse sessions are encrypted on the bot server. The operator can use them to access account data; these are broader credentials than a wish-history key.\n\nThe helper signs you in on official HoYoverse pages in an isolated browser. It does not collect your password. The Windows helper sends only an encrypted connection package through Telegram. Never send passwords or wish links. Advanced cookie entry is accepted only after you explicitly start it in /login; it passes raw cookies through Telegram, requests message deletion and encrypts the session on the server.\n\nDisconnect erases the bot's session and stops syncing. Delete data removes your saved records too. Telegram messages and external backups are separate.\n\nAKASHA build cards send your selected public UID to Enka.Network; rankings open on Akasha.cv. No HoYoverse session is sent to either service.
+export const PRIVACY=`<b>◈ YOUR DATA</b>\n\nThe bot stores your Telegram ID, Genshin UIDs, wishes, manually saved currency balances, Welkin countdowns, diary income summaries, roster snapshots, manual weapon entries, reminder preferences and the latest Real-Time Notes snapshot, and achievement journal. Connected HoYoverse sessions are encrypted on the bot server. The operator can use them to access account data; these are broader credentials than a wish-history key.\n\nThe helper signs you in on official HoYoverse pages in an isolated browser. It does not collect your password. The Windows helper sends only an encrypted connection package through Telegram. Never send passwords or wish links. Advanced cookie entry is accepted only after you explicitly start it in /login; it passes raw cookies through Telegram, requests message deletion and encrypts the session on the server.\n\nDisconnect erases the bot's session and reminder settings, and stops syncing and alerts. Delete data removes your saved records too. Telegram messages and external backups are separate.\n\nAKASHA build cards send your selected public UID to Enka.Network; rankings open on Akasha.cv. No HoYoverse session is sent to either service.
 
 Independent fan project; unofficial interfaces. No game clicking, process-memory access or game-file edits. Session expiry and upstream changes can interrupt syncing.`;
 const artMap=JSON.parse(readFileSync(new URL('../assets/enka-icons.json',import.meta.url))).items;
 const itemIds=JSON.parse(readFileSync(new URL('../exporter/item-dictionary.json',import.meta.url)));
 export class BotApp {
- constructor({telegram,store,vault=null,hoyo=null,sync=null,icons=null,ownerId=null,art=null,renderer=null,enka=undefined}){this.tg=telegram;this.store=store;this.vault=vault;this.hoyo=hoyo;this.sync=sync;this.icons=icons;this.ownerId=ownerId?String(ownerId):null;this.art=art;this.renderer=renderer;this.savings=new Savings(this);this.roster=new Roster(this);this.cookieLogin=new CookieLogin(this);this.akasha=new Akasha(this,enka);this.limits=new Map();this.context=new AsyncLocalStorage();}
+ constructor({telegram,store,vault=null,hoyo=null,sync=null,icons=null,ownerId=null,art=null,renderer=null,enka=undefined,reminderService=null}){this.tg=telegram;this.store=store;this.vault=vault;this.hoyo=hoyo;this.sync=sync;this.icons=icons;this.ownerId=ownerId?String(ownerId):null;this.art=art;this.renderer=renderer;this.savings=new Savings(this);this.roster=new Roster(this);this.cookieLogin=new CookieLogin(this);this.akasha=new Akasha(this,enka);this.reminders=new Reminders(this,reminderService);this.limits=new Map();this.context=new AsyncLocalStorage();}
  isOwner(owner){return !!this.ownerId&&String(owner)===this.ownerId;}
- menu(owner){return kb(MENU.inline_keyboard.map((row,i)=>i===2&&this.isOwner(owner)?[...row,btn('My Game Profile','savings')]:row));}
+ menu(owner){return kb([...MENU.inline_keyboard,...(this.isOwner(owner)?[[btn('My Game Profile','savings')]]:[])]);}
  async say(chat,text,markup=this.menu(chat),edit=true){const target=edit?this.context.getStore()?.message:null;const extra={parse_mode:'HTML',reply_markup:markup};if(target&&String(target.chat.id)===String(chat)){try{if(target.text)return await this.tg.call('editMessageText',{chat_id:chat,message_id:target.message_id,text,...extra,link_preview_options:{is_disabled:true}});if(target.photo&&text.length<950)return await this.tg.call('editMessageCaption',{chat_id:chat,message_id:target.message_id,caption:text,...extra});}catch(error){if(error.notModified)return;if(error.code!==400)throw error;}}return this.tg.message(chat,text,extra);}
  async visual(chat,caption,markup,model){
   if(!this.renderer)return this.say(chat,caption,markup);
@@ -175,6 +176,7 @@ export class BotApp {
    if(bits[0]==='guide')return await this.guide(chat,owner,bits[1]);
    if(this.roster.handles(bits[0]))return await this.roster.route(chat,owner,bits);
    if(this.akasha.handles(bits[0]))return await this.akasha.route(chat,owner,bits);
+   if(this.reminders.handles(bits[0]))return await this.reminders.route(chat,owner,bits);
    if(bits[0]==='savlog')return await this.savings.log(chat,owner,Number(bits[1]));
    if(bits[0]==='savfield')return await this.savings.editField(chat,owner,bits[1]);
    if(bits[0]==='diary'||bits[0]==='df')return await this.savings.diary(chat,owner,bits[1],bits[0]==='df');
@@ -198,7 +200,7 @@ export class BotApp {
    if(bits[0]==='al')return await this.achievementList(chat,owner,bits[1],Number(bits[2]),bits[3]);
    if(bits[0]==='ad')return await this.achievement(chat,owner,Number(bits[1]));
    if(bits[0]==='am'){const a=this.account(owner),id=Number(bits[1]);if(!achievementById.has(id)||!['0','1'].includes(bits[2]))throw new UserError('Invalid achievement.');this.store.setAchievements(owner,a.uid,[{id,current:0,status:bits[2]==='1'?3:1,timestamp:253402271999}],'manual');return await this.achievement(chat,owner,id);}
-   if(bits[0]==='d'){this.store.deleteUser(owner,bits[1]);return await this.say(chat,'<b>Data deleted</b>\nYour session, wish archive, savings, Welkin countdowns, diary summaries, roster and manual weapons, and achievement journal have been removed from the bot.');}
+   if(bits[0]==='d'){this.store.deleteUser(owner,bits[1]);return await this.say(chat,'<b>Data deleted</b>\nYour session, reminders, wish archive, savings, Welkin countdowns, diary summaries, roster and manual weapons, and achievement journal have been removed from the bot.');}
    switch(action){
     case 'start':case 'menu':case 'help':return await this.landing(chat,owner);
     case 'connect':case 'tutorial':return await this.tutorial(chat,owner,true);
@@ -215,7 +217,7 @@ export class BotApp {
     case 'cookieguide':return await this.cookieLogin.guide(chat);
     case 'beginlogin':return await this.connectionPackage(chat,owner);
     case 'sync':return await this.refresh(chat,owner);
-    case 'disconnect':return await this.say(chat,'<b>Disconnect HoYoLAB?</b>\nAutomatic sync will stop and the saved login session will be erased. Your wishes and journal stay saved.',kb([[btn('Disconnect','disconnectyes')],[btn('Keep connected','login')]]));
+    case 'disconnect':return await this.say(chat,'<b>Disconnect HoYoLAB?</b>\nAutomatic sync and reminders will stop. The saved login session and reminder settings will be erased. Your wishes and journal stay saved.',kb([[btn('Disconnect','disconnectyes')],[btn('Keep connected','login')]]));
     case 'disconnectyes':this.store.disconnect(owner);return await this.say(chat,'<b>Disconnected</b>\nThe bot no longer has your HoYoverse session. Saved records remain available.');
     case 'history':return await this.history(chat,owner);
     case 'primogems':this.store.setUI(owner,{});return await this.savings.diary(chat,owner);

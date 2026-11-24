@@ -19,11 +19,11 @@ export class Hoyo {
   if(body.retcode!==0)throw new HoyoError(body.retcode??'RESPONSE');
   return body.data;
  }
- async roles(input){const cookies=cleanCookies(input);let data;
-  if(cookies.ltoken_v2){data=await this.request('https://api-os-takumi.mihoyo.com/binding/api/getUserGameRolesByCookie',{cookies,params:{game_biz:'hk4e_global'}});}
+ async roles(input,signal=null){const cookies=cleanCookies(input);let data;
+  if(cookies.ltoken_v2){data=await this.request('https://api-os-takumi.mihoyo.com/binding/api/getUserGameRolesByCookie',{cookies,signal,params:{game_biz:'hk4e_global'}});}
   else {
    const list=[];
-   for(const region of Object.keys(REGIONS)){const part=await this.request('https://api-account-os.hoyoverse.com/account/binding/api/getUserGameRolesOfRegionByCookieToken',{cookies,params:{game_biz:'hk4e_global',region}});list.push(...(part.list??[]));}
+   for(const region of Object.keys(REGIONS)){const part=await this.request('https://api-account-os.hoyoverse.com/account/binding/api/getUserGameRolesOfRegionByCookieToken',{cookies,signal,params:{game_biz:'hk4e_global',region}});list.push(...(part.list??[]));}
    data={list};
   }
   const roles=(data.list??[]).filter(x=>(!x.game_biz||x.game_biz==='hk4e_global')&&REGIONS[x.region]!==undefined&&/^\d{6,12}$/.test(String(x.game_uid))).map(x=>({uid:String(x.game_uid),region:x.region,timezone:REGIONS[x.region],lang:'en-us'}));
@@ -52,6 +52,7 @@ export class Hoyo {
   return parseImport(Buffer.from(JSON.stringify({info:{version:'v4.2'},hk4e:[{...role,list:[...records.values()]}]})));
  }
  async achievementTotal(cookies,role){const d=await this.request('https://sg-public-api.hoyolab.com/event/game_record/genshin/api/index',{cookies,params:{role_id:role.uid,server:role.region}});return d.stats?.achievement_number;}
+ async dailyNotes(cookies,role,signal=null){return this.request('https://sg-public-api.hoyolab.com/event/game_record/genshin/api/dailyNote',{cookies,signal,params:{role_id:role.uid,server:role.region}});}
  async roster(cookies,role,signal=null){const d=await this.request('https://sg-public-api.hoyolab.com/event/game_record/genshin/api/character/list',{cookies,signal,data:{role_id:role.uid,server:role.region}});return normalizeRoster(d,role);}
  async diary(cookies,role,period=ledgerPeriods()[0]){if(!ledgerPeriods().includes(period))throw new UserError('Only recent diary months can be requested. Older saved summaries remain available.');const d=await this.request('https://sg-hk4e-api.hoyolab.com/event/ysledgeros/month_info',{cookies,params:{uid:role.uid,region:role.region,month:Number(period.slice(5)),lang:'en-us'}});return normalizeDiary(d,role.uid,role.region,period);}
  async announcements(){return this.request('https://sg-hk4e-api.hoyoverse.com/common/hk4e_global/announcement/api/getAnnContent',{params:{game:'hk4e',game_biz:'hk4e_global',bundle_id:'hk4e_global',platform:'pc',region:'os_asia',uid:900000005,level:8,lang:'en-us'}});}

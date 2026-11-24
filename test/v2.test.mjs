@@ -19,8 +19,8 @@ function envelope(vault,owner,config,session=cookies){
  const keys=randomBytes(64),iv=randomBytes(16),cipher=createCipheriv('aes-256-cbc',keys.subarray(0,32),iv),data=Buffer.concat([cipher.update(JSON.stringify(session)),cipher.final()]).toString('base64'),iv64=iv.toString('base64');
  return {kind:'primogemless-connect-v1',challenge:config.challenge,key:publicEncrypt({key:createPublicKey(vault.privateKey),oaepHash:'sha256',padding:constants.RSA_PKCS1_OAEP_PADDING},keys).toString('base64'),iv:iv64,data,mac:createHmac('sha256',keys.subarray(32)).update(`${owner}.${config.challenge}.${iv64}.${data}`).digest('base64')};
 }
-test('five public commands and five home buttons',()=>{
- assert.deepEqual(COMMANDS.map(x=>x.command),['connect','history','primogems','characters','akasha']);assert.equal(MENU.inline_keyboard.flat().length,5);
+test('six public commands and six home buttons',()=>{
+ assert.deepEqual(COMMANDS.map(x=>x.command),['connect','history','primogems','characters','akasha','reminders']);assert.equal(MENU.inline_keyboard.flat().length,6);
 });
 test('patch boundaries convert server time to UTC; unknown dates stay unclassified',()=>{
  assert.equal(patchFor({...row,time:'2026-09-22 22:59:59'},1).id,'7.0');
@@ -87,7 +87,7 @@ const cb=(data,id=1)=>({callback_query:{id:'c',from:{id},message:msg('',id).mess
 test('public UI shows patch groups and persists manual achievements without granting another user access',async t=>{
  const store=fixture(t);store.import('1',parsed());const tg=new FakeTelegram(),app=new BotApp({telegram:tg,store});
  const run=async update=>{app.limits.clear();await app.handle(update);};
- await run(msg('/start'));assert.equal(tg.calls.at(-1).reply_markup.inline_keyboard.flat().length,5);
+ await run(msg('/start'));assert.equal(tg.calls.at(-1).reply_markup.inline_keyboard.flat().length,6);
  await run(msg('/history'));assert.ok(tg.calls.at(-1).reply_markup.inline_keyboard.flat().some(b=>b.callback_data==='p:712345678:7.1'));
  await run(cb('p:712345678:7.1'));assert.ok(tg.calls.at(-1).reply_markup.inline_keyboard.flat().some(b=>b.text==='Tighnari'));
  await run(cb('p:712345678:7.1',2));assert.ok(!tg.calls.at(-1).text.includes('Tighnari'));

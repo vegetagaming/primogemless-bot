@@ -19,7 +19,7 @@ function config(zip){
 
 test('Connect replaces Tutorial and sends an inline video followed by a personal ZIP for each player',async t=>{
  const {app,store,calls,run}=setup(t);
- assert.deepEqual(COMMANDS.map(c=>c.command),['connect','history','primogems','characters','akasha']);assert.equal(MENU.inline_keyboard[0][0].text,'✦ Connect');assert.equal(MENU.inline_keyboard[0][0].callback_data,'connect');
+ assert.deepEqual(COMMANDS.map(c=>c.command),['connect','history','primogems','characters','akasha','reminders']);assert.equal(MENU.inline_keyboard[0][0].text,'✦ Connect');assert.equal(MENU.inline_keyboard[0][0].callback_data,'connect');
  await run('/setconnectvideo');await run({video:{file_id:'recording_file_123',file_size:200000000},caption:'do not copy this caption'});
  assert.deepEqual(Object.keys(JSON.parse(store.getMeta('connect_video_v1'))).sort(),['file_id','saved_at']);assert.equal(app.savedConnectVideo().file_id,'recording_file_123');assert.equal(calls.at(-1).method,'sendVideo');assert.ok(!calls.at(-1).caption.includes('do not copy'));
  calls.length=0;await run('/connect',2);assert.deepEqual(calls.map(c=>c.method),['sendVideo','document']);assert.equal(calls[0].video,'recording_file_123');assert.equal(calls[1].name,'Connect-Primogemless.zip');assert.ok(!calls[0].reply_markup.inline_keyboard.flat().some(b=>b.callback_data==='setconnectvideo'));

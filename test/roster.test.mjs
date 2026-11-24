@@ -76,7 +76,7 @@ test('roster menu, filters, manual add/edit/remove, search and export work withi
  await run('/wedit:'+uid+':'+id);await run('3 2 80');assert.equal(store.manualWeapons('1',uid)[0].refinement,2);
  await run('/oexport:'+uid);const data=JSON.parse(calls.at(-1).bytes);assert.equal(data.unequipped_manual.length,1);assert.equal(data.unequipped_manual[0].owner,undefined);
  await run('/owm:'+uid+':'+id,2);assert.match(calls.at(-1).text,/unavailable/);
- await run('/wdelok:'+uid+':'+id);assert.equal(store.manualWeapons('1',uid).length,0);assert.equal(COMMANDS.length,5);
+ await run('/wdelok:'+uid+':'+id);assert.equal(store.manualWeapons('1',uid).length,0);assert.equal(COMMANDS.length,6);
 });
 
 test('visible history hides 3-star rows while total, export and pity still count them',async t=>{
