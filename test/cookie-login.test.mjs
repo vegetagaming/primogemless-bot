@@ -65,3 +65,33 @@ test('HoYoLAB-only periodic sync skips wishes, saves data and recognizes expired
  f.hoyo.achievementTotal=async()=>{throw new HoyoError('-100');};await assert.rejects(sync.request('1'));assert.equal(f.store.connection('1').status,'expired');
  f.hoyo.achievementTotal=async()=>{throw new HoyoError('NETWORK');};f.hoyo.roster=async()=>{throw new HoyoError('NETWORK');};await assert.rejects(sync.request('1'));assert.equal(f.store.connection('1').status,'retry');assert.equal(f.store.roster('1',role.uid).characters.length,1);await sync.stop();
 });
+
+test('full manual login verifies wish access, keeps incomplete input from downgrading an existing session, and scopes credentials',async t=>{
+ const f=setup(t),full={...cookies,account_id_v2:'12345',account_mid_v2:'synthetic-mid',cookie_token_v2:'synthetic-cookie'};
+ const complete=Object.entries(full).map(([k,v])=>k+'='+v).join('\n');
+ f.vault.save('1',full);const old=f.store.connection('1',true).secret;
+ await f.run('/cookiemode:wishes');assert.equal(f.store.getUI('1').cookieLogin.mode,'wishes');
+ await f.run(text);assert.match(f.events.at(-1).text,/Missing required cookies/);assert.equal(f.store.connection('1',true).secret,old);assert.equal(f.authRequests(),0);
+ f.hoyo.authkey=async()=>{throw new HoyoError('-100');};await f.run(complete);assert.equal(f.store.connection('1',true).secret,old);
+ let verified=0;f.hoyo.authkey=async()=>{verified++;return 'synthetic';};f.events.length=0;await f.run(complete);
+ assert.equal(f.events[0],'deleteMessage');assert.equal(verified,1);assert.deepEqual(f.vault.load('1'),full);assert.match(f.events.at(-1).text,/Wish syncing is enabled/);assert.equal(f.store.connection('2'),null);
+ for(const value of [full.ltoken_v2,full.cookie_token_v2]){assert.ok(!JSON.stringify(f.events).includes(value));assert.ok(!JSON.stringify(f.store.getUI('1')).includes(value));assert.ok(!f.store.connection('1',true).secret.includes(value));}
+});
+
+test('explicit HoYoLAB-only entry refuses a broader credential set; cancellation and bad modes do not authenticate',async t=>{
+ const f=setup(t);await f.run('/cookiemode:hoyolab');await f.run(text+'\naccount_id_v2=12345\naccount_mid_v2=synthetic-mid\ncookie_token_v2=synthetic-cookie');assert.match(f.events.at(-1).text,/HoYoLAB-only mode/);assert.equal(f.store.connection('1'),null);
+ await f.run(text);assert.match(f.events.at(-1).text,/Wish auto-sync is disabled/);
+ await f.run('/cookiemode:wishes');await f.run('/cookieguide:android');assert.equal(f.store.getUI('1').cookieLogin,undefined);
+ await f.run('/cookiemode:invalid');assert.match(f.events.at(-1).text,/Choose a connection mode/);assert.equal(f.store.getUI('1').cookieLogin,undefined);
+});
+
+test('phone guides identify real browsers, list wish cookies, preserve privacy and warn about Safari visibility',async t=>{
+ const f=setup(t);await f.run('/cookieguide');assert.match(f.events.at(-1).text,/does not add DevTools/);
+ for(const platform of ['android','ios','desktop']){
+  await f.run('/cookieguide:'+platform);const guide=f.events.at(-1);assert.ok(guide.text.length<4096);assert.match(guide.text,/cookie_token_v2/);assert.match(guide.text,/same (HoYoverse )?account/);assert.match(guide.text,/Telegram receives raw/);
+  const buttons=guide.reply_markup.inline_keyboard.flat();assert.ok(buttons.some(b=>b.callback_data==='cookiemode:wishes'));assert.ok(buttons.some(b=>b.callback_data==='cookiemode:hoyolab'));
+  if(platform==='android'){assert.match(guide.text,/Firefox for Android/);assert.ok(buttons.some(b=>b.url?.startsWith('https://addons.mozilla.org/')));}
+  if(platform==='ios'){assert.match(guide.text,/HttpOnly/);assert.ok(buttons.some(b=>b.url==='https://apps.apple.com/app/cookie-editor/id6446215341'));}
+ }
+ await f.run('/cookieguide:invalid');assert.match(f.events.at(-1).text,/Choose Android/);
+});

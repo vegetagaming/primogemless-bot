@@ -7,7 +7,7 @@ export function cleanCookies(input){
  const out={};
  for(const key of COOKIE_FIELDS){const value=input[key];if(value!==undefined){if(typeof value!=='string'||value.length>8192||!value.length||/[\s;\r\n\x00-\x1f]/.test(value))throw new UserError('The connection package contains an invalid session.');out[key]=value;}}
  const capabilities=cookieCapabilities(out);
- if(!capabilities.hoyolab&&!capabilities.wishes)throw new UserError('Provide ltoken_v2 with ltuid_v2 for HoYoLAB, or use the Windows helper for wish syncing.');
+ if(!capabilities.hoyolab&&!capabilities.wishes)throw new UserError('Provide ltoken_v2 with ltuid_v2 for HoYoLAB. Wish access needs account_id_v2, account_mid_v2 and cookie_token_v2; open Connect for manual or Windows setup.');
  for(const key of ['account_id_v2','ltuid_v2'])if(out[key]&&!/^\d{1,20}$/.test(out[key]))throw new UserError('Invalid account identifier.');
  if(out.account_id_v2&&out.ltuid_v2&&out.account_id_v2!==out.ltuid_v2)throw new UserError('The cookie account identifiers do not match. Copy fields from the same login.');
  if(out.account_mid_v2&&out.ltmid_v2&&out.account_mid_v2!==out.ltmid_v2)throw new UserError('The cookie session identifiers do not match. Copy fields from the same login.');

@@ -17,16 +17,17 @@ function config(zip){
  throw new Error('No connection configuration');
 }
 
-test('Connect replaces Tutorial and sends an inline video followed by a personal ZIP for each player',async t=>{
+test('Connect shows the video and device choices; only the Windows button creates a personal ZIP',async t=>{
  const {app,store,calls,run}=setup(t);
  assert.deepEqual(COMMANDS.map(c=>c.command),['connect','history','primogems','characters','akasha','reminders']);assert.equal(MENU.inline_keyboard[0][0].text,'✦ Connect');assert.equal(MENU.inline_keyboard[0][0].callback_data,'connect');
  await run('/setconnectvideo');await run({video:{file_id:'recording_file_123',file_size:200000000},caption:'do not copy this caption'});
  assert.deepEqual(Object.keys(JSON.parse(store.getMeta('connect_video_v1'))).sort(),['file_id','saved_at']);assert.equal(app.savedConnectVideo().file_id,'recording_file_123');assert.equal(calls.at(-1).method,'sendVideo');assert.ok(!calls.at(-1).caption.includes('do not copy'));
- calls.length=0;await run('/connect',2);assert.deepEqual(calls.map(c=>c.method),['sendVideo','document']);assert.equal(calls[0].video,'recording_file_123');assert.equal(calls[1].name,'Connect-Primogemless.zip');assert.ok(!calls[0].reply_markup.inline_keyboard.flat().some(b=>b.callback_data==='setconnectvideo'));
- const first=config(calls[1].buffer);assert.equal(first.owner,'2');store.checkChallenge('2',first.challenge);
- await run('/connect',3);const second=config(calls.at(-1).buffer);assert.equal(second.owner,'3');assert.notEqual(second.challenge,first.challenge);store.checkChallenge('2',first.challenge);
+ calls.length=0;await run('/connect',2);assert.deepEqual(calls.map(c=>c.method),['sendVideo']);assert.equal(calls[0].video,'recording_file_123');const buttons=calls[0].reply_markup.inline_keyboard.flat();assert.ok(!buttons.some(b=>b.callback_data==='setconnectvideo'));for(const action of ['cookieguide:android','cookieguide:ios','beginlogin','cookielogin'])assert.ok(buttons.some(b=>b.callback_data===action));
+ await run('/beginlogin',2);assert.equal(calls.at(-1).name,'Connect-Primogemless.zip');const first=config(calls.at(-1).buffer);assert.equal(first.owner,'2');store.checkChallenge('2',first.challenge);
+ await run('/beginlogin',3);const second=config(calls.at(-1).buffer);assert.equal(second.owner,'3');assert.notEqual(second.challenge,first.challenge);store.checkChallenge('2',first.challenge);
  await run('/connectpreview',2);assert.equal(calls.at(-1).method,'sendVideo');store.checkChallenge('2',first.challenge);
- await run('/connect',2);const renewed=config(calls.at(-1).buffer);assert.notEqual(renewed.challenge,first.challenge);assert.throws(()=>store.checkChallenge('2',first.challenge));store.checkChallenge('3',second.challenge);
+ await run('/connect',2);store.checkChallenge('2',first.challenge);await run('/cookieguide:android',2);await run('/cookieguide:ios',2);store.checkChallenge('2',first.challenge);
+ await run('/beginlogin',2);const renewed=config(calls.at(-1).buffer);assert.notEqual(renewed.challenge,first.challenge);assert.throws(()=>store.checkChallenge('2',first.challenge));store.checkChallenge('3',second.challenge);
 });
 
 test('only an owner who explicitly starts video editing can publish, replace or remove it',async t=>{
@@ -45,8 +46,8 @@ test('only an owner who explicitly starts video editing can publish, replace or 
 
 test('the ZIP stays available before recording and after a rejected video; owner previews do not rotate pairing',async t=>{
  const {app,store,calls,telegram,run}=setup(t);
- await run('/connect',2);assert.deepEqual(calls.map(c=>c.method),['message','document']);const before=config(calls.at(-1).buffer);
+ await run('/connect',2);assert.deepEqual(calls.map(c=>c.method),['message']);await run('/beginlogin',2);const before=config(calls.at(-1).buffer);
  await run('/setconnectvideo');await run({video:{file_id:'sample_video'}});store.checkChallenge('2',before.challenge);
  telegram.call=async(method,p)=>{calls.push({method,...p});if(method==='sendVideo')throw Object.assign(new Error('Rejected video'),{code:400});return {};};
- calls.length=0;await run('/connect',2);assert.deepEqual(calls.map(c=>c.method),['sendVideo','message','document']);assert.match(calls[1].text,/temporarily unavailable/);assert.equal(config(calls.at(-1).buffer).owner,'2');assert.equal(app.savedConnectVideo().file_id,'sample_video');
+ calls.length=0;await run('/connect',2);assert.deepEqual(calls.map(c=>c.method),['sendVideo','message']);assert.match(calls[1].text,/temporarily unavailable/);store.checkChallenge('2',before.challenge);await run('/beginlogin',2);assert.equal(config(calls.at(-1).buffer).owner,'2');assert.equal(app.savedConnectVideo().file_id,'sample_video');
 });

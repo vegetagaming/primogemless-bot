@@ -1,4 +1,4 @@
-# Primogemless 2.13.0
+# Primogemless 2.14.0
 
 An open-source Telegram companion for Genshin Impact, created by
 [@Wr_Vegeta](https://t.me/Wr_Vegeta).
@@ -6,7 +6,7 @@ An open-source Telegram companion for Genshin Impact, created by
 [Use the bot](https://t.me/Primogemless_bot) · [Run your own](#run) ·
 [Contribute](CONTRIBUTING.md) · [Security](SECURITY.md) · [MIT license](LICENSE)
 
-- **Connect:** a personal Windows helper with encrypted account connection.
+- **Connect:** a Windows encrypted helper or guided manual cookie entry on mobile/desktop.
 - **Wish History:** automatic checks, UIGF backups, patch filters and pity cards.
 - **Earned Primogems:** available HoYoLAB Traveler's Diary monthly income.
 - **Owned Characters:** constellations, levels and five-star weapons.
@@ -33,8 +33,10 @@ Telegram’s 120-character limit.
 
 Six public commands: `/connect`, `/history`, `/primogems`, `/characters`, `/akasha`, `/reminders`.
 The home buttons are Connect, Wish History, Earned Primogems, Owned Characters, AKASHA and Reminders.
-Opening Connect sends the owner's uploaded video inline, then a personal Windows
-ZIP. Until the video is added, it sends short text instructions and the ZIP.
+Opening Connect shows the owner's uploaded video inline and device choices for
+Android, iPhone/iPad and Windows. Until a video is added, it shows short text
+instructions. Only the Windows ZIP button generates and sends a personal ZIP;
+opening Connect or phone guides does not expire an existing pairing challenge.
 The owner uses **Connect → Set video** and sends a normal Telegram video. The bot
 stores its Telegram file ID and reuses it without downloading the video to the
 server. Replace/remove controls are owner-only and require an explicit edit action.
@@ -142,7 +144,7 @@ Sources: [Enka API rules](https://github.com/EnkaNetwork/API-docs/blob/master/ap
 
 ## Connect once
 
-1. Open **Connect** to receive the video guide and your personal Windows ZIP.
+1. Open **Connect** for the video, then choose **Windows · personal ZIP**.
 2. Extract the personal ZIP and run `Connect.cmd` on Windows with Edge or Chrome.
 3. Sign in on the official HoYoLAB and Genshin redemption pages in the isolated
    browser. Complete any CAPTCHA or verification there.
@@ -163,38 +165,55 @@ verified end to end. Mocked API flows and Windows/Node encryption interoperabili
 are tested. Upstream sessions may expire or be revoked; reconnect when requested.
 Read-only integration is not a promise of approval under the game's terms.
 
-## Advanced cookie entry from Telegram
+## Manual cookie connection on mobile and desktop
 
-Players who already have their own fresh cookies can open **/login → Cookie
-connection → Continue with cookie entry** from Android, iPhone or desktop.
-The bot explains that Telegram cloud chat receives raw credentials before server
-storage encryption. This is not end-to-end encryption. The Windows helper still
-encrypts credentials before upload and remains a separate option.
+Open **Connect → Android / iPhone** for a browser guide, or **Enter cookies manually**
+if you already have the values. This release reuses manual entry rather than
+requiring a new native helper app. The guide distinguishes these options:
 
-The explicit entry window lasts ten minutes. Send one cookie_name=value per line
-using **ltuid_v2** and **ltoken_v2**, plus **ltmid_v2** when present. The first
-letter is lowercase L. Do not send a password, full cookie dump, screenshots or
-an expired/exposed token. Only six allowlisted cookie names can be parsed.
-The bot requests message deletion before verification and aborts the login if
-Telegram does not confirm deletion. Deletion does not guarantee removal from all
-Telegram copies. Input values are never echoed, written to logs or saved in UI
-state. Verification failures leave an existing connection intact; a successful
-connection replaces it. Disconnect erases the stored session.
+- **Android:** Firefox for Android with [Cookie-Editor by cgagnier](https://addons.mozilla.org/en-US/android/addon/cookie-editor/).
+- **iPhone / iPad:** Safari with [Cookie-Editor by Christophe Gagnier](https://apps.apple.com/app/cookie-editor/id6446215341).
+  Its own Safari help documents that some cookies, including HttpOnly cookies,
+  cannot be displayed. Missing required cookies prevent full wish connection;
+  use the Windows helper, or HoYoLAB-only mode when its fields are available.
+- **Desktop:** Chrome/Edge DevTools → Application → Cookies.
 
-An ltoken/ltuid pair enables **HoYoLAB-only** mode. The bot verifies account roles
-and a roster response before saving it. Scheduled checks update available roster,
-achievement-total and diary data without attempting wish endpoints. The UI
-explicitly says wish auto-sync is disabled. Wish access requires all three of
-cookie_token_v2, account_id_v2 and account_mid_v2 and successful authkey verification.
-These can be supplied through the encrypted Windows helper (or explicit advanced
-entry). Fields must belong to the same account. Authentication, expiry and upstream
-availability still require real-account verification; tests use synthetic cookies.
+Chrome's Desktop site changes website presentation; it does not add phone DevTools.
+The [extension author's site](https://cookie-editor.com/) lists both mobile variants.
+These guides are based on the extension's documentation and source; live login and
+wish-cookie visibility still need verification on each player's phone/browser.
+The bot does not install or bundle the extension and does not claim it has audited it.
 
-The desktop DevTools/Application/Cookies instructions are not a phone-only cookie
-export method. Standard [Chrome Android inspection](https://developer.chrome.com/docs/devtools/remote-debugging)
-uses a computer, and [Safari iPhone inspection](https://webkit.org/web-inspector/enabling-web-inspector/)
-uses a Mac. The guide covers both platforms without claiming that logging into the
-mobile HoYoLAB app automatically exports cookies.
+Sign in to HoYoLAB and, for wishes, the Genshin redemption page with the same account
+in the selected browser. The HoYoLAB mobile app's session is separate. Copy only:
+
+- HoYoLAB: **ltuid_v2**, **ltoken_v2**, and **ltmid_v2** when present.
+- Genshin redemption: **account_id_v2**, **account_mid_v2**, **cookie_token_v2**.
+
+The first letter in **ltoken**, **ltuid** and **ltmid** is lowercase L. Account IDs are not
+Genshin UIDs. Do not export all cookies, alter values, paste screenshots or send a
+password. Grant extension site access narrowly where supported and remove it after use.
+
+After collecting values, choose **Connect wishes + HoYoLAB** or **HoYoLAB only**.
+The explicit entry window lasts ten minutes. Send one text message with one
+**cookie_name=value** per line. Full mode requires both sets and verifies wish authkey
+access before saving. Incomplete or rejected input leaves the existing session intact
+instead of silently downgrading it. HoYoLAB-only mode rejects extra wish credentials
+and enables roster/diary/available Real-Time Notes without wish syncing.
+The legacy unlisted **/cookiebegin** route retains automatic capability detection.
+
+Telegram cloud chat receives raw credentials before server storage encryption; it
+is not end-to-end encrypted. The bot requests message deletion before verification
+and aborts if Telegram does not confirm deletion. Deletion cannot guarantee removal
+from all Telegram copies. Values are never echoed, logged or saved in UI state.
+Only the six allowlisted names are accepted. A successful connection replaces the
+previous session; disconnect erases it. The operator can decrypt stored sessions to
+access account data. The Windows helper remains the option that encrypts the
+connection package before it enters Telegram.
+
+Phone extension compatibility, cookie visibility and HoYoverse authentication can
+change. Authentication tests use synthetic cookies; they do not prove a phone's
+current live login will work.
 
 ## Wish history
 

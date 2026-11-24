@@ -30,7 +30,7 @@ export class Hoyo {
   if(!roles.length)throw new UserError('This login has no supported global Genshin account. Check which HoYoverse account you signed into.');
   return [...new Map(roles.map(x=>[x.uid,x])).values()];
  }
- async authkey(cookies,role){if(!cookieCapabilities(cookies).wishes)throw new UserError('This HoYoLAB-only connection cannot sync wishes. Use the Windows helper in /login to enable wish access.');const d=await this.request('https://api-account-os.hoyoverse.com/binding/api/genAuthKeyByCookieToken',{cookies,data:{game_uid:role.uid,region:role.region,game_biz:'hk4e_global',auth_appid:'webview_gacha'}});if(typeof d.authkey!=='string'||d.authkey.length<100)throw new HoyoError('AUTHKEY');return decodeURIComponent(d.authkey);}
+ async authkey(cookies,role){if(!cookieCapabilities(cookies).wishes)throw new UserError('This HoYoLAB-only connection cannot sync wishes. Open Connect and use full manual cookie entry or the Windows helper to enable wish access.');const d=await this.request('https://api-account-os.hoyoverse.com/binding/api/genAuthKeyByCookieToken',{cookies,data:{game_uid:role.uid,region:role.region,game_biz:'hk4e_global',auth_appid:'webview_gacha'}});if(typeof d.authkey!=='string'||d.authkey.length<100)throw new HoyoError('AUTHKEY');return decodeURIComponent(d.authkey);}
  async wishes(cookies,role,known=new Set(),signal=null){
   const authkey=await this.authkey(cookies,role),records=new Map();
   for(const type of ['100','200','301','302','400','500']){
