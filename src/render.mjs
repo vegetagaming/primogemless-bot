@@ -31,6 +31,7 @@ export class CardRenderer{
   if(m.type==='grid'||m.type==='ownedgrid')return this.grid(m);
   if(m.type==='ownedDetail')return this.ownedDetail(m);
   if(m.type==='artpreview')return this.artPreview(m);
+  if(m.type==='showcase')return this.showcase(m);
   return this.dashboard(m);
  }
  async artPreview(m){const a=await this.art.source(m.id),meta=artwork[m.id]??{},accent=colors[meta.element]??'#e5c78d';return shell(650,image(a,310,-5,1000,660,a?.custom?'xMidYMid slice':'xMidYMid meet')+rect(0,0,630,650,0,'url(#shade)')+star(49,48,10)+t(72,55,17,'ARTWORK STUDIO','#ddc99f',600,'letter-spacing="3"')+t(48,210,m.name.length>21?34:48,m.name,'#f3f0e7',600)+t(48,252,19,a?.custom?'Your custom artwork':'Official character artwork','#9cabc0')+t(48,540,17,'One image. Every wish card.','#cbd5e3')+t(48,574,15,'Only the bot owner can change this image.','#8fa1b8'),accent);}
@@ -57,6 +58,29 @@ export class CardRenderer{
   [54,281,471,703,919,1139].forEach((x,i)=>body+=star(x,[349,326,366,329,365,332][i],i%2?5:8,'#b5a178'));
   body+=t(49,414,16,m.footer??'A little luck. A lasting memory.','#a8b4c5')+t(1150,414,13,m.uid?'UID '+m.uid:'PRIMOGEMLESS','#72839b',400,'text-anchor="end"');
   return shell(450,body,m.accent);
+ }
+ async showcase(m){
+  const [art,artifactImages]=await Promise.all([this.art?.source(m.id),Promise.all(m.artifacts.map(async a=>{try{return a.icon&&this.art?.fetchAsset?{bytes:await this.art.fetchAsset(a.icon),mime:'image/png'}:null;}catch{return null;}}))]),accent=colors[artwork[m.id]?.element]??'#a5d8c5';
+  let body=image(art,555,60,670,485,art?.custom?'xMidYMid slice':'xMidYMid meet')+rect(0,80,685,450,0,'url(#shade)');
+  body+=header(m.name+'  ·  C'+m.constellation,'PUBLIC SHOWCASE');
+  body+=t(49,153,17,m.nickname+'  /  Lv. '+m.level+'  /  UID '+m.uid,'#a6b5ca');
+  const weapon=m.weapon?m.weapon.name+'  ·  R'+m.weapon.refinement+'  ·  Lv. '+m.weapon.level:'No weapon equipped';
+  body+=t(49,192,20,weapon.length>49?weapon.slice(0,48)+'…':weapon,accent,500);
+  m.stats.forEach((s,i)=>{const x=48+(i%2)*270,y=218+Math.floor(i/2)*69;body+=rect(x,y,254,59,12,'#172638','#2f4253')+t(x+15,y+22,13,s.label,'#9dafc5')+t(x+238,y+45,23,s.value,'#edf0f5',600,'text-anchor="end"');});
+  body+=rect(817,442,334,69,15,'#122334','#3e5c61')+t(839,469,13,'ARTIFACT CRIT VALUE',accent,600,'letter-spacing="1"')+t(1129,494,28,m.cv.toFixed(1),'#e3d3a3',600,'text-anchor="end"');
+  body+=t(49,539,14,'EQUIPPED ARTIFACTS','#bdcbdc',600,'letter-spacing="2"');
+  for(let i=0;i<m.artifacts.length;i++){
+   const a=m.artifacts[i],x=48+i*224,y=557;body+=rect(x,y,210,270,16,'#172638','#344759')+t(x+15,y+28,17,a.slot,accent,600);
+   if(a.missing){body+=t(x+15,y+94,16,'Not equipped','#9dafc5');continue;}
+   const icon=artifactImages[i];
+   body+=t(x+193,y+28,13,'+'+a.level,'#c4cbd5',500,'text-anchor="end"')+image(icon,x+7,y+33,68,68);
+   const mainLabel=a.main.label.replace('Energy Recharge','ER').replace('Elemental Mastery','EM');
+   body+=t(x+195,y+57,13,mainLabel,'#9dafc5',500,'text-anchor="end"')+t(x+195,y+84,21,a.main.text,'#edf0f5',600,'text-anchor="end"');
+   a.sub.forEach((s,j)=>{const label=s.label.replace('Energy Recharge','ER').replace('Elemental Mastery','EM');body+=t(x+15,y+124+j*27,13,label,'#aab9cd')+t(x+195,y+124+j*27,15,s.text,s.key.startsWith('CRITICAL')?'#dfcf9f':'#edf0f5',500,'text-anchor="end"');});
+   body+=t(x+15,y+249,13,'CV','#9dafc5')+t(x+195,y+249,18,a.cv.toFixed(1),'#dfcf9f',600,'text-anchor="end"');
+  }
+  body+=t(49,859,14,'Artifact CV includes main stats + substats. Rankings are on Akasha.','#9dafc5')+t(1150,859,13,'HOYOVERSE / ENKA.NETWORK','#8396ae',500,'text-anchor="end"');
+  return shell(890,body,accent);
  }
  async ownedDetail(m){
   const art=await this.art.source(m.id),meta=artwork[m.id]??{},accent=colors[meta.element]??(m.rank==='4'?'#c3a2f3':'#e5c78d');

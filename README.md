@@ -1,11 +1,11 @@
-# Primogemless 2.10
+# Primogemless 2.11
 
 For hosting without a PC, see [Northflank deployment](NORTHFLANK.md). The Docker
 image starts in migration hold mode and uses PostgreSQL or a persistent disk. It does not
 start a second Telegram poller until the archive and existing secrets are restored.
 
-Four public commands: `/connect`, `/history`, `/primogems`, `/characters`.
-The home buttons are Connect, Wish History, Earned Primogems and Owned Characters.
+Five public commands: `/connect`, `/history`, `/primogems`, `/characters`, `/akasha`.
+The home buttons are Connect, Wish History, Earned Primogems, Owned Characters and AKASHA.
 Opening Connect sends the owner's uploaded video inline, then a personal Windows
 ZIP. Until the video is added, it sends short text instructions and the ZIP.
 The owner uses **Connect → Set video** and sends a normal Telegram video. The bot
@@ -21,8 +21,38 @@ Connect without changing pairing. The screenshot files remain archived locally.
 Only the configured bot owner gets an extra **My Game Profile** home button for
 manually recorded currency balances. `/profile` and `/savings` open the same page;
 all balance entry, history and export routes enforce this owner restriction.
-The home screen uses a two-by-two menu and a navy/gold image dashboard. Account
+The home screen uses a two-column menu and a navy/gold image dashboard. Account
 switching, backups, refresh, disconnect and deletion live inside those screens.
+
+## AKASHA: builds and rankings
+
+Open **AKASHA** for the selected saved Genshin UID. **Change account** switches
+between only that Telegram user's saved UIDs. No additional login is needed.
+
+- **Character build cards** fetch the public Enka showcase and display character
+  artwork, constellation, level, weapon/refinement, combat stats and five artifacts
+  with main stats, substats and artifact CRIT Value (2 × CRIT Rate + CRIT DMG,
+  including artifact main stats). CV is not a rank or a universal build score.
+- **Akasha profile · ranks & Top %** opens the selected UID on Akasha's website.
+- **Leaderboards** and **Enka showcase** open their respective websites.
+- **Showcase setup** explains how to add characters and enable **Show character
+  details** in Genshin. HoYoLAB owned characters and the public showcase are separate.
+
+Akasha returned Cloudflare HTTP 403 to normal requests from both the local computer
+and Northflank during verification on 2026-11-24. This release does not bypass it
+or claim to display Akasha rankings inside Telegram. Rankings and comparison
+categories remain on Akasha. No Akasha refresh, login or write API is called.
+
+Enka requests send only the selected public UID and an identifying User-Agent;
+HoYoverse cookies never leave the existing HoYo client. Requests use fixed HTTPS
+hosts, an 8-second timeout, a 2 MB response limit, cache/deduplication respecting
+Enka TTL (at least 60 seconds), bounded memory cache and Retry-After backoff.
+Refresh does not bypass that cache. Hidden/empty showcases and upstream outages
+keep website buttons available. No background UID scanning is performed.
+
+Sources: [Enka API rules](https://github.com/EnkaNetwork/API-docs/blob/master/api.md),
+[Genshin response fields](https://github.com/EnkaNetwork/API-docs/blob/master/docs/gi/api.md),
+[Akasha leaderboards](https://akasha.cv/leaderboards).
 
 ## Connect once
 
@@ -171,12 +201,12 @@ A player without an account is offered account connection. The owner also sees
 ## Customize icons
 
 The owner opens **Connect → Customize icons** (or the unlisted `/icons` shortcut),
-chooses one of 19 symbols, and sends one regular or premium emoji. Telegram's
+chooses one of 20 symbols, and sends one regular or premium emoji. Telegram's
 `custom_emoji` entity supplies the ID, so the user does not copy IDs manually.
 Each icon can also be removed or reset. Changes persist and apply to future screens
 for all players. Existing messages update when opened again.
 
-The four public commands remain unchanged. Only `BOT_OWNER_ID`, or the explicitly
+AKASHA adds a fifth public command. Only `BOT_OWNER_ID`, or the explicitly
 configured `bot_owner_id` runtime setting, can manage icons. Fresh installations
 have no icon administrator until configured; the first visitor never gains that role.
 
@@ -316,7 +346,7 @@ Only one Telegram polling process may run for a token.
 Tests cover exact IDs, deduplication, transactional rollback, owner isolation,
 database persistence, patch time zones, announcement parsing, UIAF round trips,
 envelope tampering/replay, credential encryption, disconnect races, authentication
-expiry, request scoping, four-command UI, and personal connection archives.
+expiry, request scoping, five-command UI, and personal connection archives.
 
 ## Data sources and credits
 

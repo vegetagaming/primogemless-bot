@@ -20,6 +20,7 @@ export const ICONS=[
  {key:'currency_acquaint',name:'Acquaint Fates',symbol:'🔵'},
  {key:'currency_intertwined',name:'Intertwined Fates',symbol:'🌠'},
  {key:'currency_welkin',name:'Welkin Moon',symbol:'🌙'},
+ {key:'akasha',name:'AKASHA',symbol:'🏆'},
 ];
 const escape=value=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const pattern=new RegExp('['+ICONS.map(x=>x.symbol).join('')+']','gu');

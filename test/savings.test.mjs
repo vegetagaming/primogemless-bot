@@ -43,7 +43,7 @@ test('Savings is inside History, saves to the account chosen at entry, and expor
  await run('/history');assert.ok(calls.at(-1).reply_markup.inline_keyboard.flat().some(x=>x.callback_data==='savings'));
  await run('/savedit');await run('12000 300 25 10');assert.equal(store.savingsRows('1',uid)[0].primogems,12000);assert.match(calls.at(-1).text,/100 event wishes/);
  await run('/savexport');const data=JSON.parse(calls.at(-1).bytes);assert.equal(data.uid,uid);assert.equal(data.snapshots.length,1);assert.equal(data.snapshots[0].owner,undefined);
- assert.equal(COMMANDS.length,4);
+ assert.equal(COMMANDS.length,5);
 });
 
 test('owner profile edits one currency on the original account, preserves other amounts and rejects invalid input',async t=>{

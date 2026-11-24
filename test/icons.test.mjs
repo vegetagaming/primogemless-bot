@@ -32,7 +32,7 @@ test('theme persists across reloads, renders custom icons, and preserves HTML at
  reloaded.set('history',{text:''});assert.equal(reloaded.html('✧ History'),' History');
  reloaded.set('history',null);assert.equal(reloaded.html('✧ History'),'✧ History');
  assert.throws(()=>reloaded.set('invented',custom),UserError);
- assert.equal(ICONS.length,19);
+ assert.equal(ICONS.length,20);
 });
 
 test('Telegram rejection falls back to regular icons for captions and buttons without dropping messages',async t=>{
@@ -46,7 +46,7 @@ test('Telegram rejection falls back to regular icons for captions and buttons wi
  await assert.rejects(tg.message(1,'✧',{parse_mode:'HTML'}),e=>e.notModified);assert.equal(tg.customEmojiFallbacks,1);
 });
 
-test('only the configured owner can edit icons; public commands remain four',async t=>{
+test('only the configured owner can edit icons; public commands remain five',async t=>{
  const store=storeFor(t),theme=new IconTheme(store),raw=new RawTelegram(),tg=new ThemedTelegram(raw,theme),app=new BotApp({store,telegram:tg,icons:theme,ownerId:'1'});
  const run=async update=>{app.limits.clear();await app.handle(update);};
  await run(message('/tutorial'));assert.ok(raw.calls.at(-1).reply_markup.inline_keyboard.flat().some(x=>x.callback_data==='icons'));
@@ -58,7 +58,7 @@ test('only the configured owner can edit icons; public commands remain four',asy
  await run(message('/start'));assert.equal(raw.calls.at(-1).reply_markup.inline_keyboard.flat().find(x=>x.callback_data==='history').icon_custom_emoji_id,custom.custom_emoji_id);
  await run(callback('ir:history',2));assert.deepEqual(theme.value('history'),custom);
  await run(callback('ir:history'));assert.equal(theme.value('history').text,'✧');
- assert.deepEqual(COMMANDS.map(x=>x.command),['connect','history','primogems','characters']);
+ assert.deepEqual(COMMANDS.map(x=>x.command),['connect','history','primogems','characters','akasha']);
 });
 
 test('each currency has an independent owner-only premium emoji on profile text and buttons',async t=>{
