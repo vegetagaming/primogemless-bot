@@ -183,7 +183,7 @@ export class BotApp {
    }
    if(bits[0]==='artreset'||bits[0]==='emojireset'){this.requireArtOwner(owner);if(bits[0]==='artreset')this.art.reset(bits[1]);else this.art.setEmoji(bits[1],null);return await this.artItem(chat,owner,bits[1]);}
    if(bits[0]==='i')return await this.editIcon(chat,owner,bits[1]);
-   if(bits[0]==='ir'||bits[0]==='in'){this.requireIconOwner(owner);this.icons.set(bits[1],bits[0]==='ir'?null:{text:''});this.store.setUI(owner,{});return await this.iconSettings(chat,owner);}
+   if(bits[0]==='ir'||bits[0]==='in'){this.requireIconOwner(owner);this.icons.set(bits[1],bits[0]==='ir'?null:{text:''});this.store.setUI(owner,{});return await (bits[1].startsWith('currency_')?this.savings.emojiSettings(chat,owner):this.iconSettings(chat,owner));}
    if(bits[0]==='a'){this.store.select(owner,bits[1]);return await this.history(chat,owner);}
    if(bits[0]==='p')return await this.patch(chat,owner,bits[1],bits[2]);
    if(bits[0]==='w')return await this.wishes(chat,owner,bits[1],bits[2],Number(bits[3]));
@@ -202,6 +202,7 @@ export class BotApp {
     case 'artsearch':this.requireArtOwner(owner);this.store.setUI(owner,{...this.artNavigation(owner),artSearch:true});return await this.say(chat,'<b>Find artwork / emoji</b>\nSend a character or weapon name.',kb([[btn('Cancel','art:0')]]));
     case 'artall':this.store.setUI(owner,{});return await this.artSettings(chat,owner,0,'');
     case 'icons':return await this.iconSettings(chat,owner);
+    case 'currencyicons':return await this.savings.emojiSettings(chat,owner);
     case 'login':return await this.login(chat,owner);
     case 'cookielogin':return await this.cookieLogin.info(chat,owner);
     case 'cookiebegin':return await this.cookieLogin.begin(chat,owner);
@@ -239,13 +240,13 @@ export class BotApp {
  }
  async editIcon(chat,owner,key){
   this.requireIconOwner(owner);const item=this.icons.item(key);this.store.setUI(owner,{editingIcon:key});
-  return this.say(chat,'<b>'+esc(item.name)+'</b>\n\nCurrent icon: '+item.symbol+'\n\nSend one emoji from your Telegram emoji picker. Premium emoji are read automatically; no ID or code needed.',kb([[btn('Remove icon','in:'+key),btn('Reset default','ir:'+key)],[btn('← All icons','icons')]]));
+  return this.say(chat,'<b>'+esc(item.name)+'</b>\n\nCurrent icon: '+item.symbol+'\n\nSend one emoji from your Telegram emoji picker. Premium emoji are read automatically; no ID or code needed.',kb([[btn('Remove icon','in:'+key),btn('Reset default','ir:'+key)],[btn(key.startsWith('currency_')?'← Currency emojis':'← All icons',key.startsWith('currency_')?'currencyicons':'icons')]]));
  }
  async saveIcon(chat,owner,message){
   this.requireIconOwner(owner);const key=this.store.getUI(owner).editingIcon,item=this.icons.item(key),value=iconFromMessage(message);
   this.icons.set(key,value);this.store.setUI(owner,{});
   const before=this.tg.customEmojiFallbacks??0;
-  await this.say(chat,'<b>Icon saved</b>\n\n'+item.symbol+' '+esc(item.name)+'\n\nYour next menus will use this icon.',kb([[btn('Change another icon','icons'),btn('Preview menu','start')]]));
+  await this.say(chat,'<b>Icon saved</b>\n\n'+item.symbol+' '+esc(item.name)+'\n\nYour next menus will use this icon.',kb([[btn(key.startsWith('currency_')?'Change another currency':'Change another icon',key.startsWith('currency_')?'currencyicons':'icons'),btn(key.startsWith('currency_')?'Preview profile':'Preview menu',key.startsWith('currency_')?'savings':'start')]]));
   if((this.tg.customEmojiFallbacks??0)>before)await this.say(chat,'Telegram rejected the premium emoji, so its regular fallback is shown. Check the bot owner’s Premium subscription or the bot’s custom-emoji eligibility.',kb([[btn('Icon settings','icons')]]));
  }
  async landing(chat,owner){

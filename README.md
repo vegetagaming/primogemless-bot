@@ -1,4 +1,4 @@
-# Primogemless 2.9
+# Primogemless 2.9.1
 
 For hosting without a PC, see [Northflank deployment](NORTHFLANK.md). The Docker
 image starts in migration hold mode and uses PostgreSQL or a persistent disk. It does not
@@ -171,7 +171,7 @@ A player without an account is offered account connection. The owner also sees
 ## Customize icons
 
 The owner opens **Connect → Customize icons** (or the unlisted `/icons` shortcut),
-chooses one of 14 symbols, and sends one regular or premium emoji. Telegram's
+chooses one of 18 symbols, and sends one regular or premium emoji. Telegram's
 `custom_emoji` entity supplies the ID, so the user does not copy IDs manually.
 Each icon can also be removed or reset. Changes persist and apply to future screens
 for all players. Existing messages update when opened again.
@@ -217,7 +217,11 @@ are scoped to the current Telegram user and selected Genshin account. After the
 first save, tap Primogems, Genesis Crystals, Standard pulls or Event pulls to replace
 just that balance. Single-field edits preserve the other balances and remain bound
 to the account selected when editing began. Standard pulls mean Acquaint Fates;
-event pulls mean Intertwined Fates.
+event pulls mean Intertwined Fates. The profile uses the official currency names.
+Open **My Game Profile → Set currency emojis** to assign a separate premium or
+regular emoji to Primogems, Genesis Crystals, Acquaint Fates and Intertwined Fates.
+These appear in Telegram labels and buttons. Only the bot owner can edit them;
+the static dashboard image uses text labels.
 
 The event-wish budget is Intertwined Fates plus floor(Primogems / 160). Standard
 tickets remain separate. A second, explicitly hypothetical figure includes crystals
@@ -319,7 +323,7 @@ All 76 supported weapons are available to the owner, regardless of ownership.
 Choose a weapon, press Set button emoji and send one premium emoji.
 
 VIDEO / CHANNEL TUTORIAL
-Step 2 now shows wish connection status and short action buttons.
+Connection settings show wish connection status and short action buttons.
 The bot owner can open Connect -> Add channel link.
 Post the tutorial video in a public Telegram channel, then send its public post
 link to the bot in that editor. A channel link also works. Players see Watch

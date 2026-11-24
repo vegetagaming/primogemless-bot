@@ -52,7 +52,7 @@ test('owner profile edits one currency on the original account, preserves other 
  await app.savings.editField(1,'1','acquaint');store.select('1',otherUid);
  await assert.rejects(app.savings.accept(1,'1','1.5'),UserError);assert.equal(store.savingsRows('1',uid).length,1);
  await app.savings.accept(1,'1','30');let rows=store.savingsRows('1',uid);assert.equal(rows.length,2);assert.equal(rows[0].acquaint,30);assert.equal(rows[0].intertwined,25);assert.equal(rows[0].primogems,12000);assert.equal(rows[0].crystals,300);assert.equal(store.selected('1').uid,uid);assert.equal(store.savingsRows('1',otherUid).length,0);
- assert.match(calls.at(-1).text,/Standard pulls: <b>30<\/b>/);assert.match(calls.at(-1).text,/Event pulls: <b>25<\/b>/);
+ assert.match(calls.at(-1).text,/Acquaint Fates: <b>30<\/b>/);assert.match(calls.at(-1).text,/Intertwined Fates: <b>25<\/b>/);
  await app.savings.editField(1,'1','acquaint');await app.savings.accept(1,'1','30');assert.equal(store.savingsRows('1',uid).length,2);
  await app.savings.editField(1,'1','crystals');await app.savings.accept(1,'1','0');assert.equal(store.savingsRows('1',uid)[0].crystals,0);
  await assert.rejects(app.savings.editField(1,'1','owner'),UserError);

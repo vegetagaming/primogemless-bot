@@ -15,6 +15,10 @@ export const ICONS=[
  {key:'previous',name:'Back / Previous',symbol:'←'},
  {key:'next',name:'Next',symbol:'→'},
  {key:'star',name:'Rarity star',symbol:'★'},
+ {key:'currency_primogems',name:'Primogems',symbol:'💎'},
+ {key:'currency_crystals',name:'Genesis Crystals',symbol:'💠'},
+ {key:'currency_acquaint',name:'Acquaint Fates',symbol:'🔵'},
+ {key:'currency_intertwined',name:'Intertwined Fates',symbol:'🌠'},
 ];
 const escape=value=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const pattern=new RegExp('['+ICONS.map(x=>x.symbol).join('')+']','gu');
