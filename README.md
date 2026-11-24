@@ -1,4 +1,4 @@
-# Primogemless 2.12
+# Primogemless 2.12.1
 
 For hosting without a PC, see [Northflank deployment](NORTHFLANK.md). The Docker
 image starts in migration hold mode and uses PostgreSQL or a persistent disk. It does not
@@ -30,6 +30,10 @@ sending a blank-text image. Render-cache versioning replaces older broken cards.
 premium emoji settings continue to control captions and buttons independently.
 The home screen uses a two-column menu and a navy/gold image dashboard. Account
 switching, backups, refresh, disconnect and deletion live inside those screens.
+
+Traveler labels use Aether (10000005) and Lumine (10000007) in artwork/emoji
+pickers, Enka build cards and owned rosters, including previously saved snapshots.
+Their stable IDs and custom emoji/artwork settings are preserved.
 
 ## Character galleries
 

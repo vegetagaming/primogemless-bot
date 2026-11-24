@@ -1,5 +1,6 @@
 import {readFileSync} from 'node:fs';
 import {UserError} from './history.mjs';
+import {characterName} from './character-names.mjs';
 
 export const weaponCatalogue=JSON.parse(readFileSync(new URL('../assets/five-star-weapons.json',import.meta.url))).items;
 export const weaponById=new Map(weaponCatalogue.map(w=>[w.id,w]));
@@ -10,7 +11,7 @@ export function validateRoster(rows){
  if(!Array.isArray(rows)||rows.length>1000)throw new UserError('HoYoLAB did not return a valid character roster.');
  const seen=new Set();
  return rows.map(c=>{
-  const out={id:id(c.id),name:name(c.name),rank:integer(c.rank,4,5),level:integer(c.level,1,100),constellation:integer(c.constellation,0,6)};
+  const out={id:id(c.id),name:name(characterName(c.id,c.name)),rank:integer(c.rank,4,5),level:integer(c.level,1,100),constellation:integer(c.constellation,0,6)};
   if(seen.has(out.id))throw new UserError('HoYoLAB returned a duplicate character.');seen.add(out.id);
   if(c.weapon){const w=c.weapon;out.weapon={id:id(w.id),name:name(w.name),rank:integer(w.rank,1,5),level:integer(w.level,1,100),refinement:integer(w.refinement,1,5)};}
   else out.weapon=null;

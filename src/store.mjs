@@ -6,6 +6,7 @@ import { sameWish, sortWishes, UserError } from './history.mjs';
 import {balances,CURRENCIES} from './savings.mjs';
 import {validateRoster,manualWeapon} from './roster-data.mjs';
 import {welkinRecord} from './welkin.mjs';
+import {characterName} from './character-names.mjs';
 
 export class Store {
   constructor(path,{database}={}) {
@@ -34,7 +35,7 @@ export class Store {
   close() { this.db.close(); }
   saveArtwork(hash,bytes){this.db.prepare('INSERT INTO artwork_blobs VALUES (?,?) ON CONFLICT(hash) DO NOTHING').run(hash,bytes);}
   loadArtwork(hash){const row=this.db.prepare('SELECT bytes FROM artwork_blobs WHERE hash=?').get(hash);return row?Buffer.from(row.bytes):null;}
-  roster(owner,uid){const r=this.db.prepare('SELECT data,checked_at FROM roster_snapshots WHERE owner=? AND uid=?').get(String(owner),String(uid));return r?{characters:JSON.parse(r.data),checked_at:r.checked_at}:null;}
+  roster(owner,uid){const r=this.db.prepare('SELECT data,checked_at FROM roster_snapshots WHERE owner=? AND uid=?').get(String(owner),String(uid));return r?{characters:JSON.parse(r.data).map(c=>({...c,name:characterName(c.id,c.name)})),checked_at:r.checked_at}:null;}
   saveRoster(owner,uid,rows){
     if(!this.accounts(owner).some(a=>a.uid===uid))throw new UserError('Choose your own saved account.');
     const data=validateRoster(rows);

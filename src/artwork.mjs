@@ -2,9 +2,10 @@ import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {UserError} from './history.mjs';
+import {TRAVELER_NAMES} from './character-names.mjs';
 export const artwork=JSON.parse(readFileSync(new URL('../assets/enka-icons.json',import.meta.url))).items;
 const dictionary=JSON.parse(readFileSync(new URL('../exporter/item-dictionary.json',import.meta.url)));
-const names=new Map(Object.entries(dictionary).map(([name,id])=>[String(id),name]));
+const names=new Map([...Object.entries(dictionary).map(([name,id])=>[String(id),name]),...Object.entries(TRAVELER_NAMES)]);
 export const itemId=row=>String(row.item_id||dictionary[row.name]||'');
 export const items=Object.entries(artwork).map(([id,a])=>({id,name:names.get(id)??id,...a})).sort((a,b)=>a.name.localeCompare(b.name));
 export function itemInfo(id){const a=artwork[String(id)];if(!a)throw new UserError('That item is not in the artwork catalogue.');return {id:String(id),name:names.get(String(id))??String(id),...a};}
