@@ -1,4 +1,4 @@
-# Primogemless 2.15.0
+# Primogemless 2.16.0
 
 An open-source Telegram companion for Genshin Impact, created by
 [@Wr_Vegeta](https://t.me/Wr_Vegeta).
@@ -72,7 +72,8 @@ level and element. Wish History opens with characters and weapons together;
 every four- or five-star drop has its own tile, even when the same item appears
 several times. Each tile shows that pull's date and pity, preserving the five-star
 green/yellow/red scale and purple four-star pity. Buttons and Next/Previous pages
-cover the same entries. The weapons-only filter retains nine entries per page.
+cover the same entries. All wish banner filters use this portrait layout; the
+Owned Characters weapon inventory retains nine entries per page.
 
 ## Daily and Original Resin reminders
 
@@ -231,8 +232,16 @@ periods are labelled as awaiting a patch update; they are not guessed from a fix
 **All history** appears above the patch options and includes every saved pull for
 the selected account. Each patch opens a three-column list of individual character
 and weapon pulls, newest first, with one tile per drop. Repeated items remain
-separate and show their own pity and date. Filters select all items, characters or
-weapons, and all rarities, five stars or four stars. Records without available
+separate and show their own pity and date. Banner filters select **All banners**,
+**Limited Character Banner** (301/400 together), **Limited Weapon Banner** (302),
+**Standard Banner** (200), or **Regional Banner** (Chronicled Wish, 500).
+**Beginners' Wish** (100) appears when that patch or archive contains those records.
+The banner where an item dropped determines its category: characters and weapons
+can appear together within a banner. Totals describe the selected banner and patch,
+including hidden three-star pulls. Rarity filters then select all, five-star or
+four-star drops. The banner and rarity remain selected through page changes, the
+text list and individual cards. Older Characters/Weapons buttons reopen All banners.
+Records without available
 artwork still appear. Tap a name for a landscape card containing full artwork,
 a large pity count, rarity, saved copies, banner and date. Newer/Older browses
 individual pulls within the selected filters. Buttons identify exact pull IDs,
@@ -247,7 +256,7 @@ Hit pity counts pulls since the preceding hit of the same rarity in the same
 banner pool, including the winning pull. Character Event types 301/400 share a
 pool; weapons and characters of the same rarity both reset that pool's counter.
 Four-star and five-star counters are independent. Calculation runs over the whole
-account archive before filtering by patch or rarity. A `+` marks the first observed
+account archive before filtering by patch, banner or rarity. A `+` marks the first observed
 hit of a rarity, whose preceding reset is not saved. Unknown gaps can still make
 archived counts incomplete; the bot does not invent missing pulls.
 

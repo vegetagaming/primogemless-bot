@@ -8,6 +8,7 @@ import {HoyoError} from './hoyo.mjs';
 import {ICONS,iconFromMessage} from './icons.mjs';
 import {items,itemInfo,itemId} from './artwork.mjs';
 import {collection} from './collection.mjs';
+import {historyBanner,bannerGroup} from './history-banners.mjs';
 import {Savings} from './savings.mjs';
 import {Roster} from './roster.mjs';
 import {CookieLogin} from './cookie-login.mjs';
@@ -100,23 +101,29 @@ export class BotApp {
  }
  async saveItemEmoji(chat,owner,message){this.requireArtOwner(owner);const id=this.store.getUI(owner).editingItemEmoji;this.art.setEmoji(id,iconFromMessage(message));this.store.setUI(owner,this.artNavigation(owner));return this.artItem(chat,owner,id);}
  async grid(chat,owner,uid,id,kind='a',rank='a',page=0){
-  const g=this.group(owner,uid,id),list=collection(g.rows,kind,rank),size=galleryPageSize(kind),pages=Math.max(1,Math.ceil(list.length/size));
+  const banner=historyBanner(kind),whole=this.group(owner,uid,id),g=bannerGroup(whole,banner.id),size=galleryPageSize('a');
+  if(kind==='w'&&Number.isInteger(page)&&page>=0)page=Math.floor(page*galleryPageSize('w')/size);
+  kind=banner.id;
+  const list=collection(g.rows,'a',rank),pages=Math.max(1,Math.ceil(list.length/size));
   if(!Number.isInteger(page)||page<0||page>=pages)throw new UserError('That collection page is unavailable.');
   const visible=list.slice(page*size,page*size+size),buttons=visible.map(x=>({...btn((x.name.length>15?x.name.slice(0,14)+'…':x.name)+' · '+x.pity,'hit:'+uid+':'+id+':'+x.pullId+':'+kind+':'+rank),ui_icon:this.art?.emoji(x.id)})),rows=[];
   for(let i=0;i<buttons.length;i+=3)rows.push(buttons.slice(i,i+3));
   const route=(k,r,p=0)=>'g:'+uid+':'+id+':'+k+':'+r+':'+p,nav=[];
   if(page)nav.push(btn('← Previous',route(kind,rank,page-1)));if(page+1<pages)nav.push(btn('Next →',route(kind,rank,page+1)));
-  const caption='<b>✧ '+esc(g.label.toUpperCase())+'</b>\n<b>'+g.total+'</b> wishes · <b>'+g.five+'</b> five-stars · <b>'+g.four+'</b> four-stars\n\n'+(list.length?list.length+' matching pulls · newest first.\nEach tile is one pull, including repeated items. Tap it for the exact wish.':'No saved 4★ / 5★ pulls in this selection.')+'\n<i>3★ pulls are hidden but count in totals and pity. + means earlier history is missing.</i>';
+  const caption='<b>✧ '+esc(g.label.toUpperCase())+'</b>\n'+esc(banner.caption??banner.label)+'\n<b>'+g.total+'</b> wishes · <b>'+g.five+'</b> five-stars · <b>'+g.four+'</b> four-stars\n\n'+(list.length?list.length+' matching pulls · newest first.\nEach tile is one pull, including repeated items. Tap it for the exact wish.':'No saved 4★ / 5★ pulls in this selection.')+'\n<i>3★ pulls are hidden but count in totals and pity. + means earlier history is missing.</i>';
   const selected=(label,data,active)=>({...btn(label,data),...(active?{style:'primary'}:{})});
+  const bannerButton=filter=>selected(historyBanner(filter).label,route(filter,rank),kind===filter);
   return this.visual(chat,caption,kb([
-   [selected('All items',route('a',rank),kind==='a'),selected('Characters',route('c',rank),kind==='c'),selected('Weapons',route('w',rank),kind==='w')],
+   [bannerButton('a')],[bannerButton('301')],[bannerButton('302')],[bannerButton('200'),bannerButton('500')],
+   ...(whole.rows.some(r=>r.gacha_type==='100')?[[bannerButton('100')]]:[]),
    [selected('All rarities',route(kind,'a'),rank==='a'),selected('5★',route(kind,'5'),rank==='5'),selected('4★',route(kind,'4'),rank==='4')],
-   ...rows,...(nav.length?[nav]:[]),[btn('4★ / 5★ pulls','w:'+uid+':'+id+':0'),btn('← All patches','history')],home]),
-   {type:'grid',title:g.label,subtitle:g.total+' wishes  /  '+g.five+' five-stars  /  '+g.four+' four-stars',items:visible,page,pages,kind});
+   ...rows,...(nav.length?[nav]:[]),[btn('Text list','w:'+uid+':'+id+':0:'+kind+':'+rank),btn('← All patches','history')],home]),
+   {type:'grid',title:g.label,subtitle:g.total+' wishes  /  '+g.five+' five-stars  /  '+g.four+' four-stars',items:visible,page,pages,kind:'a',bannerLabel:banner.caption??banner.label});
  }
  async pullCard(chat,owner,uid,id,pullId,kind='a',rank='a'){
   if(!/^\d{1,19}$/.test(pullId))throw new UserError('Invalid saved pull.');
-  const g=this.group(owner,uid,id),list=collection(g.rows,kind,rank),index=list.findIndex(x=>x.pullId===pullId);
+  kind=historyBanner(kind).id;
+  const g=bannerGroup(this.group(owner,uid,id),kind),list=collection(g.rows,'a',rank),index=list.findIndex(x=>x.pullId===pullId);
   if(index<0)throw new UserError('That saved wish is unavailable in this filter.');
   const entry=list[index],route=i=>'hit:'+uid+':'+id+':'+list[i].pullId+':'+kind+':'+rank,nav=[];
   if(index)nav.push(btn('← Newer',route(index-1)));if(index+1<list.length)nav.push(btn('Older →',route(index+1)));
@@ -206,7 +213,7 @@ export class BotApp {
    if(bits[0]==='ir'||bits[0]==='in'){this.requireIconOwner(owner);this.icons.set(bits[1],bits[0]==='ir'?null:{text:''});this.store.setUI(owner,{});return await (bits[1].startsWith('currency_')?this.savings.emojiSettings(chat,owner):this.iconSettings(chat,owner));}
    if(bits[0]==='a'){this.store.select(owner,bits[1]);return await this.history(chat,owner);}
    if(bits[0]==='p')return await this.patch(chat,owner,bits[1],bits[2]);
-   if(bits[0]==='w')return await this.wishes(chat,owner,bits[1],bits[2],Number(bits[3]));
+   if(bits[0]==='w')return await this.wishes(chat,owner,bits[1],bits[2],Number(bits[3]),bits[4],bits[5]);
    if(bits[0]==='c')return await this.card(chat,owner,bits[1],bits[2],Number(bits[3]??0),bits[4]??'5');
    if(bits[0]==='ag')return await this.categories(chat,owner,Number(bits[1]));
    if(bits[0]==='al')return await this.achievementList(chat,owner,bits[1],Number(bits[2]),bits[3]);
@@ -316,15 +323,16 @@ export class BotApp {
   if(!g)throw new UserError('That patch has no saved wishes.');return g;
  }
  async patch(chat,owner,uid,id){return this.grid(chat,owner,uid,id,'a','a',0);}
- async wishes(chat,owner,uid,id,page){
-  const g=this.group(owner,uid,id),visible=g.rows.filter(r=>['4','5'].includes(r.rank_type)),pages=Math.max(1,Math.ceil(visible.length/8));
+ async wishes(chat,owner,uid,id,page,filter='a',rank='a'){
+  const banner=historyBanner(filter),g=bannerGroup(this.group(owner,uid,id),banner.id),visible=collection(g.rows,'a',rank).map(x=>x.row),pages=Math.max(1,Math.ceil(visible.length/8));
   if(!Number.isInteger(page)||page<0||page>=pages)throw new UserError('That page is unavailable.');
   const list=visible.slice(page*8,page*8+8).map(r=>'<b>'+r.rank_type+'★ '+esc(r.name)+'</b>'+(r.pity?' · <b>'+pityLabel(r)+'</b>':'')+'\n'+r.time+' · '+BANNERS[pool(r.gacha_type)]).join('\n\n'),nav=[];
-  if(page)nav.push(btn('← Newer','w:'+uid+':'+id+':'+(page-1)));
-  if(page+1<pages)nav.push(btn('Older →','w:'+uid+':'+id+':'+(page+1)));
-  const galleries=[...(g.five?[btn('5★ Cards','c:'+uid+':'+id+':0:5')]:[]),...(g.four?[btn('4★ Cards','c:'+uid+':'+id+':0:4')]:[])];
-  return this.say(chat,'<b>✧ '+esc(g.label)+'</b> · '+(page+1)+'/'+pages+'\n4★ / 5★ pulls · '+visible.length+' shown of '+g.total+' total\n<i>Server time · + = earlier history missing</i>\n\n'+(list||'No 4★ or 5★ pulls in this selection.'),
-   kb([...(nav.length?[nav]:[]),...(galleries.length?[galleries]:[]),[btn('← Overview','p:'+uid+':'+id)],home]));
+  const route=p=>'w:'+uid+':'+id+':'+p+':'+banner.id+':'+rank;
+  if(page)nav.push(btn('← Newer',route(page-1)));
+  if(page+1<pages)nav.push(btn('Older →',route(page+1)));
+  const galleries=[...(g.five?[btn('5★ Cards','g:'+uid+':'+id+':'+banner.id+':5:0')]:[]),...(g.four?[btn('4★ Cards','g:'+uid+':'+id+':'+banner.id+':4:0')]:[])];
+  return this.say(chat,'<b>✧ '+esc(g.label)+'</b> · '+(page+1)+'/'+pages+'\n'+esc(banner.caption??banner.label)+'\n'+(rank==='a'?'4★ / 5★':rank+'★')+' pulls · '+visible.length+' shown of '+g.total+' total\n<i>Server time · + = earlier history missing</i>\n\n'+(list||'No 4★ or 5★ pulls in this selection.'),
+   kb([...(nav.length?[nav]:[]),...(galleries.length?[galleries]:[]),[btn('← History items','g:'+uid+':'+id+':'+banner.id+':'+rank+':0')],home]));
  }
  async overview(chat,owner){const a=this.account(owner),rows=this.store.rows(owner,a.uid),groups=stats(rows).filter(g=>g.total);return this.say(chat,`<b>✧ ALL-TIME OVERVIEW</b>\nUID ${a.uid} · ${rows.length} wishes\n\n${groups.map(g=>`<b>${g.name}</b> · ${g.total} pulls\n${g.five} five-stars · ${g.four} four-stars\n${g.previousFiveFound?`${g.sinceFive} recorded pulls since latest 5★`:'No 5★ in the saved span'}`).join('\n\n')}\n\n<i>Missing or unsynced pulls make current pity uncertain. Character Event banners share one count.</i>`,kb([[btn('Five-star cards',`c:${a.uid}:all:0`)],[btn('← Patches','history')],home]));}
  async card(chat,owner,uid,id,page,rank='5'){

@@ -142,7 +142,7 @@ export class CardRenderer{
  }
  async characterGrid(m){
   const owned=m.type==='ownedgrid',rows=Math.max(4,Math.ceil(m.items.length/3)),height=230+rows*278;
-  let body=header(m.title,owned?'OWNED CHARACTERS':m.kind==='a'?'CHARACTER & WEAPON WISHES':'CHARACTER WISHES')+t(49,153,18,m.subtitle,'#95a6bd');
+  let body=header(m.title,owned?'OWNED CHARACTERS':m.bannerLabel?.toUpperCase()??(m.kind==='a'?'CHARACTER & WEAPON WISHES':'CHARACTER WISHES'))+t(49,153,18,m.subtitle,'#95a6bd');
   const assets=await Promise.all(m.items.map(x=>this.art?.source(x.id,true)));
   m.items.forEach((entry,i)=>{
    const x=48+(i%3)*373,y=182+Math.floor(i/3)*278,accent=entry.rank==='5'?'#e4c383':'#b7a0e4',meta=artwork[entry.id]??{},elementColor=colors[meta.element]??accent;

@@ -31,7 +31,7 @@ test('mixed pages preserve duplicate tiles and exact clicked pulls after a sync 
  assert.equal(models.at(-1).row.id,original.pullId);assert.equal(models.at(-1).row.pity.count,original.row.pity.count);assert.notEqual(models.at(-1).row.id,wish(100).id);
  const newest=calls.at(-1).reply_markup.inline_keyboard.flat().find(b=>b.text==='← Newer');assert.ok(newest.callback_data.includes(wish(100).id));
  await assert.rejects(app.pullCard('2','2',uid,'all',original.pullId,'a','a'),/Connect/);
- await assert.rejects(app.pullCard('1','1',uid,'all',original.pullId,'w','a'),/unavailable/);
+ await assert.rejects(app.pullCard('1','1',uid,'all',original.pullId,'302','a'),/unavailable/);
  await assert.rejects(app.pullCard('1','1',uid,'all',original.pullId,'a','4'),/unavailable/);
  await assert.rejects(app.pullCard('1','1',uid,'all','invalid','a','a'),UserError);
  assert.equal(store.rows('1',uid).length,22);
