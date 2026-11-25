@@ -89,7 +89,7 @@ test('public UI shows patch groups and persists manual achievements without gran
  const run=async update=>{app.limits.clear();await app.handle(update);};
  await run(msg('/start'));assert.equal(tg.calls.at(-1).reply_markup.inline_keyboard.flat().length,6);
  await run(msg('/history'));assert.ok(tg.calls.at(-1).reply_markup.inline_keyboard.flat().some(b=>b.callback_data==='p:712345678:7.1'));
- await run(cb('p:712345678:7.1'));assert.ok(tg.calls.at(-1).reply_markup.inline_keyboard.flat().some(b=>b.text==='Tighnari'));
+ await run(cb('p:712345678:7.1'));assert.ok(tg.calls.at(-1).reply_markup.inline_keyboard.flat().some(b=>b.text.startsWith('Tighnari · ')&&b.callback_data.startsWith('hit:')));
  await run(cb('p:712345678:7.1',2));assert.ok(!tg.calls.at(-1).text.includes('Tighnari'));
  await run(msg('/achievements'));assert.match(tg.calls.at(-1).text,/manual or imported/);
  await run(cb('am:81000:1'));assert.equal(store.achievementRows('1',role.uid)[0].status,3);

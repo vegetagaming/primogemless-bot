@@ -34,9 +34,9 @@ function fixture(t){
  return {store,art,theme,raw,tg,renderer,app,run};
 }
 
-test('collection groups duplicate characters, preserves latest full-history pity and filters rarities',()=>{
+test('collection keeps repeated pulls separately, preserves each pity and filters rarities',()=>{
  const rows=withPity([wish(1),wish(2,'10000031','4'),wish(3)]),list=collection(rows);
- assert.equal(list.length,2);assert.equal(list[0].id,'10000069');assert.equal(list[0].copies,2);assert.equal(list[0].pity,'2');
+ assert.equal(list.length,3);assert.equal(list[0].id,'10000069');assert.deepEqual(list.map(x=>x.pullId),['3','2','1']);assert.equal(list[0].pity,'2');assert.equal(list[2].pity,'1+');
  assert.equal(collection(rows,'c','4')[0].name,'Fischl');assert.equal(collection(rows,'w').length,0);
  assert.throws(()=>collection(rows,'x'),UserError);
 });
@@ -52,7 +52,7 @@ test('visual navigation reuses photo IDs and edits existing photo messages',asyn
  const f=fixture(t);await f.run(message('/start'));assert.equal(f.raw.calls.at(-1).method,'photoUpload');
  await f.run(callback('history',1,true));assert.equal(f.raw.calls.at(-1).method,'editMessageMedia');
  await f.run(callback('g:'+uid+':all:c:a:0',1,true));assert.equal(f.renderer.models.at(-1).type,'grid');
- const row=f.raw.calls.at(-1).reply_markup.inline_keyboard.find(r=>r.some(b=>b.callback_data.startsWith('v:')));assert.equal(row.length,2);
+ const row=f.raw.calls.at(-1).reply_markup.inline_keyboard.find(r=>r.some(b=>b.callback_data.startsWith('hit:')));assert.equal(row.length,3);
  await f.run(callback('v:'+uid+':all:10000069:0:0:a',1,true));const m=f.renderer.models.at(-1);assert.equal(m.type,'hit');assert.equal(m.copies,2);assert.equal(m.row.pity.count,2);
  const before=f.renderer.models.length;await f.run(callback('v:'+uid+':all:10000069:0:0:a',2,true));assert.equal(f.renderer.models.length,before);assert.match(f.raw.calls.at(-1).caption??f.raw.calls.at(-1).text,/Connect/);
 });
@@ -63,7 +63,7 @@ test('artwork and per-character premium emoji are owner-only, persistent, and in
  await f.run(callback('artset:10000069'));await f.run(message('',1,{photo:[{file_id:'photo',file_size:tiny.length}]}));
  assert.ok(f.art.override('10000069'));assert.equal(f.raw.downloads,1);assert.equal((await f.art.source('10000069')).custom,true);
  await f.run(callback('artemoji:10000069'));await f.run(message('🌿',1,{entities:[{type:'custom_emoji',offset:0,length:2,custom_emoji_id:'5368324170671202286'}]}));
- await f.run(callback('g:'+uid+':all:c:a:0'));const button=f.raw.calls.at(-1).reply_markup.inline_keyboard.flat().find(b=>b.text==='Tighnari');assert.equal(button.icon_custom_emoji_id,'5368324170671202286');assert.equal(button.ui_icon,undefined);
+ await f.run(callback('g:'+uid+':all:c:a:0'));const buttons=f.raw.calls.at(-1).reply_markup.inline_keyboard.flat().filter(b=>b.text.startsWith('Tighnari · '));assert.equal(buttons.length,2);for(const button of buttons){assert.equal(button.icon_custom_emoji_id,'5368324170671202286');assert.equal(button.ui_icon,undefined);}
  assert.equal(f.theme.value('history').text,'📚');assert.equal(f.store.rows('1',uid).length,3);
  await f.run(callback('artreset:10000069',2));assert.ok(f.art.override('10000069'));
  await f.run(callback('artreset:10000069'));assert.equal(f.art.override('10000069'),null);

@@ -99,20 +99,30 @@ export class BotApp {
   await this.artItem(chat,owner,id);
  }
  async saveItemEmoji(chat,owner,message){this.requireArtOwner(owner);const id=this.store.getUI(owner).editingItemEmoji;this.art.setEmoji(id,iconFromMessage(message));this.store.setUI(owner,this.artNavigation(owner));return this.artItem(chat,owner,id);}
- async grid(chat,owner,uid,id,kind='c',rank='a',page=0){
+ async grid(chat,owner,uid,id,kind='a',rank='a',page=0){
   const g=this.group(owner,uid,id),list=collection(g.rows,kind,rank),size=galleryPageSize(kind),pages=Math.max(1,Math.ceil(list.length/size));
   if(!Number.isInteger(page)||page<0||page>=pages)throw new UserError('That collection page is unavailable.');
-  const visible=list.slice(page*size,page*size+size),buttons=visible.map(x=>({...btn(x.name.length>19?x.name.slice(0,18)+'…':x.name,'v:'+uid+':'+id+':'+x.id+':0:'+page+':'+rank),ui_icon:this.art?.emoji(x.id)})),rows=[];
+  const visible=list.slice(page*size,page*size+size),buttons=visible.map(x=>({...btn((x.name.length>15?x.name.slice(0,14)+'…':x.name)+' · '+x.pity,'hit:'+uid+':'+id+':'+x.pullId+':'+kind+':'+rank),ui_icon:this.art?.emoji(x.id)})),rows=[];
   for(let i=0;i<buttons.length;i+=3)rows.push(buttons.slice(i,i+3));
   const route=(k,r,p=0)=>'g:'+uid+':'+id+':'+k+':'+r+':'+p,nav=[];
   if(page)nav.push(btn('← Previous',route(kind,rank,page-1)));if(page+1<pages)nav.push(btn('Next →',route(kind,rank,page+1)));
-  const caption='<b>✧ '+esc(g.label.toUpperCase())+'</b>\n<b>'+g.total+'</b> wishes · <b>'+g.five+'</b> five-stars · <b>'+g.four+'</b> four-stars\n\n'+(list.length?'Tap a name to open its card.':'No saved '+(kind==='c'?'characters':'weapons')+' in this selection.')+'\n<i>Pity uses all saved patches. + means earlier history is missing.</i>';
+  const caption='<b>✧ '+esc(g.label.toUpperCase())+'</b>\n<b>'+g.total+'</b> wishes · <b>'+g.five+'</b> five-stars · <b>'+g.four+'</b> four-stars\n\n'+(list.length?list.length+' matching pulls · newest first.\nEach tile is one pull, including repeated items. Tap it for the exact wish.':'No saved 4★ / 5★ pulls in this selection.')+'\n<i>3★ pulls are hidden but count in totals and pity. + means earlier history is missing.</i>';
   const selected=(label,data,active)=>({...btn(label,data),...(active?{style:'primary'}:{})});
   return this.visual(chat,caption,kb([
-   [selected('Characters',route('c',rank),kind==='c'),selected('Weapons',route('w',rank),kind==='w')],
+   [selected('All items',route('a',rank),kind==='a'),selected('Characters',route('c',rank),kind==='c'),selected('Weapons',route('w',rank),kind==='w')],
    [selected('All rarities',route(kind,'a'),rank==='a'),selected('5★',route(kind,'5'),rank==='5'),selected('4★',route(kind,'4'),rank==='4')],
    ...rows,...(nav.length?[nav]:[]),[btn('4★ / 5★ pulls','w:'+uid+':'+id+':0'),btn('← All patches','history')],home]),
    {type:'grid',title:g.label,subtitle:g.total+' wishes  /  '+g.five+' five-stars  /  '+g.four+' four-stars',items:visible,page,pages,kind});
+ }
+ async pullCard(chat,owner,uid,id,pullId,kind='a',rank='a'){
+  if(!/^\d{1,19}$/.test(pullId))throw new UserError('Invalid saved pull.');
+  const g=this.group(owner,uid,id),list=collection(g.rows,kind,rank),index=list.findIndex(x=>x.pullId===pullId);
+  if(index<0)throw new UserError('That saved wish is unavailable in this filter.');
+  const entry=list[index],route=i=>'hit:'+uid+':'+id+':'+list[i].pullId+':'+kind+':'+rank,nav=[];
+  if(index)nav.push(btn('← Newer',route(index-1)));if(index+1<list.length)nav.push(btn('Older →',route(index+1)));
+  const markup=kb([...(nav.length?[nav]:[]),[btn('← History items','g:'+uid+':'+id+':'+kind+':'+rank+':'+Math.floor(index/galleryPageSize(kind)))],[btn('All patches','history'),btn('⌂ Home','start')],...(this.isOwner(owner)&&this.art&&artMap[entry.id]?[[btn('Edit artwork / emoji','artitem:'+entry.id)]]:[])]);
+  const copies=g.rows.filter(r=>entry.id?itemId(r)===entry.id:r.name===entry.name&&r.item_type===entry.row.item_type).length;
+  return this.hitCard(chat,owner,uid,g,entry.row,index,list.length,markup,copies);
  }
  async itemCard(chat,owner,uid,id,item,index=0,gridPage=0,rank='a'){
   if(!/^\d{1,12}$/.test(item)||!['a','4','5'].includes(rank)||!Number.isInteger(gridPage)||gridPage<0)throw new UserError('Invalid character card.');
@@ -125,7 +135,7 @@ export class BotApp {
   return this.hitCard(chat,owner,uid,g,r,index,hits.length,markup,hits.length);
  }
  async hitCard(chat,owner,uid,g,r,index,total,markup,copies){
-  return this.visual(chat,'<b>'+r.rank_type+'★ '+esc(r.name)+'</b> · <b>'+pityLabel(r)+'</b>\n'+esc(g.label)+' · '+BANNERS[pool(r.gacha_type)]+'\n<i>Saved history only'+(r.pity.anchored?'':'; earlier pulls are missing')+'.</i>',markup,{type:'hit',row:r,patch:g.label,banner:BANNERS[pool(r.gacha_type)],uid,index,total,copies});
+  return this.visual(chat,'<b>'+r.rank_type+'★ '+esc(r.name)+'</b> · <b>'+pityLabel(r)+'</b>\n'+esc(g.label)+' · '+BANNERS[pool(r.gacha_type)]+'\n'+esc(r.time)+' · server time\n<i>Saved history only'+(r.pity.anchored?'':'; earlier pulls are missing')+'.</i>',markup,{type:'hit',row:r,patch:g.label,banner:BANNERS[pool(r.gacha_type)],uid,index,total,copies});
  }
  account(owner,uid=null){const a=uid?this.store.accounts(owner).find(x=>x.uid===uid):this.store.selected(owner);if(!a)throw new UserError('Connect your Genshin account first, or send an existing UIGF wish file.');return a;}
  handle(update){return this.context.run({message:update.callback_query?.message},()=>this.handleUpdate(update));}
@@ -182,6 +192,7 @@ export class BotApp {
    if(bits[0]==='savfield')return await this.savings.editField(chat,owner,bits[1]);
    if(bits[0]==='diary'||bits[0]==='df')return await this.savings.diary(chat,owner,bits[1],bits[0]==='df');
    if(bits[0]==='g')return await this.grid(chat,owner,bits[1],bits[2],bits[3],bits[4],Number(bits[5]));
+   if(bits[0]==='hit')return await this.pullCard(chat,owner,bits[1],bits[2],bits[3],bits[4],bits[5]);
    if(bits[0]==='v')return await this.itemCard(chat,owner,bits[1],bits[2],bits[3],Number(bits[4]),Number(bits[5]??0),bits[6]??'a');
    if(bits[0]==='arttab')return await this.artSettings(chat,owner,0,'',bits[1]);
    if(bits[0]==='art')return await this.artSettings(chat,owner,Number(bits[1]??0));
@@ -296,7 +307,7 @@ export class BotApp {
   for(let i=0;i<groups.length;i+=2)patches.push(groups.slice(i,i+2).map(g=>btn(g.label+' · '+g.total,'p:'+a.uid+':'+g.id)));
   return this.visual(chat,'<b>✧ YOUR WISH HISTORY</b>\n<b>'+rows.length+'</b> total wishes · UID '+a.uid+'\n\nOpen your complete collection or choose a patch.\n'+(c?(caps.wishes?'Last wish sync: ':'HoYoLAB-only connection · wish auto-sync disabled\nLast HoYoLAB check: ')+date(c.last_sync):'<i>Archive saved · connect for automatic checks</i>'),
    kb([[{...btn('✦ All history · '+rows.length+' wishes','p:'+a.uid+':all'),style:'primary'}],...patches,[btn('Owned Characters','characters'),...(this.isOwner(owner)?[btn('My Game Profile','savings')]:[])],[btn('Pity overview','stats'),btn('Accounts','accounts')],[btn('↻ Refresh','sync'),btn('Backup','export')],home]),
-   {type:'dashboard',title:'Every wish has a story.',subtitle:'All history, or one chapter at a time.',metrics:[{value:rows.length,label:'TOTAL WISHES'},{value:five,label:'FIVE-STARS'},{value:four,label:'FOUR-STARS',color:'#bfa8e7'},{value:groups.length,label:'SAVED PATCHES'}],uid:a.uid,footer:'Select a patch below to discover your characters.'});
+   {type:'dashboard',title:'Every wish has a story.',subtitle:'All history, or one chapter at a time.',metrics:[{value:rows.length,label:'TOTAL WISHES'},{value:five,label:'FIVE-STARS'},{value:four,label:'FOUR-STARS',color:'#bfa8e7'},{value:groups.length,label:'SAVED PATCHES'}],uid:a.uid,footer:'Select a patch to see each character and weapon pull.'});
  }
  group(owner,uid,id){
   const a=this.account(owner,uid),all=withPity(this.store.rows(owner,uid));
@@ -304,7 +315,7 @@ export class BotApp {
   const g=patchGroups(all,a.timezone).find(g=>g.id===id);
   if(!g)throw new UserError('That patch has no saved wishes.');return g;
  }
- async patch(chat,owner,uid,id){return this.grid(chat,owner,uid,id,'c','a',0);}
+ async patch(chat,owner,uid,id){return this.grid(chat,owner,uid,id,'a','a',0);}
  async wishes(chat,owner,uid,id,page){
   const g=this.group(owner,uid,id),visible=g.rows.filter(r=>['4','5'].includes(r.rank_type)),pages=Math.max(1,Math.ceil(visible.length/8));
   if(!Number.isInteger(page)||page<0||page>=pages)throw new UserError('That page is unavailable.');

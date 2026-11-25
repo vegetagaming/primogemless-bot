@@ -1,4 +1,4 @@
-# Primogemless 2.14.0
+# Primogemless 2.15.0
 
 An open-source Telegram companion for Genshin Impact, created by
 [@Wr_Vegeta](https://t.me/Wr_Vegeta).
@@ -66,12 +66,13 @@ Their stable IDs and custom emoji/artwork settings are preserved.
 
 ## Character galleries
 
-Owned Characters and the character tab in Wish History use portrait cards with
-18 characters per page (three columns, up to six rows). Owned entries show a
-portrait, constellation, level and element. Pulled entries show copies and the
-latest saved pity, preserving the five-star green/yellow/red scale and purple
-four-star pity. Character buttons and Next/Previous pages cover the same entries.
-Weapon galleries retain nine entries per page.
+Owned Characters and Wish History use portrait cards with 18 entries per page
+(three columns, up to six rows). Owned entries show a portrait, constellation,
+level and element. Wish History opens with characters and weapons together;
+every four- or five-star drop has its own tile, even when the same item appears
+several times. Each tile shows that pull's date and pity, preserving the five-star
+green/yellow/red scale and purple four-star pity. Buttons and Next/Previous pages
+cover the same entries. The weapons-only filter retains nine entries per page.
 
 ## Daily and Original Resin reminders
 
@@ -228,11 +229,15 @@ periods are labelled as awaiting a patch update; they are not guessed from a fix
 42-day cycle. The parser must be maintained if HoYoverse changes announcement wording.
 
 **All history** appears above the patch options and includes every saved pull for
-the selected account. Each patch opens a three-column character picker with portrait
-tiles, latest saved pity, rarity and copy counts. Tabs switch between characters and
-weapons or filter 5-star/4-star records. Tap a name for a landscape card containing
-full artwork, a large pity count, rarity, saved copies, banner and date. Newer/Older
-browses copies. Copy counts refer to saved records, not inferred constellations.
+the selected account. Each patch opens a three-column list of individual character
+and weapon pulls, newest first, with one tile per drop. Repeated items remain
+separate and show their own pity and date. Filters select all items, characters or
+weapons, and all rarities, five stars or four stars. Records without available
+artwork still appear. Tap a name for a landscape card containing full artwork,
+a large pity count, rarity, saved copies, banner and date. Newer/Older browses
+individual pulls within the selected filters. Buttons identify exact pull IDs,
+so a new sync does not change which saved pull an old button opens. Copy counts
+refer to saved records, not inferred constellations.
 Paging edits the current photo instead of sending a new one for every card.
 Pity numbers in cards and collection tiles use green for 5-star counts 1–35,
 yellow for 36–65, and red for 66 and above. Four-star pity is always purple.

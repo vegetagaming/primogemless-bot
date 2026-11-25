@@ -35,7 +35,7 @@ export class CardRenderer{
  constructor(art){this.art=art;}
  async render(model){
   if(!fontReady){assertCardFont();fontReady=true;}
-  const svg=await this.svg(model),key=createHash('sha256').update('ui-v3.2-fonts').update(svg).digest('hex');
+  const svg=await this.svg(model),key=createHash('sha256').update('ui-v3.3-pull-history').update(svg).digest('hex');
   return {key,svg,png:()=>Buffer.from(new Resvg(svg,{font:fontOptions}).render().asPng())};
  }
  async svg(m){
@@ -122,10 +122,10 @@ export class CardRenderer{
   body+=t(48,606,15,m.footer,'#a2b0c3');return shell(650,body,accent);
  }
  async grid(m){
-  if(m.kind==='c')return this.characterGrid(m);
+  if(m.kind==='c'||m.kind==='a')return this.characterGrid(m);
   const owned=m.type==='ownedgrid';
   const rows=Math.max(1,Math.ceil(m.items.length/3)),height=226+rows*182;
-  let body=header(m.title,m.kind==='w'?'WEAPON COLLECTION':'CHARACTER COLLECTION')+t(49,153,18,m.subtitle,'#95a6bd');
+  let body=header(m.title,owned?'WEAPON COLLECTION':'WEAPON WISHES')+t(49,153,18,m.subtitle,'#95a6bd');
   const assets=await Promise.all(m.items.map(x=>this.art.source(x.id,true)));
   m.items.forEach((entry,i)=>{
    const x=48+(i%3)*373,y=182+Math.floor(i/3)*182,accent=entry.rank==='5'?'#e4c383':'#b7a0e4';
@@ -133,8 +133,8 @@ export class CardRenderer{
    body+=`<path d="M${x+17} ${y+1} H${x+341}" stroke="${accent}" stroke-width="2" opacity=".8"/>`;
    body+=image(assets[i],x+3,y+20,130,142);
    body+=t(x+139,y+48,entry.name.length>18?15:19,entry.name.length>25?entry.name.slice(0,24)+'…':entry.name,'#edf0f5',600);
-   body+=t(x+139,y+77,13,owned?entry.secondary:entry.rank+' STAR  /  ×'+entry.copies,accent,600);
-   body+=owned?t(x+139,y+117,35,entry.badge,accent,600)+t(x+139,y+141,12,entry.detail,'#8798ae',500):t(x+139,y+115,29,entry.pity,pityColor(entry.rank,entry.pity),600)+t(x+146+String(entry.pity).length*17,y+115,29,'pity','#f0ede5',600)+t(x+139,y+141,12,'LATEST SAVED PULL','#8798ae',500);
+   body+=t(x+139,y+77,13,owned?entry.secondary:entry.rank+' STAR  /  #'+(entry.position??i+1),accent,600);
+   body+=owned?t(x+139,y+117,35,entry.badge,accent,600)+t(x+139,y+141,12,entry.detail,'#8798ae',500):t(x+139,y+115,29,entry.pity,pityColor(entry.rank,entry.pity),600)+t(x+146+String(entry.pity).length*17,y+115,29,'pity','#f0ede5',600)+t(x+139,y+141,12,entry.time?.slice(0,16)??'PITY AT THIS PULL','#8798ae',500);
   });
   if(!m.items.length)body+=t(600,245,23,m.empty??'No saved wishes in this selection.','#9aaac0',400,'text-anchor="middle"');
   body+=t(48,height-22,13,owned?'Choose a name below for details.':'Choose a name below to open its wish card.','#8a9bb3')+t(1150,height-22,13,'PAGE '+(m.page+1)+' / '+m.pages,'#8a9bb3',400,'text-anchor="end"');
@@ -142,24 +142,24 @@ export class CardRenderer{
  }
  async characterGrid(m){
   const owned=m.type==='ownedgrid',rows=Math.max(4,Math.ceil(m.items.length/3)),height=230+rows*278;
-  let body=header(m.title,owned?'OWNED CHARACTERS':'PULLED CHARACTERS')+t(49,153,18,m.subtitle,'#95a6bd');
+  let body=header(m.title,owned?'OWNED CHARACTERS':m.kind==='a'?'CHARACTER & WEAPON WISHES':'CHARACTER WISHES')+t(49,153,18,m.subtitle,'#95a6bd');
   const assets=await Promise.all(m.items.map(x=>this.art?.source(x.id,true)));
   m.items.forEach((entry,i)=>{
    const x=48+(i%3)*373,y=182+Math.floor(i/3)*278,accent=entry.rank==='5'?'#e4c383':'#b7a0e4',meta=artwork[entry.id]??{},elementColor=colors[meta.element]??accent;
    body+=rect(x,y,358,260,19,'#172537','#34435a')+rect(x+1,y+1,356,166,18,'#213247');
    body+=`<circle cx="${x+179}" cy="${y+86}" r="76" fill="${elementColor}" opacity=".12"/>`+image(assets[i],x+94,y+2,170,170);
    body+=rect(x+14,y+14,62,29,14,'#111d2f')+t(x+45,y+35,17,entry.rank+'★','#c3a2f3',600,'text-anchor="middle"');
-   body+=rect(x+274,y+14,70,32,14,'#111d2f')+t(x+309,y+37,20,owned?entry.badge:'×'+entry.copies,accent,600,'text-anchor="middle"');
+   body+=rect(x+274,y+14,70,32,14,'#111d2f')+t(x+309,y+37,20,owned?entry.badge:'#'+(entry.position??i+1),accent,600,'text-anchor="middle"');
    const name=entry.name.length>29?entry.name.slice(0,28)+'…':entry.name,size=entry.name.length>22?19:entry.name.length>17?22:26;
    body+=t(x+179,y+202,size,name,'#f0f3f8',600,'text-anchor="middle"');
    if(owned){
     body+=t(x+22,y+239,23,'Lv. '+(entry.level??'?'),'#c6d2e4',500)+t(x+336,y+239,16,element[meta.element]??'CHARACTER',elementColor,500,'text-anchor="end"');
    }else{
-    body+=t(x+22,y+238,14,'LATEST PITY','#91a6bf',500,'letter-spacing="1"')+t(x+336,y+240,34,entry.pity,pityColor(entry.rank,entry.pity),600,'text-anchor="end"');
+    body+=t(x+22,y+228,14,'PITY AT PULL','#91a6bf',500,'letter-spacing="1"')+t(x+22,y+250,12,entry.time?.slice(0,16)??'SAVED HISTORY','#8298b2')+t(x+336,y+242,34,entry.pity,pityColor(entry.rank,entry.pity),600,'text-anchor="end"');
    }
   });
-  if(!m.items.length)body+=t(600,360,23,m.empty??'No saved characters in this selection.','#9aaac0',400,'text-anchor="middle"');
-  body+=t(48,height-25,15,'Choose a character below for the full card.','#9aacc3')+t(1150,height-25,15,'PAGE '+(m.page+1)+' / '+m.pages,'#9aacc3',500,'text-anchor="end"');
+  if(!m.items.length)body+=t(600,360,23,m.empty??(owned?'No saved characters in this selection.':'No saved 4-star or 5-star pulls in this selection.'),'#9aaac0',400,'text-anchor="middle"');
+  body+=t(48,height-25,15,owned?'Choose a character below for the full card.':'Each tile is one pull. Choose it below for the full card.','#9aacc3')+t(1150,height-25,15,'PAGE '+(m.page+1)+' / '+m.pages,'#9aacc3',500,'text-anchor="end"');
   return shell(height,body,'#b8b7ea');
  }
 }

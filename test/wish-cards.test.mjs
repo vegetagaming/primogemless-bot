@@ -51,7 +51,7 @@ test('All history contains all patches and rarities, totals, and both image gall
  assert.match(menu.text,/<b>3<\/b> total wishes/);
  await f.app.patch(1,'1',uid,'all');const total=f.tg.calls.at(-1);
  assert.match(total.text,/ALL HISTORY/);assert.match(total.text,/<b>3<\/b> wishes · <b>1<\/b> five-stars · <b>1<\/b> four-stars/);assert.doesNotMatch(total.text,/three-stars/);
- for(const rank of ['4','5'])assert.ok(total.reply_markup.inline_keyboard.flat().some(b=>b.callback_data==='g:'+uid+':all:c:'+rank+':0'));
+ for(const rank of ['4','5'])assert.ok(total.reply_markup.inline_keyboard.flat().some(b=>b.callback_data==='g:'+uid+':all:a:'+rank+':0'));
  await f.app.wishes(1,'1',uid,'all',0);assert.match(f.tg.calls.at(-1).text,/Fischl/);
 });
 
